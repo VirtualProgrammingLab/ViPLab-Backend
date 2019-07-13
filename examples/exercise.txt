@@ -1,0 +1,74 @@
+{ "Exercise" :
+{ "postTime"    : "1985-04-12T23:20:50.52Z", // must, given by TC
+  "TTL"         : 360000, // opt, given by TC (here 10*10*3600s = 100h)
+  "identifier"  : "Numerik II, SS10, Aufgabe 1, v1.0", // name of exercise for teachers
+  "department"  : "RUS", // opt, for filtering exercises
+  "comment"     : "Um die Studenten mal richtig zu fordern.", // optional
+  "name"        : "Aufgabe 1",                       // name of exercise to be shown in SCs
+  "description" : "Schreiben Sie eine C-Funktion...",// optional: short description (could be used as subtitle,
+                                                     //   longer descriptions should be in "elements").
+  "elements" : // must: at least one array element
+  [
+    { "identifier": "preamble",                       // for referencing
+      "visible"   : true,                             // if it has to be shown in SC
+      "modifiable": false,                            // optional
+      "name"      : "Info: source before your code.", // name of element for student
+      "MIMEtype"  : "text/plain",                     // optional (default: "text/plain")
+      "syntaxHighlighting": "C",                      // optional (default: "none")
+      "emphasis"  : "low",                            // optional (for rendering)
+      "value"     : "#include <stdio.h>\n"            // source (newline should be in effect after decoding)
+    },
+    { "identifier": "codeFromStudent",
+      "visible"   : true,
+      "modifiable": true,                             // bool; has to be true here to make it editable in SC
+      "name"      : "Fill in your code!",
+      "MIMEtype"  : "text/plain",                     // optional (default: "text/plain")
+      "syntaxHighlighting": "C",                      // optional (default: "none")
+      "emphasis"  : "medium",
+      "value"     : "void bar() { /* Schreiben Sie hier Code, der \"bar\" ausgibt. */\n\n}\n" // source (template) from teacher
+    },
+    { "identifier": "postscript",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source after your code calling bar() in it.",
+      "MIMEtype"  : "text/plain",                     // optional (default: "text/plain")
+      "syntaxHighlighting": "C",                      // optional (default: "none")
+      "emphasis"  : "low",
+      "value"     : "int main() { bar(); return 0; }" // source
+    }
+  ], // elements[]
+
+  "environment" : "anIdentifier", // optional
+
+  "config" :
+  { "C" : // C language specific stuff
+    {
+      // phases
+      //
+      "merging"  : // optional / must (for compiling)
+      {
+        "sources" : ["preamble", "codeFromStudent", "postscript"] // identifiers of to be merged sources (elements with text content) from above
+      },
+      "compiling" : // optional / must (for checking/linking)
+      {
+        "compiler" : "gcc",      // string
+        "flags"    : "-O2 -Wall" // string
+      },
+      "checking" : // optional
+      {
+        "sources": ["codeFromStudent"],   // sources to be checked
+        "forbiddenCalls": "system execve" // forbidden call names separated by WS
+      },
+      "linking" : // optional / must (for running)
+      {
+        "flags" : "-lm" // string
+      },
+      "running" : // optional
+      {
+        "commandLineArguments" : "--stepwidth 0.001" // string
+      },
+      "stopAfterPhase" : "running" // optional: "running" here is the same as omitting "stopAfterPhase"
+    } // "C"
+  } // "config"
+} // "Exercise"
+} // "Exercise" wrapper
