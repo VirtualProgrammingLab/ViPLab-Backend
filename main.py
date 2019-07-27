@@ -9,24 +9,20 @@ pts = "examples/solution.json"
 
 if __name__ == "__main__":
     exercise = dataObjects.Exercise(dataObjects.readJson(pte))
-    solution = dataObjects.Solution(dataObjects.readJson(pts))
-    l = exercise.lang
-    comp = None
-    if l == "C":
-        comp = compiler.C(exercise, solution)
-    elif l == "C++":
-        comp = compiler.Cpp(exercise, solution)
-    elif l == "Matlab":
-        comp = compiler.Matlab(exercise, solution)
-    elif l == "Octave":
-        comp = compiler.Octave(exercise, solution)
-    elif l == "Java":
-        comp = compiler.Java(exercise, solution)
-    elif l == "DuMuX":
-        comp = compiler.DuMuX(exercise, solution)
-    elif l == "Python":
-        comp = compiler.Python(exercise, solution)
+    solution = dataObjects.Solution(dataObjects.readJson(pts), exercise)
+    if solution.exercise.lang == "C":
+        compiler.C(solution)
+    elif solution.exercise.lang == "C++":
+        compiler.Cpp(solution)
+    elif solution.exercise.lang == "Matlab":
+        compiler.Matlab(solution)
+    elif solution.exercise.lang == "Octave":
+        compiler.Octave(solution)
+    elif solution.exercise.lang == "Java":
+        compiler.Java(solution)
+    elif solution.exercise.lang == "DuMuX":
+        compiler.DuMuX(solution)
+    elif solution.exercise.lang == "Python":
+        compiler.Python(solution)
     else:
         print("No supported lang detected")
-
-    comp.clearTempFiles()
