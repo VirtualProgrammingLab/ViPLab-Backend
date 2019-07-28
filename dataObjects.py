@@ -112,19 +112,3 @@ class Solution:
             if d is None:
                 data.pop(d, None)
         return json.dumps(data, indent=4)
-
-    def getCode(self):
-        """ retrieving code from exercise and solution objects """
-        # replacing exercise code with student solution
-        for sEl in self.exerciseModifications["elements"]:
-            for eEl in self.exercise.elements:
-                if eEl["identifier"] == sEl["identifier"] and eEl["modifiable"] == True:
-                    eEl["value"] = sEl["value"]
-                    
-        code = ""
-        #for e in self.exercise.elements[:-1]:
-        for e in self.exercise.elements:
-            code += e["value"]
-            if code[-1] != "\n":
-                code += "\n"
-        return code

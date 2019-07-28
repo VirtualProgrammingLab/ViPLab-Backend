@@ -10,10 +10,8 @@ pts = "examples/solution.json"
 if __name__ == "__main__":
     exercise = dataObjects.Exercise(dataObjects.readJson(pte))
     solution = dataObjects.Solution(dataObjects.readJson(pts), exercise)
-    if solution.exercise.lang == "C":
+    if solution.exercise.lang in ["C", "C++"]:
         compiler.C(solution)
-    elif solution.exercise.lang == "C++":
-        compiler.Cpp(solution)
     elif solution.exercise.lang == "Matlab":
         compiler.Matlab(solution)
     elif solution.exercise.lang == "Octave":
