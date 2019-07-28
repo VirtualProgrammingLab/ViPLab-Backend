@@ -46,12 +46,15 @@ class C(Compiler):
             for eEl in self.solution.exercise.elements:
                 if eEl["identifier"] == sEl["identifier"] and eEl["modifiable"] == True:
                     eEl["value"] = sEl["value"]
-        #concatenating code     
+        #concatenating code
         code = ""
-        for e in self.solution.exercise.elements:
-            code += e["value"]
-            if code[-1] != "\n":
-                code += "\n"
+        for s in self.solution.exercise.config[self.lang]["merging"]["sources"]:
+            for e in self.solution.exercise.elements:
+                if s == e["identifier"]:
+                    code += e["value"]
+                    if code[-1] != "\n":
+                        code += "\n"
+                    break
         #check if temp dir exists
         if not os.path.exists(path):
             os.makedirs(path)
