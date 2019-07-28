@@ -11,11 +11,12 @@ class CState(Enum):
 path = "temp"
 
 class Compiler:     
-    def __del__(self):
-        if os.path.isdir(path):
-            for f in os.scandir(path):
-                os.remove(f.path)
-            print("temp folder cleared")
+    # def __del__(self):
+    #     if os.path.isdir(path):
+    #         for f in os.scandir(path):
+    #             os.remove(f.path)
+    #         print("temp folder cleared")
+    pass
 
 class C(Compiler):
     def __init__(self, solution):
@@ -63,20 +64,29 @@ class C(Compiler):
             f.write(code)
 
     def compile(self):
-        com = (self.solution.exercise.getCompilingCommand() + " -o temp temp.c").split(" ")
-        result = subprocess.run(com, stdout=subprocess.PIPE)
+        com = self.solution.exercise.getCompilingCommand() + " -c temp.c"
+        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
         print(result.stdout.decode("utf-8"))
 
     def check(self):
-        pass
+        code = ""
+        for s in self.solution.exercise.config[self.lang]["checking"]["sources"]:
+            for e in self.solution.exercise.elements:
+                if s == e["identifier"]:
+                    code = e["value"]
+                    # Todo: check for illegal system calls in code
+                    break
 
     def link(self):
-        pass
+        flags = self.solution.exercise.config[self.lang]["linking"]["flags"]
+        com = "gcc -o out temp.o " + flags
+        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
+        print(result.stdout.decode("utf-8"))
     
     def run(self):
-        os.chmod("temp", 0o700)
-        com = "./temp".split(" ")
-        result = subprocess.run(com, stdout=subprocess.PIPE)
+        os.chmod("out", 0o700)
+        com = "./out"
+        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
         print(result.stdout.decode("utf-8"))
         
 class Matlab(Compiler):
