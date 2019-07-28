@@ -11,16 +11,15 @@ class CState(Enum):
 path = "temp"
 
 class Compiler:     
-    # def __del__(self):
-    #     if os.path.isdir(path):
-    #         for f in os.scandir(path):
-    #             os.remove(f.path)
-    #         print("temp folder cleared")
-    pass
+    def __del__(self):
+        if os.path.isdir(path):
+            for f in os.scandir(path):
+                os.remove(f.path)
+            print("temp folder cleared")
 
 class C(Compiler):
     def __init__(self, solution):
-        path = os.getcwd()
+        curpath = os.getcwd()
         self.solution = solution
         self.lang = self.solution.exercise.lang
         maxState = CState[self.getMaxState()]
@@ -33,7 +32,7 @@ class C(Compiler):
             self.link()
         if CState.RUNNING.value <= maxState.value:
             self.run()
-        os.chdir(path)
+        os.chdir(curpath)
 
     def getMaxState(self):
         s = self.solution.exercise.config[self.lang].get("stopAfterPhase")
