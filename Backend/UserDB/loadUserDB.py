@@ -19,24 +19,24 @@ class UserDB(object):
         Constructor
         '''
     
-    def genPubKey(self):
+    def genPubKey(self,owner):
         secret_code="Chaosprojekt"
         key = RSA.generate(2048)
         encrypted_key = key.export_key(passphrase=secret_code, pkcs=8, protection="scryptAndAES128-CBC")
-        file_out = open("rsa_key.bin", "wb")
+        file_out = open("rsa_key_"+owner+".bin", "wb")
         file_out.write(encrypted_key)
         file_out.close()
         print("Finished generating RSA key")
         
         
         
-    def generatePEM(self):
+    def generatePEM(self,owner):
         secret_code = "Chaosprojekt"
         encoded_key = open("rsa_key.bin","rb").read() 
         key = RSA.import_key(encoded_key, passphrase=secret_code)
         
         public_key = key.publickey().export_key()
-        file_out = open("public.pem", "wb")
+        file_out = open("public_"+owner+".pem", "wb")
         file_out.write(public_key)
         file_out.close()
         
@@ -45,11 +45,11 @@ class UserDB(object):
         file_out.write(private_key)
         file_out.close()
         print("Finished generating .pem's...")
-    def encryptData(self, receiver):
+    def encryptData(self, receiver,owner):
         print("Start Encrypting...")
         data = open('pinf.passwd', 'r').read().encode("utf-8");
-        file_out = open("encrypted_data.bin", "wb")
-        recipient_key = RSA.import_key(open("public.pem").read())
+        file_out = open("encrypted_data_"+owner+".bin", "wb")           #CHANGE TO YOUR NAME
+        recipient_key = RSA.import_key(open("public_"+owner+".pem").read()) #CHANGE TO YOUR NAME
         session_key = get_random_bytes(16)
         
         # Encrypt the session key with the public RSA key
@@ -61,8 +61,8 @@ class UserDB(object):
         
         [file_out.write(x) for x in (enc_session_key, cipher_aes.nonce, tag, ciphertext)]
         print("Stop Encrypting...")
-    def decryptData(self):
-        file_in = open("encrypted_data.bin","rb")
+    def decryptData(self,owner):
+        file_in = open("encrypted_data_"+owner+".bin","rb") #CHANGE TO YOUR NAME
         
         private_key = RSA.import_key(open("private.pem").read())
         
