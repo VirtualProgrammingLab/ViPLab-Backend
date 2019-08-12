@@ -1,6 +1,4 @@
 '''
-Created on 01.08.2019
-
 @author: Joshua
 '''
 import json
@@ -19,28 +17,34 @@ class ConnectCC:
         self.pw = pw
 
     def GetSolutions(self):
+        print("GetSolution Start...")
         r = requests.post(self.url + '/numlab/solutions/fifo', auth=(self.user, self.pw))
         print(r.status_code)
         if r.text != "":
             return r.json()
         
     def GetExerciseList(self):
-        r= requests.get(self.url + '/numblab/exercises', auth=(self.user, self.pw)) 
+        print("GetExerciseList Start... ")
+        r= requests.get(self.url + '/numlab/exercises', auth=(self.user, self.pw))
         print(r.status_code)
         if r.text != "":
             return r.json() 
         
         
     def GetExercise(self, ID):
-        r= requests.get(self.url + '/numblab/exercises/' + ID, auth=(self.user, self.pw))
+        print("GetExercise Start...")
+        r= requests.get(self.url + '/numlab/exercises/' + ID, auth=(self.user, self.pw))
         print(r.status_code)
         if r.text != "":
-             return r.json()
+            return r.json()
         
-    def PostResults(self, ID):
-        payload = ""   ''' Json Data Here '''
-        headers = {'content-type': 'application/json'}
-        r = requests.post(self.url + '/numlab/results',data = json.dumps(payload), headers = headers, auth=(self.user, self.pw))
+    def PostResults(self,ID):
+        print("Post Results Start...")
+        with open("../Connector/test_result.json") as json_file:
+            json_data = json.load(json_file)
+        
+        headers = {'Accept' : 'application/json', 'Content-Type' : 'application/json'}
+        r = requests.post(self.url + '/numlab/results',data = json.dumps(json_data),headers = headers, auth=(self.user, self.pw))
         print(r.status_code)
         return r.status_code
            

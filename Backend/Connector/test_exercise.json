@@ -1,0 +1,72 @@
+{ "Exercise" :
+{ "postTime"    : "1985-04-12T23:20:50.52Z",
+  "TTL"         : 360000,
+  "identifier"  : "Numerik II, SS10, Aufgabe 1, v1.0", 
+  "department"  : "RUS", 
+  "comment"     : "Um die Studenten mal richtig zu fordern.",
+  "name"        : "Aufgabe 1",                       
+  "description" : "Schreiben Sie eine C-Funktion...",
+  "elements" :
+  [
+    { "identifier": "preamble",                       
+      "visible"   : true,                             
+      "modifiable": false,                           
+      "name"      : "Info: source before your code.", 
+      "MIMEtype"  : "text/plain",                    
+      "syntaxHighlighting": "C",                      
+      "emphasis"  : "low",                          
+      "value"     : "#include <stdio.h>\n"            
+    },
+    { "identifier": "codeFromStudent",
+      "visible"   : true,
+      "modifiable": true,                            
+      "name"      : "Fill in your code!",
+      "MIMEtype"  : "text/plain",                     
+      "syntaxHighlighting": "C",                    
+      "emphasis"  : "medium",
+      "value"     : "void bar() { /* Schreiben Sie hier Code, der \"bar\" ausgibt. */\n\n}\n" 
+    },
+    { "identifier": "postscript",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source after your code calling bar() in it.",
+      "MIMEtype"  : "text/plain",                     
+      "syntaxHighlighting": "C",                      
+      "emphasis"  : "low",
+      "value"     : "int main() { bar(); return 0; }" 
+    }
+  ], 
+
+  "environment" : "anIdentifier", 
+
+  "config" :
+  { "C" : 
+    {
+   
+      "merging"  : 
+      {
+        "sources" : ["preamble", "codeFromStudent", "postscript"] 
+      },
+      "compiling" :
+      {
+        "compiler" : "gcc",      
+        "flags"    : "-O2 -Wall"
+      },
+      "checking" : 
+      {
+        "sources": ["codeFromStudent"],   
+        "forbiddenCalls": "system execve"
+      },
+      "linking" : 
+      {
+        "flags" : "-lm"
+      },
+      "running" : 
+      {
+        "commandLineArguments" : "--stepwidth 0.001"
+      },
+      "stopAfterPhase" : "running"
+    } 
+  } 
+} 
+} 

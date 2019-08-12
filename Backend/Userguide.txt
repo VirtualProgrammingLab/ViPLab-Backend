@@ -1,0 +1,20 @@
+Prerequisites:
+json for Python
+pip install json
+requests for Python
+pip install requests
+
+Usage:
+1. Open in Python IDE and execute main
+   The main will finish with generating all of the rsa keys "private.pem","public.pem","rsa_key.bin"
+   Please upload "public.key" to git and I will provide a set of "encrypted_data_YourName.bin".
+   
+   Notice : You might want to git ignore the following files: "rsa_key.bin", "private.pem", "*.passwd",
+2. Please download "encrypted_data_YourName.bin" and put it in the "UserDB" Folder
+   
+3. Execute main again and Select D and you get to the Controller Interface
+
+Controller Interface:
+You can select the Clients by entering the highlighted Letters.
+
+Warning: All POST-Requests are deactivated since they produce a 400 Error. Working on fixing it, but might take a bit.

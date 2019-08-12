@@ -1,0 +1,83 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2012-07-25 17:59:50",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2012-07-25 17:59:49",
+            "duration" : "555ms",
+            "finishTime" : "2012-07-25 17:59:50",
+            "CC_versionLong" : "[ViP CCv2.16 (C chain)v1.9 (Matlab chain)v2.6.1 (Octave chain)v1.4.1 (DuMuX chain)v1.2 (C++ chain)v1.3 (Tue Jun 26 19:10:42 CEST 2012)]",
+            "CC_version" : "ViP CCv2.16",
+            "chain_version" : "(C chain)v1.9",
+            "technicalInfo" : {
+                "host" : "numlab",
+                "PID" : "6405",
+                "ID" : "#1"
+            },
+            "userInfo" : {
+                "summary" : "(C chain)v1.9 failed.",
+                "elements" : [
+                    {
+                        "severity" : "info",
+                        "type" : "compiler",
+                        "message" : "source_0.c: In function \u2018trapez\u2019:",
+                        "output" : {
+                            "elementID" : "compile_stderr_0.txt",
+                            "extract" : "source_0.c: In function \u2018trapez\u2019:",
+                            "begin" : 0,
+                            "end" : 37
+                        }
+                    },
+                    {
+                        "severity" : "warning",
+                        "type" : "compiler",
+                        "message" : "source_0.c:21:10: warning: unused variable \u2018x\u2019 [-Wunused-variable]",
+                        "source" : {
+                            "elementID" : "codeFromStudent",
+                            "extract" : "  double x = 0;",
+                            "begin" : 406,
+                            "end" : 421,
+                            "line" : 15,
+                            "col" : 10
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr_0.txt",
+                            "extract" : "source_0.c:21:10: warning: unused variable \u2018x\u2019 [-Wunused-variable]",
+                            "begin" : 38,
+                            "end" : 108
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "callcheck",
+                        "message" : "[C function filtering] Function call not allowed:\n\"system\"; original source: codeFromStudent, line (corrected): 20, col: 3\nForbidden calls:\nsystem.\n",
+                        "source" : {
+                            "elementID" : "codeFromStudent",
+                            "extract" : "  system(\"/bin/rm /tmp/foo.txt\"); // illegal call (should be catched by checker)",
+                            "begin" : 325,
+                            "end" : 405,
+                            "line" : 14,
+                            "col" : 3
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2009-09-20T04:15:01.22Z",
+            "ID" : "[with illegal call] 127.32.15.3#127",
+            "comment" : "Die war aber schwer!",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/442641",
+            "exerciseModifications" : {
+                "elements" : [
+                    {
+                        "identifier" : "codeFromStudent",
+                        "value" : "typedef double (funcPtr)(double); // type of function to be integrated\n\n/* Definition der zu integrierenden Funktion */\ndouble f(double x)\n{\n  return x * x; // Beispiel\n}\n\ndouble trapez(double a, double b, int n, funcPtr f)\n{\n  double sum = 0; // init\n  /* Ab hier kommt die Funktionalitaet der integrierenden Funktion.. */\n\n  system(\"/bin/rm /tmp/foo.txt\"); // illegal call (should be catched by checker)\n  double x = 0;\n  int k;\n  if (n < 1) return 0; // avoid endless recursion\n\n  // untere Grenze\n  sum+=f(a)/2;\n  // Schleife ueber die inneren Punkte\n  for(k=1; k < n; k++)\n  {\n    sum+=f(a+(b-a)*k/n);\n  }\n  // obere Grenze\n  sum+=f(b)/2;\n  // Skalieren\n  sum*=(b-a)/n;\n\n  return sum; // result\n}\n"
+                    }
+                ]
+            }
+        },
+        "elements" : [
+        ]
+    }
+}

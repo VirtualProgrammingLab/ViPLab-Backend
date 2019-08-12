@@ -1,6 +1,4 @@
 '''
-Created on 01.08.2019
-
 @author: Joshua
 '''
 import json
@@ -19,12 +17,17 @@ class ConnectSC(object):
         self.user = user
         self.pw = pw
     def PostSolution(self):
-        payload = ""   ''' Json Data Here '''
-        headers = {'content-type': 'application/json'}
+        print("Start PostSolution ...")
+        payload = json.load(open("../Connector/test_solution.json"))
+        headers = {'Content-Type': 'application/json'}
         r = requests.post(self.url + '/numlab/solutions',data = json.dumps(payload), headers = headers, auth=(self.user, self.pw))
+        print (r.status_code)
         return r.status_code
     
     def GetResult(self):
-        r = requests.post(self.url + 'numlab/results/fifo', auth = (self.user, self.pw))
+        print("Start GetResult ...")
+        r = requests.post(self.url + '/numlab/results/fifo', auth = (self.user, self.pw))
+        print (r.status_code)
         if r.text != "":
+            
             return r.json()

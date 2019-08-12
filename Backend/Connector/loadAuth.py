@@ -1,6 +1,4 @@
 '''
-Created on 01.08.2019
-
 @author: Joshua
 '''
 def loadAuthenication():

@@ -1,12 +1,11 @@
 '''
-Created on 01.08.2019
-
 @author: Joshua
 '''
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
 
+#Standard RSA for Userdata Encryption
 class UserDB(object):
     '''
     classdocs
