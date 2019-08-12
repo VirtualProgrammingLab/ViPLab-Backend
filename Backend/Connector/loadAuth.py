@@ -1,6 +1,7 @@
 '''
 @author: Joshua
 '''
+import os
 def loadAuthenication():
     auth = [0]*6
     ld = open("../UserDB/pinf.passwd","r")
@@ -14,5 +15,8 @@ def loadAuthenication():
         temp = ld.readline()
         temp = ld.readline()
         temp = ld.readline()
+    ld.close()
+    os.remove("../UserDB/pinf.passwd")
+    print("PassWD file removed for safety reasons")
     return auth
         

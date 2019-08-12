@@ -19,15 +19,15 @@ class ConnectSC(object):
     def PostSolution(self):
         print("Start PostSolution ...")
         payload = json.load(open("../Connector/test_solution.json"))
-        headers = {'Content-Type': 'application/json'}
+        headers = {'Content-Type': 'application/json','X-EcsReceiverCommunities':'pinf'}
         r = requests.post(self.url + '/numlab/solutions',data = json.dumps(payload), headers = headers, auth=(self.user, self.pw))
         print (r.status_code)
-        return r.status_code
+        print(r.text)
+        return True
     
     def GetResult(self):
         print("Start GetResult ...")
         r = requests.post(self.url + '/numlab/results/fifo', auth = (self.user, self.pw))
         print (r.status_code)
-        if r.text != "":
-            
-            return r.json()
+        print(r.text)
+        return True
