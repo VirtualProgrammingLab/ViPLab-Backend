@@ -112,3 +112,33 @@ class Solution:
             if d is None:
                 data.pop(d, None)
         return json.dumps(data, indent=4)
+
+
+class Result:
+    def __init__(self):
+        self.id = dt.datetime.strftime(dt.datetime.now(), "%Y-%m-%d %H:%M:%S")
+        
+    def createJson(self):
+        data = {
+            "Result" : {
+                "ID" : "",
+                "status" : "",
+                "computation" : {
+                    "startTime" : -1,
+                    "duration" : "",
+                    "finishTime" : "",
+                    "CC_versionLong" : "",
+                    "CC_version" : "",
+                    "chain_version" : "",
+                    "technicalInfo" : {
+                        "host" : "",
+                        "PID" : -1,
+                        "ID" : ""
+                    },
+                    "userInfo" : {},
+                    "Solution" : None,
+                    "elements" : []
+                }
+            }
+        }
+        return json.dumps(data)
