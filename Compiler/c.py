@@ -1,4 +1,4 @@
-import os, subprocess
+import os, subprocess, dataObjects
 
 PATH = "temp"
 DEBUG = False
@@ -10,7 +10,8 @@ class C:
                 os.remove(f.path)
             print("temp folder cleared")
 
-    def __init__(self, solution):
+    def __init__(self, solution : dataObjects.Solution):
+        self.result = dataObjects.Result(solution.createJson())
         print("Language: C/C++\n---")
         if not os.path.exists(PATH):
             os.makedirs(PATH)

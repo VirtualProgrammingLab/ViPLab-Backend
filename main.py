@@ -1,4 +1,4 @@
-import subprocess, dataObjects, compiler
+import subprocess, dataObjects
 from Compiler.c import C
 from Compiler.dumux import Dumux
 from Compiler.java import Java

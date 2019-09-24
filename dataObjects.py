@@ -1,5 +1,5 @@
 import json, urllib.request
-import datetime as dt
+from datetime import datetime as dt
 
 class InvalidJsonData(Exception):
     pass
@@ -27,6 +27,11 @@ def readJson(input):
 
 class Exercise:
     def __init__(self, data):
+        """ Constructor for exercise object.
+        
+        Args:
+            data: exercise data parsed by readJson
+        """
         # elements retrieved with .get are optional and
         # return None if not found
         self.postTime = data["Exercise"]["postTime"]
@@ -46,8 +51,12 @@ class Exercise:
         self.lang = self.__getLang()
 
     def createJson(self):
-        """ creating a JSON string from exercise object """
-        # all data stored in the exercise object
+        """ Creates a JSON out of the exercise object 
+        
+        Returns:
+            A string containing the JSON data
+        """
+        #struct with all possible data
         data = {
             "postTime" : self.postTime,
             "ttl" : self.ttl,
@@ -63,7 +72,7 @@ class Exercise:
             "elementProperties" : self.elementProperties,
             "config" : self.config
         }
-        # remove all "None" data
+        #removes optional entries if no value is given
         for d in data:
             if d is None:
                 data.pop(d, None)
@@ -75,7 +84,11 @@ class Exercise:
             self.config[self.lang]["compiling"]["flags"]
 
     def __getLang(self):
-        """ retrieving language of exercise """
+        """ Retrieving language of exercise
+
+        Returns:
+            The programming language of the exercise, given in config
+        """
         languages = ["C", "C++", "Matlab", "Octave", "Java", "DuMuX", "Python"]
         for lang in languages:
             if lang in self.config:
@@ -83,7 +96,19 @@ class Exercise:
         return None
 
 class Solution:
-    def __init__(self, data, exercise = None):
+    """ Solution object
+    
+    Documentation:
+        https://campusconnect.tik.uni-stuttgart.de/HeikoBernloehr/FreeLancer/ECS/ecs2/NumLab/solutions
+    """
+    def __init__(self, data, exercise : Exercise = None):
+        """ Constructor for solution object.
+        
+        Args:
+            data (str): solution data parsed by readJson
+            exercise (Exercise): optional exercise object. If not given, it will
+                try to retrieve it from exercise url
+        """
         self.postTime = data["Solution"]["postTime"]
         self.id = data["Solution"]["ID"]
         self.evaluationService = data["Solution"].get("evaluationService")
@@ -93,13 +118,19 @@ class Solution:
         self.exercise = self.getExercise() if exercise == None else exercise
 
     def getExercise(self):
-        """ retrieving exercise json and create exercise object """
+        """ Retrieves the given exercise json and creates exercise object
+        """
         with urllib.request.urlopen(self.exerciseUrl) as url:
             data = json.loads(url.read().decode())
             return Exercise(data)
 
     def createJson(self):
-        """ creating a JSON string from solution object """
+        """ Creates a JSON out of the solution object 
+        
+        Returns:
+            A string containing the JSON data
+        """
+        #struct with all possible data
         data = {
             "postTime" : self.postTime,
             "ID" : self.id,
@@ -108,37 +139,85 @@ class Solution:
             "exercise" : self.exerciseUrl,
             "exerciseModifications" : self.exerciseModifications
         }
+        #removes optional entries if no value is given
         for d in data:
             if d is None:
                 data.pop(d, None)
+        
         return json.dumps(data, indent=4)
 
-
 class Result:
-    def __init__(self):
-        self.id = dt.datetime.strftime(dt.datetime.now(), "%Y-%m-%d %H:%M:%S")
+    """ Result object
+    
+    Documentation:
+        https://campusconnect.tik.uni-stuttgart.de/HeikoBernloehr/FreeLancer/ECS/ecs2/NumLab/results
+    """
+    def __init__(self, solution : str, comment : str = None, 
+                 status : str = "final"):
+        """ Constructor for result object.
         
+        Args:
+            solution (str): JSON string containing the solution data
+            comment (str): optional comment
+            status (str): has to be "final" or "intermediate"
+        """
+        self.time = dt.now()
+        self.solution = solution
+        self.id = dt.strftime(dt.now(), "%Y-%m-%d %H:%M:%S")
+        self.comment = comment
+        self.status = status
+        self.index = 0
+        self.computation = {
+            "startTime" : dt.strftime(self.time, "%Y-%m-%d %H:%M:%S")
+        }
+        self.elements = []
+
+    def calculateComputationTime(self):
+        """ Adds finish time and time delta to computation dict
+        """
+        time = dt.now()
+        self.computation["finishTime"] = dt.strftime(time, "%Y-%m-%d %H:%M:%S")
+        self.computation["duration"] = time - self.time()
+
+    def addComputationInfos(self, ccVersionLong : str, ccVersion : str,
+            chainVersion : str, technicalInfo : dict, userInfo : dict):
+        """ Adds required informations about the CC 
+
+        Args:
+            ccVersionLong (str):
+            ccVersion (str):
+            chainVersion (str):
+            technicalInfo (dict):
+            userInfo (dict):
+        """
+        self.computation["CC_versionLong"] = ccVersionLong
+        self.computation["CC_version"] = ccVersion,
+        self.computation["chain_version"] = chainVersion
+        self.computation["technicalInfo"] = technicalInfo
+        self.computation["userInfo"] = userInfo
+
     def createJson(self):
+        """ Creates a JSON out of the result object 
+        
+        Returns:
+            A string containing the JSON data
+        """
+        #struct with all possible data
         data = {
             "Result" : {
-                "ID" : "",
-                "status" : "",
-                "computation" : {
-                    "startTime" : -1,
-                    "duration" : "",
-                    "finishTime" : "",
-                    "CC_versionLong" : "",
-                    "CC_version" : "",
-                    "chain_version" : "",
-                    "technicalInfo" : {
-                        "host" : "",
-                        "PID" : -1,
-                        "ID" : ""
-                    },
-                    "userInfo" : {},
-                    "Solution" : None,
-                    "elements" : []
-                }
+                "ID" : self.id,
+                "comment" : self.comment,
+                "status" : self.status,
+                "index" : self.index,
+                "computation" : self.computation,
+                "Solution" : self.solution,
+                "elements" : self.elements
             }
         }
-        return json.dumps(data)
+        #removes optional entries if no value is given
+        if data.get("comment") is None:
+            data.pop("comment", None)
+        if data.get("index") is None:
+            data.pop("index", None)
+        
+        return json.dumps(data, indent=4)
