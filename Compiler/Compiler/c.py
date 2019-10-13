@@ -1,7 +1,14 @@
-import os, sys, subprocess, dataObjects
+import os, subprocess, dataObjects
+#sys import to put temp dir relative to main.py
+#can be removed when that's a fixed absolute path
+import sys 
+#json import to print "fileInfo" dict in a nice way
+# can be removed later
+import json
 from pycparser import c_parser, c_ast, parse_file
 
 PATH = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "temp")
+# Keeps files created in temp folder if DEBUG = True
 DEBUG = True
 
 class C:
@@ -18,21 +25,33 @@ class C:
             os.makedirs(PATH)
             print("created temp folder")
         curpath = os.getcwd()
+        os.chdir(PATH)
         self.solution = solution
         self.lang = self.solution.exercise.lang
         maxState = self.getMaxState()
-        maxState = 2
+        #maxState = 2
         self.replaceCodeWithSolution()
         self.fileext = ".c" if self.lang == "C" else ".cpp"
-        fileInfo = self.merge()
+        print("Merging")
+        self.fileInfo = self.merge()
+        print(f"fileInfo:\n{json.dumps(self.fileInfo, indent = 2)}")
+        print("---")
         if 1 <= maxState:
-            self.compile(fileInfo)
+            print("Compiling")
+            self.compile()
+            print("---")
         if 2 <= maxState and self.lang == "C":
-            self.check(fileInfo)
+            print("Checking - WIP")
+            self.check()
+            print("---")
         if 3 <= maxState:
-            self.link(fileInfo)
+            print("Linking")
+            self.link()
+            print("---")
         if 4 <= maxState:
+            print("Running")
             self.run()
+            print("---")
         self.result.calculateComputationTime()
         os.chdir(curpath)
 
@@ -51,13 +70,10 @@ class C:
                     eEl["value"] = sEl["value"]
 
     def merge(self):
-        print("Merging")
-        os.chdir(PATH)
         if len(self.solution.exercise.config[self.lang]["merging"]) == 1:
             return self.mergeSingleFile()
         else:
             return self.mergeMultipleFiles()
-        print("---")
 
     def mergeSingleFile(self) -> dict:
         r = {"temp" : {}}
@@ -66,16 +82,19 @@ class C:
         for s in self.solution.exercise.config[self.lang]["merging"]["sources"]:
             for e in self.solution.exercise.elements:
                 if s == e["identifier"]:
-                    r["temp"][s] = (loc + 1)
+                    r["temp"][s] = {}
+                    r["temp"][s]["visible"] = e["visible"]
+                    r["temp"][s]["start"] = (loc + 1)
                     code += e["value"]
                     if not code.endswith("\n"):
                         code += "\n"
-                    loc += e["value"].count("\n")
+                    cnt = e["value"].count("\n")
+                    loc += cnt
+                    r["temp"][s]["stop"] = loc if cnt != 0 else (loc + 1)
                     break
         loc += 1
         with open(f"temp.{self.fileext}", "w+") as f:
             f.write(code)
-        print(r)
         return r
 
     def mergeMultipleFiles(self) -> dict:
@@ -88,54 +107,49 @@ class C:
             for s in m["sources"]:
                 for e in self.solution.exercise.elements:
                     if s == e["identifier"]:
-                        r[fname][s] = (loc + 1)
+                        r[fname][s] = {}
+                        r[fname][s]["visible"] = e["visible"]
+                        r[fname][s]["start"] = (loc + 1)
                         code += e["value"]
                         if not code.endswith("\n"):
                             code += "\n"
-                    loc += e["value"].count("\n")
-                    break
+                        cnt = e["value"].count("\n")
+                        loc += cnt
+                        r["temp"][s]["stop"] = loc if cnt != 0 else (loc + 1)
+                        break
             loc += 1
             with open(f"{fname}.{self.fileext}", "w+") as f:
                 f.write(code)
-        print(r)
         return r
 
-    def compile(self, fileInfo):
-        print("Compiling")
+    def compile(self):
         files = self.solution.exercise.config[self.lang]["compiling"].get("sources")
-        files = files if files is not None else fileInfo
-        com = self.solution.exercise.getCompilingCommand() + " -c "
+        files = files if files is not None else self.fileInfo
+        com = f"{self.solution.exercise.getCompilingCommand()} -c "
         com += " ".join([s + self.fileext for s in files])
-        print("Compiling command: " + com)
+        print(f"Compiling command: {com}")
         result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
-        print("Compiling Output:\n" + result.stdout.decode("utf-8"))
-        print("---")
+        print(f"Compiling Output:\n{result.stdout.decode('utf-8')}")
 
-    def check(self, fileInfo):
-        print("Checking - WIP")
-        checker = Checker(fileInfo)
+    def check(self):
+        checker = Checker(self.fileInfo)
         for a in checker.asts:
             checker.show_func_defs(checker.asts[a])
-        print("---")
 
-    def link(self, fileInfo):
-        print("Linking")
+    def link(self):
         flags = self.solution.exercise.config[self.lang]["linking"]["flags"]
         com = "gcc" if self.lang == "C" else "g++"
-        com += " -o out " + " ".join([s + ".o" for s in fileInfo]) + " " + flags
-        print("Linking command: " + com)
+        com += f" -o out {' '.join([s + '.o' for s in self.fileInfo])} {flags}"
+        print(f"Linking command: {com}")
         result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
-        print("Linking Output:\n" + result.stdout.decode("utf-8"))
-        print("---")
+        print(f"Linking Output:\n{result.stdout.decode('utf-8')}")
     
     def run(self):
-        print("Running")
         os.chmod("out", 0o700)
         com = "./out"
         print("Running command: " + com)
         result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
-        print("Running Output:\n" + result.stdout.decode("utf-8"))
-        print("---")
+        print("Running Output:\n" + result.stdout.decode('utf-8'))
 
 class Checker:
     def __init__(self, files: dict):
@@ -154,13 +168,17 @@ class Checker:
             asts[f] = self.getAst(f"{f}.c")
         return asts
 
-    class FuncDefVisitor(c_ast.NodeVisitor):
+    class Visitor(c_ast.NodeVisitor):
         def visit_FuncDef(self, node):
-            t = f"\n{' '*4}"
-            print(f"'{node.decl.name}'{t}file: {node.decl.coord.file}"
-                f"{t}line: {node.decl.coord.line}{t}column: {node.decl.coord.column}")
+            print(f"File: {node.decl.coord.file}")
+            for n in node.body.block_items:
+                if isinstance(n, c_ast.FuncCall):
+                    print(f"{' '*4}Function: {node.decl.name}\n"
+                        f"{' '*8}Function Call: {n.name.name}\n"
+                        f"{' '*8}line: {n.coord.line}\n"
+                        f"{' '*8}column: {n.coord.column}")
 
     def show_func_defs(self, ast):
-        v = self.FuncDefVisitor()
+        v = self.Visitor()
         v.visit(ast)
         
