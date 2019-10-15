@@ -21,17 +21,22 @@ if __name__ == "__main__":
     #solution = dataObjects.Solution(dataObjects.readJson(generic), exercise)
     exercise = dataObjects.Exercise(dataObjects.readJson(pte))
     solution = dataObjects.Solution(dataObjects.readJson(pts), exercise)
+
+    comp = None
     if solution.exercise.lang in ["C", "C++"]:
-        C(solution)
+        comp = C(solution)
     elif solution.exercise.lang == "Matlab":
-        Matlab(solution)
+        comp = Matlab(solution)
     elif solution.exercise.lang == "Octave":
-        Octave(solution)
+        comp = Octave(solution)
     elif solution.exercise.lang == "Java":
-        Java(solution)
+        comp = Java(solution)
     elif solution.exercise.lang == "DuMuX":
-        Dumux(solution)
+        comp = Dumux(solution)
     elif solution.exercise.lang == "Python":
-        Python(solution)
+        comp = Python(solution)
+
+    if comp is not None:
+        comp.processData()
     else:
-        print("No supported lang detected")
+        print("No supported language detected")
