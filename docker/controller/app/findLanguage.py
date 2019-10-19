@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import json 
 import requests
 
@@ -6,8 +8,8 @@ def readJson(input):
     with open(input, "r") as f:
         return json.load(f)
 
-pathToExercise = "C:/Users/jule-/Documents/Uni/Projekt-INF/testing/examples/exercise.json" # replace 'None' with path to exercise
-pathToSolution = "C:/Users/jule-/Documents/Uni/Projekt-INF/testing/examples/solution.json" # replace 'None' with path to solution
+pathToExercise = "./examples/exercise.json" # replace 'None' with path to exercise
+pathToSolution = "./examples/solution.json" # replace 'None' with path to solution
 
 def findLanguage(pathToExercise, pathToSolution):
     '''
