@@ -5,4 +5,6 @@ WORKDIR /app
 
 RUN pip install -r requirements.txt
 
-CMD ["python", "app_restful.py"]
+RUN chmod +x run.sh
+
+CMD [./run.sh]
