@@ -37,7 +37,7 @@ class C:
                 The solution object storing data from solution json and exercise object
         """
         print("Language: C/C++\n---")
-        self.result = dataObjects.Result(solution.createJson())
+        self.result = dataObjects.Result(dataObjects.readJson(solution.createJson()))
         self.solution = solution
         self._lang = self.solution.exercise.lang
         self._fileext = "c" if self._lang == "C" else "cpp"
@@ -206,7 +206,9 @@ class C:
         """
         checker = Checker(self.fileInfo)
         for a in checker.asts:
-            checker.show_func_defs(checker.asts[a])
+            checker.getFunctions(checker.asts[a])
+
+        print(json.dumps(checker.visitor.data, indent=4))
 
     def link(self):
         """ Links compiled files and libraries.
@@ -247,21 +249,30 @@ class Checker:
         """
         self._files = files
         self.asts = self.getAsts()
+        self.visitor = self.Visitor()
 
     class Visitor(c_ast.NodeVisitor):
         """ Internal Class for visiting nodes in an AST.
         """
+        def __init__(self):
+            self.data = {}
         
         def visit_FuncDef(self, node):
             """ Finds and prints all found function calls in a function
             """
-            print(f"File: {node.decl.coord.file}")
+            if node.decl.coord.file not in self.data:
+                self.data[node.decl.coord.file] = {}
+            self.data[node.decl.coord.file][node.decl.name] = {}
+            #print(f"File: {node.decl.coord.file}")
+            i = 0
             for n in node.body.block_items:
                 if isinstance(n, c_ast.FuncCall):
-                    print(f"{' '*4}Function: {node.decl.name}\n"
-                        f"{' '*8}Function Call: {n.name.name}\n"
-                        f"{' '*8}line: {n.coord.line}\n"
-                        f"{' '*8}column: {n.coord.column}")
+                    self.data[node.decl.coord.file][node.decl.name][str(i)] = {
+                        "FuncCall" : n.name.name,
+                        "Line" : n.coord.line,
+                        "Column" : n.coord.column
+                    }
+                    i += 1
 
     def getAst(self, filename) -> c_ast.FileAST:
         """ Generates an AST from given source file
@@ -288,12 +299,10 @@ class Checker:
             asts[f] = self.getAst(f"{f}.c")
         return asts
     
-    def show_func_defs(self, ast: c_ast.FileAST):
+    def getFunctions(self, ast: c_ast.FileAST):
         """ Iterates over the given AST and visit nodes as specified as in Visitor class
         Args:
             ast:
                 An AST representing a source file.
         """
-        v = self.Visitor()
-        v.visit(ast)
-        
+        self.visitor.visit(ast)

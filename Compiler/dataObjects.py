@@ -1,4 +1,4 @@
-import json, urllib.request
+import json, requests
 from datetime import datetime as dt
 
 class InvalidJsonData(Exception):
@@ -11,16 +11,17 @@ def readJson(input):
 
         If both failed, raise InvalidJsonData Exception
     """
+    
     #try to read input data as path
     try:
         with open(input, "r") as f:
             return json.load(f)
-    except json.JSONDecodeError:
+    except:
         pass
     #try to read input data as json string
     try:
         return json.loads(input)
-    except json.JSONDecodeError:
+    except:
         pass
     #if nothing found, return None
     raise InvalidJsonData()
@@ -58,24 +59,27 @@ class Exercise:
         """
         #struct with all possible data
         data = {
-            "postTime" : self.postTime,
-            "ttl" : self.ttl,
-            "identifier" : self.identifier,
-            "department" : self.department,
-            "comment" : self.comment,
-            "name" : self.name,
-            "description" : self.description,
-            "elements" : self.elements,
-            "environment" : self.environment,
-            "routing" : self.routing,
-            "elementMap" : self.elementMap,
-            "elementProperties" : self.elementProperties,
-            "config" : self.config
+            "Exercise" : {
+                "postTime" : self.postTime,
+                "ttl" : self.ttl,
+                "identifier" : self.identifier,
+                "department" : self.department,
+                "comment" : self.comment,
+                "name" : self.name,
+                "description" : self.description,
+                "elements" : self.elements,
+                "environment" : self.environment,
+                "routing" : self.routing,
+                "elementMap" : self.elementMap,
+                "elementProperties" : self.elementProperties,
+                "config" : self.config
+            }
         }
         #removes optional entries if no value is given
-        for d in data:
+        for d in data["Exercise"]:
             if d is None:
-                data.pop(d, None)
+                data["Exercise"].pop(d, None)
+
         return json.dumps(data, indent=4)
     
     def getCompilingCommand(self):
@@ -120,9 +124,8 @@ class Solution:
     def getExercise(self):
         """ Retrieves the given exercise json and creates exercise object
         """
-        with urllib.request.urlopen(self.exerciseUrl) as url:
-            data = json.loads(url.read().decode())
-            return Exercise(data)
+        r = requests.get(self.exerciseUrl)
+        return Exercise(r.json())
 
     def createJson(self):
         """ Creates a JSON out of the solution object 
@@ -132,17 +135,19 @@ class Solution:
         """
         #struct with all possible data
         data = {
-            "postTime" : self.postTime,
-            "ID" : self.id,
-            "evaluationService" : self.evaluationService,
-            "comment" : self.comment,
-            "exercise" : self.exerciseUrl,
-            "exerciseModifications" : self.exerciseModifications
+            "Solution" : {
+                "postTime" : self.postTime,
+                "ID" : self.id,
+                "evaluationService" : self.evaluationService,
+                "comment" : self.comment,
+                "exercise" : self.exerciseUrl,
+                "exerciseModifications" : self.exerciseModifications
+            }
         }
         #removes optional entries if no value is given
-        for d in data:
+        for d in data["Solution"]:
             if d is None:
-                data.pop(d, None)
+                data["Solution"].pop(d, None)
         
         return json.dumps(data, indent=4)
 
@@ -163,10 +168,10 @@ class Result:
         """
         self.time = dt.now()
         self.solution = solution
-        self.id = dt.strftime(dt.now(), "%Y-%m-%d %H:%M:%S")
+        self.id = dt.strftime(self.time, "%Y-%m-%d %H:%M:%S")
         self.comment = comment
         self.status = status
-        self.index = 0
+        self.index = None
         self.computation = {
             "startTime" : dt.strftime(self.time, "%Y-%m-%d %H:%M:%S")
         }
@@ -215,9 +220,9 @@ class Result:
             }
         }
         #removes optional entries if no value is given
-        if data.get("comment") is None:
-            data.pop("comment", None)
-        if data.get("index") is None:
-            data.pop("index", None)
+        if data["Result"].get("comment") is None:
+            data["Result"].pop("comment", None)
+        if data["Result"].get("index") is None:
+            data["Result"].pop("index", None)
         
-        return json.dumps(data, indent=4)
+        return json.dumps(data, indent=2, default=str)
