@@ -197,8 +197,14 @@ class C:
         com = f"{self.solution.exercise.getCompilingCommand()} -c "
         com += " ".join([f"{s}.{self._fileext}" for s in files])
         print(f"Compiling command: {com}")
-        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
+        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         print(f"Compiling Output:\n{result.stdout.decode('utf-8')}")
+        data = {
+            "MIMEtype":"text/plain",
+            "identifier":f"{self.result.id} Compiling",
+            "value" : result.stdout.decode("utf-8")
+        }
+        self.result.elements.append(data)
 
     def check(self):
         """ Checks all merged source files.
@@ -217,8 +223,14 @@ class C:
         com = "gcc" if self._lang == "C" else "g++"
         com += f" -o out {' '.join([f'{s}.o' for s in self.fileInfo])} {flags}"
         print(f"Linking command: {com}")
-        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
+        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         print(f"Linking Output:\n{result.stdout.decode('utf-8')}")
+        data = {
+            "MIMEtype":"text/plain",
+            "identifier":f"{self.result.id} Linking",
+            "value" : result.stdout.decode("utf-8")
+        }
+        self.result.elements.append(data)
     
     def run(self):
         """ Makes file executable and runs it.
@@ -226,8 +238,14 @@ class C:
         os.chmod("out", 0o700)
         com = "./out"
         print("Running command: " + com)
-        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE)
+        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         print("Running Output:\n" + result.stdout.decode('utf-8'))
+        data = {
+            "MIMEtype":"text/plain",
+            "identifier":f"{self.result.id} Running",
+            "value" : result.stdout.decode("utf-8")
+        }
+        self.result.elements.append(data)
 
 class Checker:
     """ Class for generating Abstract Syntax Trees (AST) of source files
