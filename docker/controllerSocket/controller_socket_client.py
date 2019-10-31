@@ -9,6 +9,9 @@ import json
 import socket
 import sys
 import time
+import findLanguage
+import struct
+
 
 app = Flask(__name__)
 api = Api(app)
@@ -16,12 +19,14 @@ client= docker.from_env()
 
 class results(Resource):
 	def post(self):
-		return {"The result is: " : request.get_json()}, 201
+                input=json.loads(request.stream.read())
+                findLanguage.printResult(json.dumps(input))
+		#return {"The result is: " : input}, 201
 
 class startingNewContainer(Resource):
-    
+
     def startContainer(self, language):
-        containerObject = client.containers.run("python_socket_" + language, runtime="kata-fc", publish_all_ports=True, auto_remove=True, detach=True, stdin_open=True)
+        containerObject = client.containers.run("python_socket_" + language + "_test", runtime="kata-fc", publish_all_ports=True, detach=True, stdin_open=True)
         a = True
         containerId= vars(containerObject)["attrs"]["Id"]
         while a==True:
@@ -29,6 +34,7 @@ class startingNewContainer(Resource):
             containerIp = vars(container)["attrs"]["NetworkSettings"]["Networks"]["bridge"]["IPAddress"]
             if containerIp!="":
                 a=False
+        print(containerIp)
         return containerIp
 
 
@@ -39,8 +45,9 @@ class startingNewContainer(Resource):
         time.sleep(5)
         client_socket.connect(server_address)
         data_in_bytes = json.dumps(data).encode("utf-8")
-        amount_data = sys.getsizeof(data_in_bytes)
+        amount_data = sys.getsizeof(data_in_bytes)        
         client_socket.send(str(amount_data).encode("utf-8")) 
+        time.sleep(0.5)
         client_socket.sendall(data_in_bytes)
         return 200
         #return client_socket.recv(amount_data).decode("utf-8")

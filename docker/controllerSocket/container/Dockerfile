@@ -2,9 +2,11 @@ FROM python
 
 RUN pip install --upgrade pip
 
-COPY requirements.txt ./
+COPY /intoContainer ./
 
-COPY kata_socket_server.py ./
+#COPY ./intoContainer/kata_socket_server.py ./
+
+#WORKDIR /home
 
 RUN pip install -r requirements.txt
 

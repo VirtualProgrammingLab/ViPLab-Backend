@@ -3,6 +3,9 @@
 import json 
 import requests
 
+def printResult(result):
+    print("Result ist: ")
+    print(result)
 
 def readJson(input):
     with open(input, "r") as f:
@@ -36,9 +39,10 @@ def findLanguage(pathToExercise, pathToSolution):
 def createNewContainer(lang, data):
     ''' Sendet einen Post Request an localhost:500/newcontainer, welches einen Kata-Container hochzieht, 
     die Daten an den Container sendet und diesen compilieren lässt '''
-    data=json.dumps({"language":lang, "data":data})
+    data=json.dumps({"language":lang, "data":data, "receiver":"receiver"})
     request = requests.post('http://localhost:5001/newcontainer', data=data, headers = {'Content-type': 'application/json'})
     print(request.text)
+    
 
 if __name__ == "__main__":
     lang, data= findLanguage(pathToExercise, pathToSolution)  
