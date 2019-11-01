@@ -34,8 +34,14 @@ def computeResult(data):
     return comp.result.createJson()
 
 
-def sendResultsBackToController(result_json):
-    requests.post('http://172.17.0.1:5001/results', data=result_json, headers = {'Content-type': 'application/json'})
+def sendResultsBackToController(result_json, receiver):
+    #print(type(json.loads(result_json)))
+    #print(result_json)
+    #data = {"Result": json.loads(result_json).get("Result"), "receiver":receiver}
+    #data_json = json.dumps(data)
+    result_jsons = json.loads(result_json)
+    result_jsons.update({"receiver":receiver})
+    requests.post('http://172.17.0.1:5001/results', data=json.dumps(result_jsons), headers = {'Content-type': 'application/json'})
 
 
 def startSocket():
@@ -50,7 +56,9 @@ def startSocket():
 
 if __name__ == '__main__':
     data = startSocket()
+    real_data = data.get("data")
+    receiver = data.get("receiver")
     print(data)
-    result = computeResult(data)
-    sendResultsBackToController(result)
+    result = computeResult(real_data)
+    sendResultsBackToController(result, receiver)
     

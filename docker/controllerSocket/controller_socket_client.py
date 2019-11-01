@@ -25,8 +25,8 @@ class results(Resource):
 
 class startingNewContainer(Resource):
 
-    def startContainer(self, language):
-        containerObject = client.containers.run("python_socket_" + language + "_test", runtime="kata-fc", publish_all_ports=True, detach=True, stdin_open=True)
+    def startContainer(self, language, debug):
+        containerObject = client.containers.run("python_socket_" + language + "_test", runtime="kata-fc", publish_all_ports=True, auto_remove=debug, detach=True, stdin_open=True)
         a = True
         containerId= vars(containerObject)["attrs"]["Id"]
         while a==True:
@@ -57,8 +57,10 @@ class startingNewContainer(Resource):
         input=json.loads(request.stream.read())
         language = input["language"].lower()
         data = input["data"]
-        ip = self.startContainer(language)
-        return self.openSocket(ip, data)
+        debug = input["debug"]
+        whole_data = {"data": data, "receiver": input["receiver"]}
+        ip = self.startContainer(language, debug)
+        return self.openSocket(ip, whole_data)
         
 
 api.add_resource(results,'/results')

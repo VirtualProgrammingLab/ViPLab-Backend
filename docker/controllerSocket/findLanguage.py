@@ -2,6 +2,7 @@
 
 import json 
 import requests
+import sys
 
 def printResult(result):
     print("Result ist: ")
@@ -36,14 +37,18 @@ def findLanguage(pathToExercise, pathToSolution):
         print("No supported lang detected")
     return lang, data
 
-def createNewContainer(lang, data):
-    ''' Sendet einen Post Request an localhost:500/newcontainer, welches einen Kata-Container hochzieht, 
-    die Daten an den Container sendet und diesen compilieren lässt '''
-    data=json.dumps({"language":lang, "data":data, "receiver":"receiver"})
+def createNewContainer(lang, data, debug):
+    ''' Sendet einen Post Request an localhost:500/newcontainer, welches einen Kata-Container hochzieht, die Daten an den Container sendet und diesen compilieren lässt '''
+    receiver = 123
+    data=json.dumps({"language":lang, "data":data, "receiver":receiver, "debug":debug})
     request = requests.post('http://localhost:5001/newcontainer', data=data, headers = {'Content-type': 'application/json'})
     print(request.text)
     
 
 if __name__ == "__main__":
-    lang, data= findLanguage(pathToExercise, pathToSolution)  
-    createNewContainer(lang, data)  
+    lang, data= findLanguage(pathToExercise, pathToSolution)
+    if len(sys.argv)== 1:
+        debug = True
+    else:
+        debug = False
+    createNewContainer(lang, data, debug)  
