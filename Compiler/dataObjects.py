@@ -1,4 +1,4 @@
-import json, requests
+import json, requests, os, socket
 from datetime import datetime as dt
 
 class InvalidJsonData(Exception):
@@ -49,7 +49,7 @@ class Exercise:
         self.elementProperties = data["Exercise"].get("elementProperties")
         self.config = data["Exercise"].get("config")
         # adding language of Exercise
-        self.lang = self.__getLang()
+        self.lang = list(self.config.keys())[0]
 
     def createJson(self):
         """ Creates a JSON out of the exercise object 
@@ -86,18 +86,6 @@ class Exercise:
         """ retrieving compiling command """
         return self.config[self.lang]["compiling"]["compiler"] + " " + \
             self.config[self.lang]["compiling"]["flags"]
-
-    def __getLang(self):
-        """ Retrieving language of exercise
-
-        Returns:
-            The programming language of the exercise, given in config
-        """
-        languages = ["C", "C++", "Matlab", "Octave", "Java", "DuMuX", "Python"]
-        for lang in languages:
-            if lang in self.config:
-                return lang
-        return None
 
 class Solution:
     """ Solution object
@@ -173,7 +161,16 @@ class Result:
         self.status = status
         self.index = None
         self.computation = {
-            "startTime" : dt.strftime(self.time, "%Y-%m-%d %H:%M:%S")
+            "startTime" : dt.strftime(self.time, "%Y-%m-%d %H:%M:%S"),
+            "CC_versionLong" : "",
+            "CC_version" : "",
+            "chain_version" : "",
+            "technicalInfo" : {
+                "host" : socket.gethostname(),
+                "PID" : os.getpid(),
+                "ID" : 1
+            },
+            "userInfo" : {}
         }
         self.elements = []
 
@@ -183,23 +180,6 @@ class Result:
         time = dt.now()
         self.computation["finishTime"] = dt.strftime(time, "%Y-%m-%d %H:%M:%S")
         self.computation["duration"] = time - self.time
-
-    def addComputationInfos(self, ccVersionLong : str, ccVersion : str,
-            chainVersion : str, technicalInfo : dict, userInfo : dict):
-        """ Adds required informations about the CC 
-
-        Args:
-            ccVersionLong (str):
-            ccVersion (str):
-            chainVersion (str):
-            technicalInfo (dict):
-            userInfo (dict):
-        """
-        self.computation["CC_versionLong"] = ccVersionLong
-        self.computation["CC_version"] = ccVersion
-        self.computation["chain_version"] = chainVersion
-        self.computation["technicalInfo"] = technicalInfo
-        self.computation["userInfo"] = userInfo
 
     def createJson(self):
         """ Creates a JSON out of the result object 

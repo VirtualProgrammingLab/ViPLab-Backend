@@ -1,10 +1,7 @@
-import os, subprocess, dataObjects
+import os, subprocess, dataObjects, json
 #sys import to put temp dir relative to main.py
 #can be removed when that's a fixed absolute path
-import sys 
-#json import to print "fileInfo" dict in a nice way
-# can be removed later
-import json
+import sys
 from pycparser import c_parser, c_ast, parse_file
 
 # Path for temp files.
@@ -36,7 +33,6 @@ class C:
             solution (Solution):
                 The solution object storing data from solution json and exercise object
         """
-        print("Language: C/C++\n---")
         self.result = dataObjects.Result(dataObjects.readJson(solution.createJson()))
         self.solution = solution
         self._lang = self.solution.exercise.lang
@@ -50,46 +46,30 @@ class C:
             os.makedirs(PATH)
             print("created temp folder")
 
-        # Changes to temp folder for easier execution of commands
-        curpath = os.getcwd()
-        os.chdir(PATH)
-
         # Prepare code by replacing placeholder code with solutions code
         self.replaceCodeWithSolution()
 
         maxState = self.getMaxState()
         #maxState = 2 # For testing
         # Step 1: Merge source code
-        print("Merging")
         self.fileInfo = self.merge()
-        print(f"fileInfo:\n{json.dumps(self.fileInfo, indent = 2)}")
-        print("---")
+        #print(f"fileInfo:\n{json.dumps(self.fileInfo, indent = 2)}")
         # Step 2: Compile files containing source code
+        exitcode = 0
         if 1 <= maxState:
-            print("Compiling")
-            self.compile()
-            print("---")
+            exitcode = self.compile()
         # Step 3 (Only C): Check if student's solution contains illegal calls
-        if 2 <= maxState and self._lang == "C":
-            print("Checking - WIP")
-            self.check()
-            print("---")
+        if exitcode == 0 and 2 <= maxState and self._lang == "C":
+            exitcode = self.check()
         # Step 4: Link compiled files and libraries
-        if 3 <= maxState:
-            print("Linking")
-            self.link()
-            print("---")
+        if exitcode == 0 and 3 <= maxState:
+            exitcode = self.link()
         # Step 5: Run exectutable files
-        if 4 <= maxState:
-            print("Running")
+        if exitcode == 0 and 4 <= maxState:
             self.run()
-            print("---")
 
         # Data for result object
         self.result.calculateComputationTime()
-
-        # Changes back to original working dir
-        os.chdir(curpath)
 
     def getMaxState(self) -> int:
         """ Retrieves max state of data processing 
@@ -155,7 +135,7 @@ class C:
                     r["temp"][s]["stop"] = loc if cnt != 0 else (loc + 1)
                     break
         loc += 1
-        with open(f"temp.{self._fileext}", "w+") as f:
+        with open(os.path.join(PATH, f"temp.{self._fileext}"), "w+") as f:
             f.write(code)
         return r
 
@@ -185,7 +165,7 @@ class C:
                         r["temp"][s]["stop"] = loc if cnt != 0 else (loc + 1)
                         break
             loc += 1
-            with open(f"{fname}.{self._fileext}", "w+") as f:
+            with open(os.path.join(PATH, f"{fname}.{self._fileext}"), "w+") as f:
                 f.write(code)
         return r
 
@@ -194,17 +174,24 @@ class C:
         """
         files = self.solution.exercise.config[self._lang]["compiling"].get("sources")
         files = files if files is not None else self.fileInfo
-        com = f"{self.solution.exercise.getCompilingCommand()} -c "
-        com += " ".join([f"{s}.{self._fileext}" for s in files])
-        print(f"Compiling command: {com}")
-        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print(f"Compiling Output:\n{result.stdout.decode('utf-8')}")
+        com = f"{self.solution.exercise.getCompilingCommand()} -c " \
+            f"{' '.join([os.path.join(PATH, f'{s}.{self._fileext}') for s in files])} " \
+            "-fdiagnostics-format=json"
+        self.result.computation["technicalInfo"]["compileCommand"] = com
+        proc = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        parsed = json.loads(proc.stdout.decode("utf-8"))
+
+        if len(parsed) > 0:
+            #todo: error and warning informations     
+            pass   
+        
         data = {
             "MIMEtype":"text/plain",
             "identifier":f"{self.result.id} Compiling",
-            "value" : result.stdout.decode("utf-8")
+            "value" : parsed
         }
         self.result.elements.append(data)
+        return proc.returncode
 
     def check(self):
         """ Checks all merged source files.
@@ -214,36 +201,43 @@ class C:
         for a in checker.asts:
             checker.getFunctions(checker.asts[a])
 
-        print(json.dumps(checker.visitor.data, indent=4))
+        #print(json.dumps(checker.visitor.data, indent=4))
+
+        data = {
+            "MIMEtype":"text/plain",
+            "identifier":f"{self.result.id} Checking",
+            "value" : ""
+        }
+        self.result.elements.append(data)
+        return 0
 
     def link(self):
         """ Links compiled files and libraries.
         """
         flags = self.solution.exercise.config[self._lang]["linking"]["flags"]
         com = "gcc" if self._lang == "C" else "g++"
-        com += f" -o out {' '.join([f'{s}.o' for s in self.fileInfo])} {flags}"
-        print(f"Linking command: {com}")
-        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print(f"Linking Output:\n{result.stdout.decode('utf-8')}")
+        com += f" -o out {' '.join([os.path.join(PATH, f'{s}.o') for s in self.fileInfo])} {flags}"
+        self.result.computation["technicalInfo"]["linkCommand"] = com
+        proc = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         data = {
             "MIMEtype":"text/plain",
             "identifier":f"{self.result.id} Linking",
-            "value" : result.stdout.decode("utf-8")
+            "value" : proc.stdout.decode("utf-8")
         }
         self.result.elements.append(data)
+        return proc.returncode
     
     def run(self):
         """ Makes file executable and runs it.
         """
         os.chmod("out", 0o700)
-        com = "./out"
-        print("Running command: " + com)
-        result = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print("Running Output:\n" + result.stdout.decode('utf-8'))
+        com = os.path.join(PATH, "out")
+        self.result.computation["technicalInfo"]["runCommand"] = com
+        proc = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         data = {
             "MIMEtype":"text/plain",
             "identifier":f"{self.result.id} Running",
-            "value" : result.stdout.decode("utf-8")
+            "value" : proc.stdout.decode("utf-8")
         }
         self.result.elements.append(data)
 
@@ -314,7 +308,7 @@ class Checker:
         """
         asts = {}
         for f in self._files:
-            asts[f] = self.getAst(f"{f}.c")
+            asts[f] = self.getAst(os.path.join(PATH, f"{f}.c"))
         return asts
     
     def getFunctions(self, ast: c_ast.FileAST):
