@@ -36,7 +36,7 @@ class startingNewContainer(Resource):
             if containerIp!="":
                 a=False
         print(containerIp)
-        return containerIp
+        return containerIp, containerId
 
 
     def openSocket(self, ip, data):
@@ -62,13 +62,18 @@ class startingNewContainer(Resource):
 
     
     def post(self):
+        #conf_file = open("./examples/config.json")
+        #config = json.load(conf_file)
+        #conf_file.close()
         input=json.loads(request.stream.read())
         language = input["language"].lower()
         data = input["data"]
         debug = input["debug"]
+        #whole_data = {"data": data, "receiver": input["receiver"], "conf":config}
         whole_data = {"data": data, "receiver": input["receiver"]}
-        ip = self.startContainer(language, debug)
-        return self.openSocket(ip, whole_data)
+        ip, container_id = self.startContainer(language, debug)
+        statuscode = self.openSocket(ip, whole_data)
+        return {container_id:input.get("receiver")}, statuscode
         
 
 api.add_resource(results,'/results')
