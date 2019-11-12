@@ -43,12 +43,19 @@ class startingNewContainer(Resource):
         port=5005
         server_address = (ip, port)
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        time.sleep(5)
-        client_socket.connect(server_address)
+        connected = False
+        while not connected:
+            try:
+                client_socket.connect(server_address)
+                connected = True
+            except Exception as e:
+                pass
+        #time.sleep(5)
+        #client_socket.connect(server_address)
         data_in_bytes = json.dumps(data).encode("utf-8")
         amount_data = sys.getsizeof(data_in_bytes)        
         client_socket.send(str(amount_data).encode("utf-8")) 
-        time.sleep(0.5)
+        time.sleep(0.25)
         client_socket.sendall(data_in_bytes)
         return 200
         #return client_socket.recv(amount_data).decode("utf-8")
