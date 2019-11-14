@@ -20,6 +20,11 @@ client= docker.from_env()
 class results(Resource):
 	def post(self):
                 input=json.loads(request.stream.read())
+                receiver = input.get("receiver")
+                result = input.get("Result")
+                r = requests.post('https://nfldevvipecs.rus.uni-stuttgart.de/numlab/results', headers={'X-EcsReceiverMemberships':receiver,'Accept': 'application/json', "Content-Type":"application/json"}, data=json.dumps(result), auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
+                print(r.headers)
+                print(r.status_code)
                 print(json.dumps(input,  indent=4))
                 #findLanguage.printResult(json.dumps(input))
 		#return {"The result is: " : input}, 201
@@ -62,15 +67,15 @@ class startingNewContainer(Resource):
 
     
     def post(self):
-        #conf_file = open("./examples/config.json")
-        #config = json.load(conf_file)
-        #conf_file.close()
+        conf_file = open("./examples/config.json")
+        config = json.load(conf_file)
+        conf_file.close()
         input=json.loads(request.stream.read())
         language = input["language"].lower()
         data = input["data"]
         debug = input["debug"]
-        #whole_data = {"data": data, "receiver": input["receiver"], "conf":config}
-        whole_data = {"data": data, "receiver": input["receiver"]}
+        whole_data = {"data": data, "receiver": input["receiver"], "conf":config}
+        #whole_data = {"data": data, "receiver": input["receiver"]}
         ip, container_id = self.startContainer(language, debug)
         statuscode = self.openSocket(ip, whole_data)
         return {container_id:input.get("receiver")}, statuscode

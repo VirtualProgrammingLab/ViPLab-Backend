@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+import threading
+import time
 import json
 import requests
 import sys
@@ -62,19 +63,32 @@ def getSolutionsFromQueue():
         return r.json(), x_ecsSender, getExerciseFromExerciseUrl(exercise_url)
     
     
+def do_something(solution, receiver, exercise, arg):
+    data =  {"Exercise" : exercise.get("Exercise"), "Solution" : solution.get("Solution")}
+    lang = findLanguage(data)
+    if len(arg)== 1:
+        debug = True
+    else:
+        debug = False
+    whole_data = {"data": data, "receiver" : receiver, "debug": debug, "language":lang}
+    createNewContainer(whole_data)
+    returnExitedContainer()
+
 
 if __name__ == "__main__":
-    solution, receiver, exercise = getSolutionsFromQueue()
-    if solution != None:
-        data =  {"Exercise" : exercise.get("Exercise"), "Solution" : solution.get("Solution")}
-        lang = findLanguage(data)
-        if len(sys.argv)== 1:
-            debug = True
+    arg = sys.argv
+    #while(True):
+    for _ in range(2):
+        solution, receiver, exercise = getSolutionsFromQueue()
+        if solution != None:
+            t = threading.Thread(target=do_something, args=[solution, receiver, exercise, arg])
+            t.start()
+            #do_something(solution, receiver, exercise, arg)
         else:
-            debug = False
-        whole_data = {"data": data, "receiver" : receiver, "debug": debug, "language":lang}
-        createNewContainer(whole_data)
-        returnExitedContainer()
+            time.sleep(1.0)
+    
+    
+
     
     
     
