@@ -47,9 +47,11 @@ class Exercise:
         self.routing = data["Exercise"].get("routing")
         self.elementMap = data["Exercise"].get("elementMap")
         self.elementProperties = data["Exercise"].get("elementProperties")
-        self.config = data["Exercise"].get("config")
-        # adding language of Exercise
-        self.lang = list(self.config.keys())[0]
+        tmp = data["Exercise"].get("config")
+        if tmp is not None:
+            self.lang = list(tmp.keys())[0]
+            self.config = tmp[self.lang]
+            # adding language of Exercise
 
     def createJson(self):
         """ Creates a JSON out of the exercise object 
@@ -84,8 +86,10 @@ class Exercise:
     
     def getCompilingCommand(self):
         """ retrieving compiling command """
-        return self.config[self.lang]["compiling"]["compiler"] + " " + \
-            self.config[self.lang]["compiling"]["flags"]
+        compiler = self.config["compiling"]["compiler"]
+        if compiler is None or compiler == "":
+            compiler = "gcc" if self.lang == "C" else "g++"
+        return f"{compiler} {self.config['compiling']['flags']}"
 
 class Solution:
     """ Solution object
@@ -168,11 +172,14 @@ class Result:
             "technicalInfo" : {
                 "host" : socket.gethostname(),
                 "PID" : os.getpid(),
-                "ID" : 1
+                "ID" : "#1"
             },
             "userInfo" : {}
         }
         self.elements = []
+
+    def setId(self, id: int):
+        self.computation["technicalInfo"]["ID"] = f"#{id}"
 
     def calculateComputationTime(self):
         """ Adds finish time and time delta to computation dict
