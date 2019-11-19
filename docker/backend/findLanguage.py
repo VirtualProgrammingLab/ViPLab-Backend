@@ -48,18 +48,24 @@ def createNewContainer(data):
     Params:
     - data (dict): '{"data": data, "receiver": receiver, "debug": debug, "language": lang}'
     '''
+    
     global running_container
-    request = requests.post('http://localhost:5001/newcontainer', data=json.dumps(data), headers = {'Content-type': 'application/json'})
-    running_container.update(request.json())
-    print(running_container)
+    try:
+        request = requests.post('http://localhost:5001/newcontainer', data=json.dumps(data), headers = {'Content-type': 'application/json'})
+        running_container.update(request.json())
+    finally:
+        return request.status_code
 
 def returnExitedContainer():
     '''
     checks if a container exited with status code 1 -> failed, looks up the student and POST a message to the ECS that something failed
     '''
+    
     global running_container
     failedContainer=(client.containers.list(all=True,filters={"exited":1}))
+    #print(running_container)
     for all in failedContainer:
+        #print(all.id)
         if all.id in running_container:
             print(all.id)
             receiver = running_container[all.id]
@@ -75,8 +81,11 @@ def getExerciseFromExerciseUrl(exercise_url):
     Return:
     - exercise
     '''
-    request = requests.get(exercise_url, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"), headers = {'Accept': 'application/json', 'Content-Type': 'application/json'})
-    return request.json()
+    try:
+        request = requests.get(exercise_url, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"), headers = {'Accept': 'application/json', 'Content-Type': 'application/json'})
+        return request.json()
+    except:
+        return 404
 
 def getSolutionsFromQueue():
     '''
@@ -85,6 +94,7 @@ def getSolutionsFromQueue():
     - None, None, None: if content-length = 0, means: "no new solution is in the solutions/fifo"
     - solution, x_ecsSender, [getExerciseFromExerciseUrl(exercise_url) -> exercise from exercise url]
     '''
+    
     r = requests.get(url + exercisesQueue, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
     if r.headers.get("Content-Length") == "0":
         print("no new Solution available")
@@ -93,6 +103,7 @@ def getSolutionsFromQueue():
         x_ecsSender = r.headers.get("X-EcsSender")
         exercise_url = r.json().get("Solution").get("exercise")
         return r.json(), x_ecsSender, getExerciseFromExerciseUrl(exercise_url)
+
     
     
 def do_something(solution, receiver, exercise, arg):
@@ -111,8 +122,11 @@ def do_something(solution, receiver, exercise, arg):
     else:
         debug = False
     whole_data = {"data": data, "receiver" : receiver, "debug": debug, "language":lang}
-    createNewContainer(whole_data)
+    statuscode = createNewContainer(whole_data)
+    if statuscode != 201:
+        createNewContainer(whole_data)
     returnExitedContainer()
+    print(statuscode)
 
 
 if __name__ == "__main__":
@@ -121,7 +135,7 @@ if __name__ == "__main__":
     '''
     arg = sys.argv #from starting this script
     #while(True):
-    for _ in range(2):
+    for _ in range(1):
         solution, receiver, exercise = getSolutionsFromQueue()
         if solution != None:
             t = threading.Thread(target=do_something, args=[solution, receiver, exercise, arg])

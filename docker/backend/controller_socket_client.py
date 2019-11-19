@@ -66,24 +66,28 @@ class startingNewContainer(Resource):
         - IP Address of corresponding container
         - data (json/dict): data which has to be transfered into the container
         Return:
-        200: if everything went good
+        201: if everything went good
+        500: if something went wrong
         '''
-        port=5005
-        server_address = (ip, port)
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        connected = False
-        while not connected:
-            try:
-                client_socket.connect(server_address)
-                connected = True
-            except Exception as e:
-                pass
-        data_in_bytes = json.dumps(data).encode("utf-8")
-        amount_data = sys.getsizeof(data_in_bytes)        
-        client_socket.send(str(amount_data).encode("utf-8")) 
-        time.sleep(0.25)
-        client_socket.sendall(data_in_bytes)
-        return 200
+        try:
+            port=5005
+            server_address = (ip, port)
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            connected = False
+            while not connected:
+                try:
+                    client_socket.connect(server_address)
+                    connected = True
+                except Exception as e:
+                    pass
+            data_in_bytes = json.dumps(data).encode("utf-8")
+            amount_data = sys.getsizeof(data_in_bytes)        
+            client_socket.send(str(amount_data).encode("utf-8")) 
+            time.sleep(0.25)
+            client_socket.sendall(data_in_bytes)
+            return 201
+        except:
+            return 500
         
 
     def post(self):
@@ -95,7 +99,7 @@ class startingNewContainer(Resource):
         - dict: '{"container_id": receiver}'
         - statuscode from openSocket
         '''
-        conf_file = open("./examples/config.json")
+        conf_file = open("/home/julia/backend/examples/config.json")
         config = json.load(conf_file)
         conf_file.close()
         input=json.loads(request.stream.read())
