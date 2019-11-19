@@ -1,17 +1,19 @@
 '''
 @autor: Julia
+This is the backend of the proof of concept container managed VipLab.
+This flask server provides two endpoints:
+    - /newcontainer: starts a new container from the corresponding language image, opens a socket, pushes the needed data through and closes the socket.
+    - /results: takes the computed results from the container and pushes it back to the ECS.
 '''
+
 import docker
 import requests
 from flask import Flask, request
 from flask_restful import Resource, Api
 import json
 import socket
-import sys
 import time
-import findLanguage
-import struct
-
+import sys
 
 app = Flask(__name__)
 api = Api(app)
@@ -19,19 +21,32 @@ client= docker.from_env()
 
 class results(Resource):
 	def post(self):
-                input=json.loads(request.stream.read())
-                receiver = input.get("receiver")
-                result = input.get("Result")
-                r = requests.post('https://nfldevvipecs.rus.uni-stuttgart.de/numlab/results', headers={'X-EcsReceiverMemberships':receiver,'Accept': 'application/json', "Content-Type":"application/json"}, data=json.dumps(result), auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
-                print(r.headers)
-                print(r.status_code)
-                print(json.dumps(input,  indent=4))
-                #findLanguage.printResult(json.dumps(input))
-		#return {"The result is: " : input}, 201
+            '''
+            Endpoint to push results from the container to the flask backend server. -> POST result to ECS Server
+            Method: POST
+            Data: '{"Result": result, "receiver": receiver}'
+            '''
+            input=json.loads(request.stream.read())
+            receiver = input.get("receiver")
+            result = input.get("Result")
+            r = requests.post('https://nfldevvipecs.rus.uni-stuttgart.de/numlab/results', headers={'X-EcsReceiverMemberships':receiver,'Accept': 'application/json', "Content-Type":"application/json"}, data=json.dumps(result), auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
+            print(r.headers)
+            print(r.status_code)
+            print(json.dumps(input,  indent=4))
+                
 
 class startingNewContainer(Resource):
 
     def startContainer(self, language, debug):
+        '''
+        starts a kata container
+        Params:
+        - language (string): programming language from the code which has to be compiled
+        - debug (bool): decides if the container is removed after compiling sucessfully (debug=True), or if the container will not be removed after compiling sucessfully (debug=False)
+        Return:
+        - ip of started container 
+        - id of started container
+        '''
         containerObject = client.containers.run("gcc_python_socket_" + language, runtime="kata-fc", publish_all_ports=True, auto_remove=debug, detach=True, stdin_open=True)
         a = True
         containerId= vars(containerObject)["attrs"]["Id"]
@@ -45,6 +60,14 @@ class startingNewContainer(Resource):
 
 
     def openSocket(self, ip, data):
+        '''
+        opens a socket into the started container
+        Params:
+        - IP Address of corresponding container
+        - data (json/dict): data which has to be transfered into the container
+        Return:
+        200: if everything went good
+        '''
         port=5005
         server_address = (ip, port)
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -55,18 +78,23 @@ class startingNewContainer(Resource):
                 connected = True
             except Exception as e:
                 pass
-        #time.sleep(5)
-        #client_socket.connect(server_address)
         data_in_bytes = json.dumps(data).encode("utf-8")
         amount_data = sys.getsizeof(data_in_bytes)        
         client_socket.send(str(amount_data).encode("utf-8")) 
         time.sleep(0.25)
         client_socket.sendall(data_in_bytes)
         return 200
-        #return client_socket.recv(amount_data).decode("utf-8")
+        
 
-    
     def post(self):
+        '''
+        Endpoint of /newcontainer
+        Method: POST
+        Data: '{"language":language, "data":data, "debug": debug, "receiver":receiver}'
+        Return:
+        - dict: '{"container_id": receiver}'
+        - statuscode from openSocket
+        '''
         conf_file = open("./examples/config.json")
         config = json.load(conf_file)
         conf_file.close()
@@ -75,7 +103,6 @@ class startingNewContainer(Resource):
         data = input["data"]
         debug = input["debug"]
         whole_data = {"data": data, "receiver": input["receiver"], "conf":config}
-        #whole_data = {"data": data, "receiver": input["receiver"]}
         ip, container_id = self.startContainer(language, debug)
         statuscode = self.openSocket(ip, whole_data)
         return {container_id:input.get("receiver")}, statuscode

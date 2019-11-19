@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+'''
+@author Julia
+Script to trigger the flask server.
+When the ECS can push new solutions from the student, then this script will not be needed anymore -> just trigger the /newcontainer endpoint of the backend
+'''
 import threading
 import time
 import json
@@ -13,6 +18,13 @@ exercisesQueue = '/numlab/solutions/fifo'
 
 
 def findLanguage(data):
+    '''
+    finds the language the exercise has
+    Params:
+    - data (dict): '{"Exercise": exercise, "Solution": solution}'
+    Return:
+    - language the exercise has
+    '''
     lang = list(data["Exercise"]["config"].keys())[0]
     if lang in ["C", "C++"]:
         pass
@@ -31,28 +43,48 @@ def findLanguage(data):
     return lang
 
 def createNewContainer(data):
+    ''' 
+    sending a POST request to the flask backend, and triggers the /newcontainer endpoint
+    Params:
+    - data (dict): '{"data": data, "receiver": receiver, "debug": debug, "language": lang}'
+    '''
     global running_container
-    ''' Sendet einen Post Request an localhost:500/newcontainer, welches einen Kata-Container hochzieht, die Daten an den Container sendet und diesen compilieren lässt '''
     request = requests.post('http://localhost:5001/newcontainer', data=json.dumps(data), headers = {'Content-type': 'application/json'})
-    #print(request.json())
     running_container.update(request.json())
     print(running_container)
 
 def returnExitedContainer():
+    '''
+    checks if a container exited with status code 1 -> failed, looks up the student and POST a message to the ECS that something failed
+    '''
     global running_container
     failedContainer=(client.containers.list(all=True,filters={"exited":1}))
     for all in failedContainer:
         if all.id in running_container:
             print(all.id)
             receiver = running_container[all.id]
+            del running_container[all.id]
             #post zum receiver, dass irgendetwas fehlgeschlagen ist
 
 
 def getExerciseFromExerciseUrl(exercise_url):
+    '''
+    gets the Exercise from the exercise url
+    Params:
+    - exercise_url: from a solution
+    Return:
+    - exercise
+    '''
     request = requests.get(exercise_url, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"), headers = {'Accept': 'application/json', 'Content-Type': 'application/json'})
     return request.json()
 
 def getSolutionsFromQueue():
+    '''
+    checks if a new solution is in the solutions/fifo. -> Production System: change GET-Method to POST-Method
+    Return:
+    - None, None, None: if content-length = 0, means: "no new solution is in the solutions/fifo"
+    - solution, x_ecsSender, [getExerciseFromExerciseUrl(exercise_url) -> exercise from exercise url]
+    '''
     r = requests.get(url + exercisesQueue, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
     if r.headers.get("Content-Length") == "0":
         print("no new Solution available")
@@ -64,6 +96,14 @@ def getSolutionsFromQueue():
     
     
 def do_something(solution, receiver, exercise, arg):
+    '''
+    starts the needed Workflow
+    Params:
+    - solution (dict)
+    - receiver 
+    - exercise
+    - arg (bool): debug param -> True, if container will be removed after compiling, False, if container will not be removed -> if an argument was passed while starting the script -> Debug=True, else Debug=False
+    '''
     data =  {"Exercise" : exercise.get("Exercise"), "Solution" : solution.get("Solution")}
     lang = findLanguage(data)
     if len(arg)== 1:
@@ -76,7 +116,10 @@ def do_something(solution, receiver, exercise, arg):
 
 
 if __name__ == "__main__":
-    arg = sys.argv
+    '''
+    main method: starts for each solution from the solution queue a new thread, else if no new solution is in solutions/fifo, it waits 1 sec. and starts a new try
+    '''
+    arg = sys.argv #from starting this script
     #while(True):
     for _ in range(2):
         solution, receiver, exercise = getSolutionsFromQueue()
