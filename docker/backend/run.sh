@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec python /home/julia/gccsocket/controller_socket_client.py
+exec python /home/julia/backend/controller_socket_client.py >> /home/julia/backend/Flasklog.log
