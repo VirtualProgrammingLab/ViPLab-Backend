@@ -133,6 +133,7 @@ if __name__ == "__main__":
     '''
     main method: starts for each solution from the solution queue a new thread, else if no new solution is in solutions/fifo, it waits 1 sec. and starts a new try
     '''
+    starttime = time.time()
     arg = sys.argv #from starting this script
     #while(True):
     for _ in range(1):
@@ -141,9 +142,10 @@ if __name__ == "__main__":
             t = threading.Thread(target=do_something, args=[solution, receiver, exercise, arg])
             t.start()
             #do_something(solution, receiver, exercise, arg)
+            t.join()
         else:
             time.sleep(1.0)
-    
+        print(time.time()-starttime)
     
 
     

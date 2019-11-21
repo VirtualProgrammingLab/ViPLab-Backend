@@ -26,8 +26,8 @@ def computeResult(data):
     dataObjects.py in Dockerfile einfügen
 
     '''
-    print("sys.argv[0]: " + sys.argv[0])
-    print("os.path.dirname(os.path.abspath(sys.argv[0])): " + os.path.dirname(os.path.abspath(sys.argv[0])))
+    #print("sys.argv[0]: " + sys.argv[0])
+    #print("os.path.dirname(os.path.abspath(sys.argv[0])): " + os.path.dirname(os.path.abspath(sys.argv[0])))
     exercise = dataObjects.Exercise({"Exercise" : data["Exercise"]})
     solution = dataObjects.Solution({"Solution" : data["Solution"]}, exercise)
     comp = C(solution)
@@ -59,7 +59,8 @@ if __name__ == '__main__':
     data = startSocket()
     real_data = data.get("data")
     receiver = data.get("receiver")
-    print(data)
+    #print(data)
     result = computeResult(real_data)
+    print(result)
     sendResultsBackToController(result, receiver)
     

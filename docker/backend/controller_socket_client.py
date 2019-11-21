@@ -47,7 +47,7 @@ class startingNewContainer(Resource):
         - ip of started container 
         - id of started container
         '''
-        containerObject = client.containers.run("gcc_python_socket_" + language, runtime="kata-fc", publish_all_ports=True, auto_remove=debug, detach=True, stdin_open=True)
+        containerObject = client.containers.run("python_socket_" + language, runtime="kata-fc", publish_all_ports=True, auto_remove=debug, detach=True, stdin_open=True)
         a = True
         containerId= vars(containerObject)["attrs"]["Id"]
         while a==True:
@@ -83,7 +83,7 @@ class startingNewContainer(Resource):
             data_in_bytes = json.dumps(data).encode("utf-8")
             amount_data = sys.getsizeof(data_in_bytes)        
             client_socket.send(str(amount_data).encode("utf-8")) 
-            time.sleep(0.25)
+            time.sleep(0.01)
             client_socket.sendall(data_in_bytes)
             return 201
         except:
