@@ -136,16 +136,22 @@ if __name__ == "__main__":
     starttime = time.time()
     arg = sys.argv #from starting this script
     #while(True):
-    for _ in range(1):
+    #d=False
+    #while(d==False):
+    for _ in range(5):
         solution, receiver, exercise = getSolutionsFromQueue()
         if solution != None:
             t = threading.Thread(target=do_something, args=[solution, receiver, exercise, arg])
             t.start()
             #do_something(solution, receiver, exercise, arg)
-            t.join()
+            #t.join()
+            #print(time.time()-starttime)
         else:
+            d=True
             time.sleep(1.0)
-        print(time.time()-starttime)
+        #print(time.time()-starttime)
+    t.join()
+    print(time.time()-starttime)
     
 
     
