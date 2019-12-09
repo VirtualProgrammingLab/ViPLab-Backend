@@ -1,0 +1,53 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "ptmx",
+  "comment"     : "",
+  "name"        : "ptmx check",
+  "description" : "",
+
+  "elements" :
+  [ { "identifier": "preamble",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source before your code.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Matlab",
+      "emphasis"  : "low",
+      "value"     : ""
+    },
+    { "identifier": "codeFromStudent",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "Fill in your code!",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Matlab",
+      "emphasis"  : "medium",
+      "value"     : "system('echo \"Hello World!\"')\n"
+    },
+    { "identifier": "postscript",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source after your code.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Matlab",
+      "emphasis"  : "low",
+      "value"     : ""
+    }
+  ],
+
+  "config" :
+  { "Matlab" :
+    {
+      "merging"  :
+      {
+        "sources" : ["preamble", "codeFromStudent", "postscript"]
+      },
+      "interpreting" :
+      {
+        "flags"    : ""
+      },
+      "stopAfterPhase" : "interpreting"
+    }
+  }
+}
+}

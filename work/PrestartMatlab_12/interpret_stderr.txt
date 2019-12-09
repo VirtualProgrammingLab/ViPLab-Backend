@@ -1,0 +1,11 @@
+{At compilation, "g" was determined to be a variable and this variable is
+uninitialized. "g" is also a function name and previous versions of MATLAB
+would have called the function. However, MATLAB 7 forbids the use of the same
+name in the same context as both a function and a variable.
+
+Error in generatedSource>g (line 114)
+  g>=1+0.02*x+0.05*y;
+
+Error in generatedSource (line 46)
+        r(i+(j-1)*nx,1) = r(i+(j-1)*nx,1)-1/dx^2*g(x(i,1)-dx,y(j,1));
+} 

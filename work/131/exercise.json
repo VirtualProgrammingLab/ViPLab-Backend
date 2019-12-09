@@ -1,0 +1,67 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "C func",
+  "comment"     : "For testing purposes.",
+  "name"        : "C-Funktion",
+  "description" : "Schreiben Sie eine C-Function void foo(void).",
+
+  "elements" :
+  [ 
+    { "identifier": "preamble",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source before your code.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "low",
+      "value"     : "#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>\n\n// declaration of function to be called\nvoid foo(void);\n"
+    },
+    { "identifier": "codeFromStudent",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "Fill in your code!",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "medium",
+      "value"     : "/* Template */\n\nvoid foo(void)\n{\n  /* your code */\n  \n}\n"
+    },
+    { "identifier": "postscript",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: main program calling foo().",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "low",
+      "value"     : null
+    }
+  ],
+
+  "config" :
+  { "C" :
+    {
+      "merging"  :
+      {
+        "sources" : ["preamble", "codeFromStudent", "postscript"]
+      },
+      "compiling" :
+      {
+        "compiler" : "gcc",
+        "flags"    : "-Wall"
+      },
+      "checking" :
+      {
+        "sources": ["codeFromStudent"],
+        "forbiddenCalls": "system"
+      },
+      "linking" :
+      {
+        "flags" : "-lm"
+      },
+      "running" :
+      {
+      },
+      "stopAfterPhase" : "running"
+    }
+  }
+}
+}

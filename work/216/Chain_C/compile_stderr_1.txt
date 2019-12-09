@@ -1,0 +1,4 @@
+source_1.c: In function ‘main’:
+source_1.c:7:1: error: expected ‘;’ before ‘}’ token
+ }
+ ^

@@ -1,0 +1,33 @@
+{
+  "Exercise": {
+    "name": "[test] syntax error",
+    "config": {
+      "Octave": {
+        "interpreting": {
+          "flags": ""
+        },
+        "stopAfterPhase": "interpreting",
+        "merging": {
+          "sources": [
+            "Id1"
+          ]
+        }
+      }
+    },
+    "postTime": "Thu Nov 03 14:46:25 CET 2011",
+    "elements": [
+      {
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Matlab",
+        "value": "1 + 1 2 + 2\n",
+        "emphasis": "High",
+        "identifier": "Id1",
+        "visible": true
+      }
+    ],
+    "description": "test",
+    "identifier": "Id:1556379990",
+    "department": "RUS"
+  }
+}

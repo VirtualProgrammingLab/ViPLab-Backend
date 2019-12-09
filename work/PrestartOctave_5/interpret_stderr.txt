@@ -1,0 +1,8 @@
+parse error near line 1 of file /work/PrestartOctave_5/generatedSource.m
+
+  syntax error
+
+>>> 1 + 1 2 + 2
+          ^
+
+error: parse error while reading file /work/PrestartOctave_5/generatedSource.m

@@ -1,0 +1,49 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "[Matlab example] GAUSS",
+  "comment"     : "",
+  "name"        : "Gauss-Berechnung mit Funktionsfilterung",
+  "description" : "",
+
+  "elements" :
+  [ { "identifier": "call GAUSS",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: calls GAUSS function provided by student.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Matlab",
+      "emphasis"  : "low",
+      "value"     : "function callGAUSS\n\n% Aufruf von GAUSS\n\nA=hilb(5);\nb=ones(1,5);\n\n[x] = GAUSS(A,b)\n\nquit\n"
+    },
+    { "identifier": "codeFromStudent",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "Fill in your code!",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Matlab",
+      "emphasis"  : "medium",
+      "value"     : "function [x] = GAUSS(A,b)\n\n% function [x] = GAUSS(A,b)\n% Gauss-Algorithmus (ohne Pivotisierung)\n%\n% Input:  A   Matrix in IR^{n x n}\n%         b   Vektor in IR^{n}\n% Output: x   Vektor in IR^{n} - Lösung von Ax=b\n%\n% Der Gauss-Algorithmus ueberfuehrt das Gleichungssystem Ax=b in ein\n% aequivalentes Gleichungssystem Rx=b, mit einer oberen Dreiecksmatrix\n% R in IR^{n x n}, dessen Loesung leichter berechnet werden kann.\n% (Beachte: die rechten Seiten b sind nicht dieselben!)\n%\n%\n%\n% Schreiben Sie ab hier den Funktions-Code; gegeben sind einige Überschriften zur Orientierung und als Hinweise.\n\n%%% Init %%%\n\n%%% Elimination %%%\n\n%%% Rückwärtseinsetzen %%%\n\n"
+    }
+  ],
+
+  "config" :
+  { "Matlab" :
+    {
+      "merging"  :
+      {
+        "sources" : ["call GAUSS", "codeFromStudent"]
+      },
+      "checking" :
+      {
+        "sources": ["codeFromStudent"],
+        "allowedCalls": "length zeros error"
+      },
+      "interpreting" :
+      {
+        "flags"    : ""
+      },
+      "stopAfterPhase" : "interpreting"
+    }
+  }
+}
+}

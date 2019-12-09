@@ -1,0 +1,22 @@
+{"Exercise":{
+      "comment": "",
+      "config": {"Octave": {
+            "interpreting": {"flags": ""},
+            "merging": {"sources": ["codeFromStudent"]},
+            "stopAfterPhase": "interpreting"
+      }},
+      "description": "",
+      "elements": [{
+            "MIMEtype": "text/plain",
+            "emphasis": "High",
+            "identifier": "codeFromStudent",
+            "modifiable": true,
+            "name": "",
+            "syntaxHighlighting": "Matlab",
+            "value": "help unknownCommand",
+            "visible": true
+      }],
+      "identifier": "",
+      "name": "call help for unknown command",
+      "postTime": "Wed Nov 30 18:18:18 CET 2011"
+}}

@@ -1,0 +1,44 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:30:59",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:30:59",
+            "duration" : "159ms",
+            "finishTime" : "2018-11-09 17:30:59",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Octave chain)v2.0",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#101"
+            },
+            "userInfo" : {
+                "summary" : "[octave just started] Interpreting succeeded!"
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36120",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "interpret_stderr.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "interpret_stdout.txt",
+                "value" : "ans =  2\n\n",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

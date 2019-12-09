@@ -1,0 +1,24 @@
+{ "Exercise" :
+{ "postTime"    : "2011-05-09 17:32:15+02:00",
+  "identifier"  : "DuMuX chain with multiple Results",
+  "comment"     : "For testing purposes.",
+  "name"        : "DuMuX chain with multiple Results",
+  "description" : "loops $1 times; in each loop: outputs counter, sleeps $2 thereafter",
+
+  "elements" :
+  [
+  ],
+
+  "config" :
+  { "DuMuX" :
+    {
+      "running" :
+      {
+        "executable" : "loopSleep",
+        "commandLineArguments" : "2 7",
+        "observe_stderr": true
+      }
+    }
+  }
+}
+}

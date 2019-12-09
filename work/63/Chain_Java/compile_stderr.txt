@@ -1,0 +1,4 @@
+HelloWorldApp.java:1: error: package foo does not exist
+import foo.Bar;
+          ^
+1 error

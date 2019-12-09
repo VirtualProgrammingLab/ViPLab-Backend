@@ -1,0 +1,340 @@
+
+[2018-11-09 17:40:55][./vip_cc 41277] info (before terminating)..
+=======
+.Info..
+=======
+hostname: nfldevvip12
+pid:  41277
+start timestamp: 2018-11-09 17:27:38
+ECS: https://nfldevvipecs.rus.uni-stuttgart.de (authId: )
+ECS: https://nfldevvipecs.rus.uni-stuttgart.de (authId: , solutionQueue: solutions)
+# defines.. #
+EXPERIMENTAL                        : 0
+WORKAROUND_CURL_MEM_LEAK            : 1
+MOUNT_RW_DEV_PTS                    : 0
+EXTERNAL_COMMANDS_WITH_UNLIMITED_UID: 0
+INIT_SANDBOX_WITH_PAUSE             : 0
+# ..defines #
+  # program arguments.. #
+    _debug                   : 1
+    _runAsService            : 0
+    _ECS_ProtocolAddressPort : https://nfldevvipecs.rus.uni-stuttgart.de
+    _ECS_prefixResource      : /numlab/
+    _ECS_ValidatingCA        : /etc/ssl/certs/Deutsche_Telekom_Root_CA_2.pem
+    _ECS_credential (getenv) : sctc01:...
+    _ECS_X_EcsAuthId         : 
+    _solutionQueue           : solutions
+    exercise                 : 
+    solution                 : 
+    useFixedExercise()       : 0
+    useFixedSolution()       : 0
+    oneRun()                 : 0
+    _doNotPOSTResult         : 0
+    _doNotUseSandbox         : 0
+    keepGeneratedFiles()     : 1
+    _debugCurl               : 0
+    _noMaintainer            : 0
+    _prestartMatlab          : 1
+    _prestartOctave          : 1
+    _prestartFlipping        : 1
+    _useOctaveInsteadOfMatlab: 0
+    _stopAfterLastSolution:    0
+  # ..program arguments #
+
+  =============
+  .Statistics..
+  =============
+  solution_count                 :    263
+  exerciseFailure_count          :      1
+
+  parseSolutionSuccess_count     :    261
+  parseSolutionFailure_count     :      2
+  getExerciseSuccess_count       :    257
+  getExerciseFailure_count       :      4
+  checkRoutingSuccess_count      :    256
+  checkRoutingFailure_count      :      1
+  mergeElementsSuccess_count     :    255
+  mergeElementsFailure_count     :      1
+  traverseAndPerformSuccess_count:    234
+  traverseAndPerformFailure_count:     21
+
+  *** Octave chain ***
+    exerciseFailureCount:      1
+    tryCount            :     19
+    failureCount        :      1
+    successCount        :     17
+    prestart used: 12, prestart not used: 7
+    --- preparation ---
+      tryCount                   :     19
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :     18
+    --- merge sources ---
+      tryCount                   :     18
+      failureShouldNotHappenCount:      0
+      failureCount               :      1
+      successCount               :     17
+    --- checking ---
+      notApplicableCount         :     16
+      tryCount                   :      1
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      1
+    --- map elements ---
+      notApplicableCount         :     16
+      tryCount                   :      1
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      1
+    --- interpreting ---
+      tryCount                   :     17
+      failureShouldNotHappenCount:      0
+      failureCount               :      9
+      successCount               :      8
+    --- analyzing ---
+      tryCount                   :     17
+      failureShouldNotHappenCount:      0
+      failureCount               :      9
+      successCount               :      8
+    --- post result ---
+      tryCount                   :     17
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :     17
+
+  *** C chain ***
+    exerciseFailureCount:      3
+    tryCount            :     90
+    failureCount        :     45
+    successCount        :     36
+    --- mergeSources ---
+      tryCount                   :     90
+      failureShouldNotHappenCount:      0
+      failureCount               :      3
+      successCount               :     87
+    --- map elements ---
+      notApplicableCount         :     54
+      tryCount                   :     32
+      failureShouldNotHappenCount:      4
+      failureCount               :      0
+      successCount               :     28
+    --- compiling ---
+      tryCount                   :     82
+      failureShouldNotHappenCount:      4
+      failureCount               :      9
+      successCount               :     69
+    --- analyzing ---
+      tryCount                   :     76
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :     76
+    --- checking ---
+      notApplicableCount         :     16
+      tryCount                   :     51
+      failureShouldNotHappenCount:      0
+      failureCount               :     23
+      successCount               :     28
+    --- linking ---
+      tryCount                   :     44
+      failureShouldNotHappenCount:      0
+      failureCount               :      1
+      successCount               :     43
+    --- running ---
+      tryCount                   :     43
+      failureShouldNotHappenCount:      0
+      failureCount               :      8
+      successCount               :     35
+    --- postResult ---
+      tryCount                   :     35
+      failureShouldNotHappenCount:      0
+      failureCount               :      1
+      successCount               :     34
+
+  *** C++ chain ***
+    exerciseFailureCount:      0
+    tryCount            :      7
+    failureCount        :      1
+    successCount        :      5
+    --- mergeSources ---
+      tryCount                   :      7
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      7
+    --- map elements ---
+      notApplicableCount         :      7
+      tryCount                   :      0
+    --- compiling ---
+      tryCount                   :      7
+      failureShouldNotHappenCount:      1
+      failureCount               :      1
+      successCount               :      5
+    --- analyzing ---
+      tryCount                   :      6
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      6
+    --- checking ---
+      notApplicableCount         :      4
+      tryCount                   :      0
+    --- linking ---
+      tryCount                   :      4
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      4
+    --- running ---
+      tryCount                   :      4
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      4
+    --- postResult ---
+      tryCount                   :      4
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      4
+
+  *** DuMuX chain ***
+    exerciseFailureCount:      0
+    tryCount            :      7
+    failureCount        :      0
+    successCount        :      4
+    --- map elements ---
+      notApplicableCount         :      3
+      tryCount                   :      4
+      failureShouldNotHappenCount:      2
+      failureCount               :      0
+      successCount               :      2
+    --- running ---
+      tryCount                   :      5
+      failureShouldNotHappenCount:      1
+      failureCount               :      0
+      successCount               :      4
+    --- post result ---
+      tryCount                   :      4
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      4
+
+  *** Matlab chain ***
+    exerciseFailureCount:      1
+    tryCount            :     69
+    failureCount        :     26
+    successCount        :     42
+    prestart used: 28, prestart not used: 27
+    --- preparation ---
+      tryCount                   :     69
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :     69
+    --- merge sources ---
+      tryCount                   :     69
+      failureShouldNotHappenCount:      0
+      failureCount               :      1
+      successCount               :     68
+    --- checking ---
+      notApplicableCount         :     34
+      tryCount                   :     34
+      failureShouldNotHappenCount:      0
+      failureCount               :     20
+      successCount               :     14
+    --- map elements ---
+      notApplicableCount         :     44
+      tryCount                   :      4
+      failureShouldNotHappenCount:      1
+      failureCount               :      0
+      successCount               :      3
+    --- interpreting ---
+      tryCount                   :     47
+      failureShouldNotHappenCount:      0
+      failureCount               :      1
+      successCount               :     46
+    --- analyzing ---
+      tryCount                   :     46
+      failureShouldNotHappenCount:      0
+      failureCount               :     19
+      successCount               :     27
+    --- post result ---
+      tryCount                   :     46
+      failureShouldNotHappenCount:      0
+      failureCount               :      4
+      successCount               :     42
+
+  *** Java chain ***
+    exerciseFailureCount:      0
+    tryCount            :     62
+    failureCount        :     35
+    successCount        :     21
+    --- mergeSources ---
+      tryCount                   :     62
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :     62
+    --- map elements ---
+      notApplicableCount         :     55
+      tryCount                   :      7
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :      7
+    --- compiling ---
+      tryCount                   :     62
+      failureShouldNotHappenCount:      2
+      failureCount               :      7
+      successCount               :     53
+    --- analyzing ---
+      tryCount                   :     60
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :     60
+    --- checking ---
+      notApplicableCount         :     12
+      tryCount                   :     41
+      failureShouldNotHappenCount:      4
+      failureCount               :     26
+      successCount               :     11
+    --- running (java) ---
+      tryCount                   :     23
+      failureShouldNotHappenCount:      0
+      failureCount               :      2
+      successCount               :     21
+    --- post result ---
+      tryCount                   :     21
+      failureShouldNotHappenCount:      0
+      failureCount               :      0
+      successCount               :     21
+
+  *** Computations ***
+  last start   : 2018-11-09 17:40:03
+  last end     : 2018-11-09 17:40:04
+  duration last:      1165ms.
+  duration all :    366013ms.
+
+  =============
+  ..Statistics.
+  =============
+=======
+..Info.
+=======
+SystemCommand(
+  forks - internal: 0, external: 720.
+  
+  
+  forkCount: 0, forkExternalCount: 48;
+  performTimeoutCount: 0, performExternalTimeoutCount: 417;
+  performCount: 0, performExternalCount: 255.
+  
+  waitForCount: 0, waitForTimeoutCount: 45.
+  
+  killCount: 7.
+  
+  
+  h_forkCount: 720, h_waitForCount: 717.
+  
+  
+  s_waitForCount: 263, s_waitForTimeoutCount: 462, s_waitedTwiceCount: 1;
+  s_killPIDCount: 8.
+
+
+  ChildTable(
+  )
+)
+HTTP return codes: { "200": 645, "201": 267, "404": 1 }
+[2018-11-09 17:40:55][./vip_cc 41277] ..info (before terminating)

@@ -1,0 +1,3 @@
+{Error: File: /work/165/Chain_Matlab/generatedSource.m Line: 1 Column: 7
+Unexpected MATLAB expression.
+} 

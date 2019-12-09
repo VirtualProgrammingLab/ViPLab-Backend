@@ -1,0 +1,15 @@
+{ "Solution" :
+{ "postTime" : "2009-09-20T04:15:01.22Z",
+  "ID" : "127.32.15.3#127",
+  "comment" : "part before plot lib funcs",
+  "exercise": "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36394",
+  "exerciseModifications" :
+  { "elements" :
+    [
+      { "identifier": "codeFromStudent",
+        "value"     : "function syntacticallyNeeded()\n\na = 14/3;\nb = 1.0;\n[p,q] = rat((a-b)/b);\ntmax = q*2*pi;\n\nt = linspace(0,tmax,300);\nx = (a-b)*cos(t) + b*cos((a-b)/b*t);\ny = (a-b)*sin(t) - b*sin((a-b)/b*t);\n\ntitle('zykloide mit b=1');\n%legend('a=14/3');\nplot(x,y,'g');\n\na = 3;\n[p,q] = rat((a-b)/b);\ntmax = q*2*pi;\n\nt = linspace(0,tmax,300);\nx = (a-b)*cos(t) + b*cos((a-b)/b*t);\ny = (a-b)*sin(t) - b*sin((a-b)/b*t);\n\n%legend('a=3');\nplot(x,y,'c');\n\nend %function syntacticallyNeeded()\n\n"
+      }
+    ]
+  }
+}
+}

@@ -1,0 +1,64 @@
+{
+  "Exercise": {
+    "name": "[test] HW C test",
+    "config": {
+      "C": {
+        "running": {
+
+        },
+        "stopAfterPhase": "running",
+        "checking": {
+          "sources": [
+            "Id1"
+          ],
+          "forbiddenCalls": "atof atoi atol atoll atoq bcmp bcopy bzero chmod chown dup execl execle execlp execv execve execvp fexecve fork gets lchown system unlink"
+        },
+        "compiling": {
+          "compiler": "gcc",
+          "flags": "-Wall -ansi -pedantic"
+        },
+        "merging": [
+          {
+            "sources": [
+              "Id2",
+              "Id1"
+            ],
+            "mergeID": "Source"
+          }
+        ],
+        "linking": {
+          "flags": "-lm"
+        }
+      }
+    },
+    "elementMap": {
+      "Source": "file:///Source"
+    },
+    "postTime": "Thu Oct 11 17:13:37 CEST 2012",
+    "elements": [
+      {
+        "group": "Source",
+        "modifiable": false,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "C",
+        "value": "#include <stdio.h>\n",
+        "emphasis": "Low",
+        "identifier": "Id2",
+        "visible": true
+      },
+      {
+        "group": "Source",
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "C",
+        "value": "int main(int argc, char * argv[])\n{\n  printf(\"Hello world!\\n\");\n  return 0;\n}\n",
+        "emphasis": "High",
+        "identifier": "Id1",
+        "visible": true
+      }
+    ],
+    "description": "Hello World!",
+    "identifier": "Id:-1246805865",
+    "department": "RUS"
+  }
+}

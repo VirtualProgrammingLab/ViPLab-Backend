@@ -1,0 +1,3 @@
+before system() call
+system() called
+after system() call; exit code: 0

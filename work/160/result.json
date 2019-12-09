@@ -1,0 +1,82 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:35:01",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:35:01",
+            "duration" : "142ms",
+            "finishTime" : "2018-11-09 17:35:01",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Matlab chain)v2.9",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#160"
+            },
+            "userInfo" : {
+                "summary" : "[prestarted MATLAB used] Interpreting failed!",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "interpreter",
+                        "message" : "At compilation, \"g\" was determined to be a variable and this variable is\nuninitialized. \"g\" is also a function name and previous versions of MATLAB\nwould have called the function. However, MATLAB 7 forbids the use of the same\nname in the same context as both a function and a variable.\n",
+                        "source" : {
+                            "elementID" : "Id1",
+                            "extract" : "  g>=1+0.02*x+0.05*y;",
+                            "begin" : 2003,
+                            "end" : 2024,
+                            "line" : 114
+                        },
+                        "output" : {
+                            "elementID" : "interpret_stderr.txt",
+                            "extract" : "Error in generatedSource>g (line 114)\n  g>=1+0.02*x+0.05*y;\n",
+                            "begin" : 289,
+                            "end" : 349
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "interpreter",
+                        "message" : "At compilation, \"g\" was determined to be a variable and this variable is\nuninitialized. \"g\" is also a function name and previous versions of MATLAB\nwould have called the function. However, MATLAB 7 forbids the use of the same\nname in the same context as both a function and a variable.\n",
+                        "source" : {
+                            "elementID" : "Id1",
+                            "extract" : "        r(i+(j-1)*nx,1) = r(i+(j-1)*nx,1)-1/dx^2*g(x(i,1)-dx,y(j,1));",
+                            "begin" : 760,
+                            "end" : 829,
+                            "line" : 46
+                        },
+                        "output" : {
+                            "elementID" : "interpret_stderr.txt",
+                            "extract" : "Error in generatedSource (line 46)\n        r(i+(j-1)*nx,1) = r(i+(j-1)*nx,1)-1/dx^2*g(x(i,1)-dx,y(j,1));\n",
+                            "begin" : 350,
+                            "end" : 455
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36291",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "interpret_stderr.txt",
+                "value" : "{\bAt compilation, \"g\" was determined to be a variable and this variable is\nuninitialized. \"g\" is also a function name and previous versions of MATLAB\nwould have called the function. However, MATLAB 7 forbids the use of the same\nname in the same context as both a function and a variable.\n\nError in generatedSource>g (line 114)\n  g>=1+0.02*x+0.05*y;\n\nError in generatedSource (line 46)\n        r(i+(j-1)*nx,1) = r(i+(j-1)*nx,1)-1/dx^2*g(x(i,1)-dx,y(j,1));\n}\b \n",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "interpret_stdout.txt",
+                "value" : "\n                            < M A T L A B (R) >\n                  Copyright 1984-2015 The MathWorks, Inc.\n                   R2015a (8.5.0.197613) 64-bit (glnxa64)\n                             February 12, 2015\n\n \nFor online documentation, see http://www.mathworks.com/support\nFor product information, visit www.mathworks.com.\n \n\n\tAcademic License\n\n>> >> ",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

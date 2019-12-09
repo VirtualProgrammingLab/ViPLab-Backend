@@ -1,0 +1,4 @@
+Main.java:7: error: ';' expected
+		double x = 2.0
+		              ^
+1 error

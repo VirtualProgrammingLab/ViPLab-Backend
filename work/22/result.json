@@ -1,0 +1,48 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:28:26",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:28:25",
+            "duration" : "928ms",
+            "finishTime" : "2018-11-09 17:28:26",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Java chain)v1.8",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#22"
+            },
+            "userInfo" : {
+                "summary" : "(Java chain)v1.8 failed.",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "callcheck",
+                        "message" : "[Java method call filtering] method call forbidden: \"java.io.PrintStream.println\"\nExpressions:\njava.io.**\nmatchedExpression: java.io.**",
+                        "source" : {
+                            "elementID" : "HelloWorldPerformer_2",
+                            "extract" : "        System.out.println(\"Hello World!\"); // Display the string.",
+                            "begin" : 0,
+                            "end" : 66,
+                            "line" : 1
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/35883",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+        ]
+    }
+}

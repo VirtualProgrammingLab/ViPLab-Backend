@@ -1,0 +1,54 @@
+{ "Exercise" :
+{ "postTime"    : "Fri May 04 15:10:10 CEST 2012",
+  "TTL"         : 100000,
+  "identifier"  : "Java_HW",
+  "name"        : "[Java] Hello World",
+  "description" : "For testing purposes. For backend tests with generic.noModifications.solution.json.",
+  "comment"     : "only working, if main() in comment will be ignored by main() detection",
+
+  "elements" :
+  [ 
+    { "identifier": "HelloWorldApp",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "HelloWorldApp source code",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Java",
+      "emphasis"  : "medium",
+      "value"     : "import hello.world.HelloWorldPerformer;\n\nclass HelloWorldApp {\n    public static void main(String[] args) {\n        hello.world.HelloWorldPerformer.perform(); // Call performer.\n    }\n}"
+    },
+    { "identifier": "HelloWorldPerformer",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "HelloWorldPerformer source code",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Java",
+      "emphasis"  : "medium",
+      "value"     : "/*\nclass HelloWorldPerformer {\n  public static void main(String[] args) {\n    hello.world.HelloWorldPerformer.perform(); // Call performer.\n  }\n}\n*/\n\npackage hello.world;\n\npublic class HelloWorldPerformer {\n    public static void perform() {\n        System.out.println(\"Hello World!\"); // Display the string.\n    }\n}"
+    }
+  ],
+
+  "config" :
+  { "Java" :
+    {
+      "merging"  :
+      [
+        {
+          "sources" : ["HelloWorldApp"]
+        },
+        {
+          "sources" : ["HelloWorldPerformer"]
+        }
+      ],
+      "compiling" :
+      {
+        "flags" : ""
+      },
+      "running" :
+      {
+        "flags" : ""
+      }
+    }
+  }
+}
+}

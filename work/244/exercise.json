@@ -1,0 +1,59 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "C test",
+  "name"        : "C.check.include_callIn_S_4a.ex.json",
+  "description" : "checking phase; suited for use with generic.noModifications.solution.json",
+  "comment"     : "file mapping with dir and #include with './' in path in T code",
+
+  "elements" :
+  [ 
+    { "identifier": "S",
+      "modifiable": true,
+      "name"      : "S",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "value"     : "// def\n#include <stdio.h>\n#include <stdlib.h>\n\nvoid\ncall_system()\n{\n  printf(\"before system() call\");\n  fflush(stdout);\n  system(\"echo -e '\\nsystem() called'\");\n  printf(\"after system() call\\n\");\n}"
+    },
+    { "identifier": "T",
+      "modifiable": false,
+      "name"      : "T",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "value"     : "// decl\nvoid callSystem();\n\n#include \"Dir/./S.c\"\n\n// main\nint\nmain(int argc, char* argv[])\n{\n  call_system();\n  return 0;\n}"
+    }
+  ],
+
+  "elementMap":
+  {
+    "S": "file:///Dir/S.c"
+  },
+
+  "config" :
+  { "C" :
+    {
+      "merging"  :
+      {
+        "sources" : ["T"]
+      },
+      "compiling" :
+      {
+        "compiler" : "gcc",
+        "flags"    : "-Wall"
+      },
+      "checking" :
+      {
+        "sources": ["S"],
+        "forbiddenCalls": "system"
+      },
+      "linking" :
+      {
+        "flags" : ""
+      },
+      "running" :
+      {
+      },
+      "stopAfterPhase" : "running"
+    }
+  }
+}
+}

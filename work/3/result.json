@@ -1,0 +1,59 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:27:44",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:27:41",
+            "duration" : "3108ms",
+            "finishTime" : "2018-11-09 17:27:44",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(C chain)v1.4",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#3"
+            },
+            "userInfo" : {
+                "summary" : "Running succeeded!"
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/35826",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "compile_stderr_0.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "compile_stdout_0.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "link_log.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "exec_stderr.txt",
+                "value" : "Starting forks...\nParent 41706 with created child 41707, childCount 1.\nChild 41707: sleeping awhile...\nParent 41706 with created child 41708, childCount 2.\nChild 41708: sleeping awhile...\nParent 41706 with created child 41709, childCount 3.\nChild 41709: sleeping awhile...\nParent 41706 with created child 41710, childCount 4.\nChild 41710: sleeping awhile...\nParent 41706 with created child 41711, childCount 5.\nChild 41711: sleeping awhile...\nParent 41706 with created child 41712, childCount 6.\nChild 41712: sleeping awhile...\nParent 41706 with created child 41713, childCount 7.\nChild 41713: sleeping awhile...\nParent 41706 with created child 41714, childCount 8.\nChild 41714: sleeping awhile...\nParent 41706 with created child 41715, childCount 9.\nChild 41715: sleeping awhile...\nParent 41706 with created child 41716, childCount 10.\n...finishing forks; sleeping awhile...\nChild 41716: sleeping awhile...\nParent 41706: ...exiting.\n",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "exec_stdout.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

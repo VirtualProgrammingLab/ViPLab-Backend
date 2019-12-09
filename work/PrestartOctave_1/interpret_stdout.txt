@@ -1,0 +1,5 @@
+fun..
+foo (external)
+bar (internal)
+..fun
+

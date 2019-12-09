@@ -1,0 +1,33 @@
+{
+  "Exercise": {
+    "name": "[test][Matlab] endless recursion",
+    "config": {
+      "Matlab": {
+        "interpreting": {
+          "flags": ""
+        },
+        "stopAfterPhase": "interpreting",
+        "merging": {
+          "sources": [
+            "Id1"
+          ]
+        }
+      }
+    },
+    "postTime": "Thu Feb 02 16:10:54 CET 2012",
+    "elements": [
+      {
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Matlab",
+        "value": "function doIt()\n\nf(0)\n\nend\n\nfunction res = f(x)\n  res = f(x+1)\nend\n",
+        "emphasis": "High",
+        "identifier": "Id1",
+        "visible": true
+      }
+    ],
+    "description": ".",
+    "identifier": "Id:1214041493",
+    "department": "RUS"
+  }
+}

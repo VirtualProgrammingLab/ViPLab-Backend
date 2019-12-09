@@ -1,0 +1,15 @@
+{ "Solution" :
+{ "postTime" : "2009-09-20T04:15:01.22Z",
+  "ID" : "127.32.15.3#127",
+  "comment" : "Matlab syntax error, only allowed calls",
+  "exercise": "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36356",
+  "exerciseModifications" :
+  { "elements" :
+    [
+      { "identifier": "codeFromStudent",
+        "value"     : "sin(1) cos(1); notAMatlabFunc(1) % syntax err\n"
+      }
+    ]
+  }
+}
+}

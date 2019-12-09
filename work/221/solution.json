@@ -1,0 +1,15 @@
+{ "Solution" :
+{ "postTime" : "2009-09-20T04:15:01.22Z",
+  "ID" : "4711#1",
+  "comment" : "Die war nicht schwer!",
+  "exercise": "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36452",
+  "exerciseModifications" :
+  { "elements" :
+    [
+      { "identifier": "codeFromStudent",
+        "value"     : "void writeVGF(const char *  fn, const char *  str)\n{\n  FILE *  f = fopen(fn, \"w\");\n  int err = 0;\n  if (f == 0) {\n    exit(1);\n  }\n  fprintf(f, \"%s\", str);\n  err = fclose(f);\n  if (err) {\n    exit(1);\n  }\n}\n\n/* Template */\n\nvoid foo(void)\n{\n  /* foo code */\n  printf(\"foo()\");\nwriteVGF(\"./vipplot.vgf\", \"# first\\n\");\nwriteVGF(\"./vipplot.vgf3\", \"# second\\n\");\nwriteVGF(\"./vipplot.vgfc\", \"# third\\n\");\n}\n"
+      }
+    ]
+  }
+}
+}

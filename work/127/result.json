@@ -1,0 +1,68 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:31:46",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:31:46",
+            "duration" : "167ms",
+            "finishTime" : "2018-11-09 17:31:46",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(C chain)v1.4",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#127"
+            },
+            "userInfo" : {
+                "summary" : "Running succeeded!"
+            }
+        },
+        "Solution" : {
+            "postTime" : "2009-09-20T04:15:01.22Z",
+            "ID" : "4711#1",
+            "comment" : "Die war nicht schwer!",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36193",
+            "exerciseModifications" : {
+                "elements" : [
+                    {
+                        "identifier" : "codeFromStudent",
+                        "value" : "/* Template */\n\nvoid foo(void)\n{\n  /* your code */\n  printf(\"foo()\");\n}\n"
+                    }
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "compile_stderr_0.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "compile_stdout_0.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "pp_stderr_0.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "link_log.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "exec_stderr.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "exec_stdout.txt",
+                "value" : "foo()",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

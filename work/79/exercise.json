@@ -1,0 +1,103 @@
+{
+  "Exercise": {
+    "config": {
+      "C": {
+        "merging": [
+          {
+            "sources": [
+              "Id1",
+              "Id2",
+              "Id3"
+            ],
+            "mergeID": "header.h"
+          },
+          {
+            "sources": [
+              "Id4",
+              "Id5"
+            ],
+            "mergeID": "main.c"
+          }
+        ],
+        "stopAfterPhase": "running",
+        "compiling": {
+          "compiler": "gcc",
+          "flags": "-Wall -ansi -pedantic"
+        },
+        "linking": {
+          "flags": "-lm"
+        },
+        "running": {
+        },
+        "checking": {
+          "forbiddenCalls": "atof atoi atol atoll atoq bcmp bcopy bzero chmod chown dup execl execle execlp execv execve execvp fexecve fork gets lchown system unlink",
+          "sources": [
+            "Id2",
+            "Id5"
+          ]
+        }
+      }
+    },
+    "elementMap": {
+      "header.h": "file:///header.h",
+      "main.c": "file:///main.c"
+    },
+    "postTime": "Mon Jul 30 14:34:54 CEST 2012",
+    "name": "Tab-Test",
+    "description": "Test für Tabulatoren",
+    "elements": [
+      {
+        "value": "#ifndef HEADER_H\n#define HEADER_H\n\n#include <stdio.h>\n\n#define PRINT printf\n\nextern double sin(double arg);\nextern double cos(double arg);\n\n",
+        "MIMEtype": "text/plain",
+        "group": "header.h",
+        "emphasis": "Low",
+        "visible": true,
+        "syntaxHighlighting": "C",
+        "identifier": "Id1",
+        "modifiable": false
+      },
+      {
+        "value": "double inline error(double arg)\n{\n\treturn 1.0 - sin(arg)*sin(arg) - cos(arg) * cos(arg);\n}\n",
+        "MIMEtype": "text/plain",
+        "group": "header.h",
+        "emphasis": "High",
+        "visible": true,
+        "syntaxHighlighting": "C",
+        "identifier": "Id2",
+        "modifiable": true
+      },
+      {
+        "value": "#endif \n",
+        "MIMEtype": "text/plain",
+        "group": "header.h",
+        "emphasis": "Low",
+        "visible": true,
+        "syntaxHighlighting": "C",
+        "identifier": "Id3",
+        "modifiable": false
+      },
+      {
+        "value": "#include \"header.h\"\n\nstatic const double pi = 3.1415926;\n",
+        "MIMEtype": "text/plain",
+        "group": "main.c",
+        "emphasis": "Low",
+        "visible": true,
+        "syntaxHighlighting": "C",
+        "identifier": "Id4",
+        "modifiable": false
+      },
+      {
+        "value": "int main(int argc,char **argv)\n{\nint i;\n\n\tfor(i = 0;i<256;i++) {\n\t\tdouble arg = i * pi / 256.0;\n\t\tPRINT(\"%g\\t:\\t%g\\n\",arg,error(arg));\n\t}\n\treturn 0;\n}\n",
+        "MIMEtype": "text/plain",
+        "group": "main.c",
+        "emphasis": "High",
+        "visible": true,
+        "syntaxHighlighting": "C",
+        "identifier": "Id5",
+        "modifiable": true
+      }
+    ],
+    "department": "RUS",
+    "identifier": "Id:-1423946453"
+  }
+}

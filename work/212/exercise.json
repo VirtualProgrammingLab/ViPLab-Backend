@@ -1,0 +1,55 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "TTL"         : 100000,
+  "identifier"  : "C_exerciseContainingAll",
+  "comment"     : "For testing purposes.",
+  "name"        : "C exercise",
+  "description" : "",
+
+  "elements" :
+  [ 
+    { "identifier": "headerIncludes",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "header including system headers",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "low",
+      "value"     : "#include <stdio.h>\n"
+    },
+    { "identifier": "main",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "main()",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "medium",
+      "value"     : "int main(int argc, char* argv[])\n{\n  printf(\"Hello World!\\n\");\n  return 0;\n}\n"
+    }
+  ],
+
+  "config" :
+  { "C" :
+    {
+      "merging"  :
+      {
+        "sources" : ["headerIncludes", "main"]
+      },
+      "compiling" :
+      {
+        "compiler" : "",
+        "flags"    : "-Wall",
+        "sources"  : ["doesNotExist"]
+      },
+      "linking" :
+      {
+        "flags" : ""
+      },
+      "running" :
+      {
+        "commandLineArguments": ""
+      }
+    }
+  }
+}
+}

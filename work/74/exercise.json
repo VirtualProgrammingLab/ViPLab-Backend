@@ -1,0 +1,63 @@
+{ "Exercise" :
+{ "postTime"    : "Fri May 04 15:10:10 CEST 2012",
+  "TTL"         : 100000,
+  "identifier"  : "Java_HW",
+  "name"        : "[Java] Hello World",
+  "description" : "For testing purposes. For backend tests with generic.noModifications.solution.json.",
+  "comment"     : "compiling: flags for javac\nrunning: flags for java",
+
+  "elements" :
+  [ 
+    { "identifier": "HelloWorldApp",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "HelloWorldApp source code",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Java",
+      "emphasis"  : "medium",
+      "value"     : "import hello.world.HelloWorldPerformer;\n\nclass HelloWorldApp {\n    public static void main(String[] args) {\n        hello.world.HelloWorldPerformer.perform(); // Call performer.\n    }\n}"
+    },
+    { "identifier": "HelloWorldPerformer",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "HelloWorldPerformer source code",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Java",
+      "emphasis"  : "medium",
+      "value"     : "package hello.world;\n\npublic class HelloWorldPerformer {\n    public static void perform() {\n        System.out.println(\"Hello World!\"); // Display the string.\n    }\n}"
+    }
+  ],
+
+  "elementMap":
+  {
+    "hwa": "file:///HelloWorldApp.java",
+    "hwp": "file:///hello/world/HelloWorldPerformer.java"
+  },
+
+  "config" :
+  { "Java" :
+    {
+      "merging"  :
+      [
+        {
+          "sources" : ["HelloWorldApp"],
+          "mergeID" : "hwa"
+        },
+        {
+          "sources" : ["HelloWorldPerformer"],
+          "mergeID" : "hwp"
+        }
+      ],
+      "compiling" :
+      {
+        "flags" : "-verbose"
+      },
+      "running" :
+      {
+        "flags" : "",
+        "mainClass": "HelloWorldApp"
+      }
+    }
+  }
+}
+}

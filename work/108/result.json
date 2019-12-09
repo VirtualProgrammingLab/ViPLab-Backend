@@ -1,0 +1,75 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:31:10",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:31:10",
+            "duration" : "36ms",
+            "finishTime" : "2018-11-09 17:31:10",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Octave chain)v2.0",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#108"
+            },
+            "userInfo" : {
+                "summary" : "[prestarted octave used] Interpreting failed! Exit code: 1",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "interpreter",
+                        "message" : "parse error near line 1 of file /work/PrestartOctave_5/generatedSource.m\n\n  syntax error\n\n>>> 1 + 1 2 + 2\n          ^\n\n",
+                        "source" : {
+                            "elementID" : "Id1",
+                            "extract" : "1 + 1 2 + 2",
+                            "begin" : 0,
+                            "end" : 11,
+                            "line" : 1
+                        },
+                        "output" : {
+                            "elementID" : "interpret_stderr.txt",
+                            "extract" : "parse error near line 1 of file /work/PrestartOctave_5/generatedSource.m\n\n  syntax error\n\n>>> 1 + 1 2 + 2\n          ^\n\n",
+                            "begin" : 0,
+                            "end" : 119
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "interpreter",
+                        "message" : "error: parse error while reading file /work/PrestartOctave_5/generatedSource.m\n",
+                        "output" : {
+                            "elementID" : "interpret_stderr.txt",
+                            "extract" : "error: parse error while reading file /work/PrestartOctave_5/generatedSource.m\n",
+                            "begin" : 119,
+                            "end" : 198
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36141",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "interpret_stderr.txt",
+                "value" : "parse error near line 1 of file /work/PrestartOctave_5/generatedSource.m\n\n  syntax error\n\n>>> 1 + 1 2 + 2\n          ^\n\nerror: parse error while reading file /work/PrestartOctave_5/generatedSource.m\n",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "interpret_stdout.txt",
+                "value" : "\n",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:31:00",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:31:00",
+            "duration" : "59ms",
+            "finishTime" : "2018-11-09 17:31:00",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Octave chain)v2.0",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#102"
+            },
+            "userInfo" : {
+                "summary" : "[prestarted octave used] Interpreting succeeded!"
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36123",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "interpret_stderr.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "interpret_stdout.txt",
+                "value" : "'ls' is a function from the file /usr/share/octave/4.0.3/m/miscellaneous/ls.m\n\n -- Command:  ls\n -- Command:  ls FILENAMES\n -- Command:  ls OPTIONS\n -- Command:  ls OPTIONS FILENAMES\n -- Function File: LIST = ls (...)\n     List directory contents.\n\n     The `ls' command is implemented by calling the native operating\n     system's directory listing command--available OPTIONS will vary\n     from system to system.\n\n     Filenames are subject to shell expansion if they contain any\n     wildcard characters `*', `?', `[]'.  To find a literal example of a\n     wildcard character the wildcard must be escaped using the\n     backslash operator `\\'.\n\n     If the optional output LIST is requested then `ls' returns a\n     character array with one row for each file/directory name.\n\n     Example usage on a UNIX-like system:\n\n          ls -l\n               -| total 12\n               -| -rw-r--r--   1 jwe  users  4488 Aug 19 04:02 foo.m\n               -| -rw-r--r--   1 jwe  users  1315 Aug 17 23:14 bar.m\n\n     See also: dir, readdir, glob, what, stat, filesep, ls_command.\n\n\nAdditional help for built-in functions and operators is\navailable in the online version of the manual.  Use the command\n'doc <topic>' to search the manual index.\n\nHelp and information about Octave is also available on the WWW\nat http://www.octave.org and via the help@octave.org\nmailing list.\n\n",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

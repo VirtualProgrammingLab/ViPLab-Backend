@@ -1,0 +1,63 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "C++_exerciseContainingAll",
+  "comment"     : "For testing purposes.",
+  "name"        : "C++ exercise",
+  "description" : "empty compiler, Hello World!",
+
+  "elements" :
+  [ 
+    { "identifier": "preamble",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source before your code.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C++",
+      "emphasis"  : "low",
+      "value"     : "#include <iostream>\n\n"
+    },
+    { "identifier": "codeForTests",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "To be filled for tests.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C++",
+      "emphasis"  : "medium",
+      "value"     : "int main(int argc, char* argv[])\n{\n  std::cout << \"Hello World!\" << std::endl;\n}\n"
+    },
+    { "identifier": "postscript",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C++",
+      "emphasis"  : "low",
+      "value"     : "/* Main could also be here. */"
+    }
+  ],
+
+  "config" :
+  { "C++" :
+    {
+      "merging"  :
+      {
+        "sources" : ["preamble", "codeForTests", "postscript"]
+      },
+      "compiling" :
+      {
+        "compiler" : "",
+        "flags"    : "-Wall"
+      },
+      "linking" :
+      {
+        "flags" : ""
+      },
+      "running" :
+      {
+        "commandLineArguments": ""
+      },
+      "stopAfterPhase" : "running"
+    }
+  }
+}
+}

@@ -1,0 +1,54 @@
+{
+  "Exercise": {
+    "name": "Funktionsfähiger C-Plot-Test geteilt",
+    "config": {
+      "C": {
+        "running": {
+        },
+        "stopAfterPhase": "running",
+        "checking": {
+          "sources": [
+            "Id2"
+          ],
+          "forbiddenCalls": "atof atoi atol atoll atoq bcmp bcopy bzero chmod chown dup execl execle execlp execv execve execvp fexecve fork gets lchown system unlink"
+        },
+        "compiling": {
+          "compiler": "gcc",
+          "flags": "-Wall -std=c99 -pedantic"
+        },
+        "merging": {
+          "sources": [
+            "Id1",
+            "Id2"
+          ]
+        },
+        "linking": {
+          "flags": "-lm"
+        }
+      }
+    },
+    "postTime": "Fri Aug 19 12:12:10 CEST 2011",
+    "elements": [
+      {
+        "modifiable": false,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "C",
+        "value": "\n#include <stdio.h>\n#include <stdlib.h>\n\n// line types for graph lines\ntypedef enum\n{\n     solid = 0, dashed = 1, dotted = 2, dashdot = 3\n} linetype;\n\n// axis scale\ntypedef enum\n{\n     linear = 0, logarithmic = 1\n} scaletype;\n\n// valid symbols\nchar symbols[] = {' ', '.', 'x', '+', '*', 'v', '^', 'o', 's', 'd'};\n\n/****************************************************************\n * plot graph to current frame                                  *\n ****************************************************************/\nvoid viplab_plot_graph_2d(char symbol, linetype line,\n                          size_t color_r, size_t color_g, size_t color_b, \n                          double* element_coords, size_t element_count, char* legend)\n{\n\t// file handle to write to ViPLab plot file (vpf)\n\tFILE* plot_file;\n\tplot_file = fopen(\"vipplot.vgf\", \"a+\");\n\t\n\t// write plot formatting\n\tfprintf(plot_file, \"# color %zd %zd %zd\\n\", color_r, color_g, color_b);\n\t\n\tif (symbol == ' ')\n\t{\n\t\tfprintf(plot_file, \"# symbol none\\n\");\n\t}\n\telse\n\t{\n\t\tfprintf(plot_file, \"# symbol %c\\n\", symbol);\n\t}\n\t\n\tswitch (line)\n\t{\n\t\tcase solid:\n\t\t\tfprintf(plot_file, \"# linestyle solid\\n\");\n\t\t\tbreak;\n\t\tcase dashed:\n\t\t\tfprintf(plot_file, \"# linestyle dashed\\n\");\n\t\t\tbreak;\n\t\tcase dotted:\n\t\t\tfprintf(plot_file, \"# linestyle dotted\\n\");\n\t\t\tbreak;\n\t\tcase dashdot:\n\t\t\tfprintf(plot_file, \"# linestyle dash-dot\\n\");\n\t\t\tbreak;\n\t}\n\t\n\tif (legend != NULL)\n\t{\n\t\tfprintf(plot_file, \"# legend %s\\n\", legend);\n\t}\n\t\n\t// write plot data\n\tsize_t coords_per_element = 4;\n\tfor (int i = 0; i < element_count*coords_per_element; i += coords_per_element)\n\t{\n\t\tfor (int j = 0; j + 1 < coords_per_element; j++)\n\t\t{\n\t\t\tfprintf(plot_file, \"%lf \", element_coords[i + j]);\n\t\t}\n\t\tfprintf(plot_file, \"%lf\\n\", element_coords[i + coords_per_element - 1]);\n\t}\n\t\n\t// close stream\n\tfclose(plot_file);\n}\n\n/****************************************************************\n * create a new frame, arguments which are NULL are ignored     *\n ****************************************************************/\nvoid viplab_plot_new_frame(char* title, char* label_x, char* label_y,\n                           scaletype scale_x, scaletype scale_y)\n{\n\t// file handle to write to ViPLab plot file (vpf)\n\tFILE* plot_file;\n\tplot_file = fopen(\"vipplot.vgf\", \"a+\");\n\t\n\tfprintf(plot_file, \"# newframe\");\n\t\n\t// write plot formatting\n\tif (title != NULL)\n\t{\n\t\tfprintf(plot_file, \"# title %s\\n\", title);\n\t}\n\tif (label_x != NULL)\n\t{\n\t\tfprintf(plot_file, \"# x-label %s\\n\", label_x);\n\t}\n\tif (label_y != NULL)\n\t{\n\t\tfprintf(plot_file, \"# y-title %s\\n\", label_y);\n\t}\n\t\n\tfprintf(plot_file, \"# scale \");\n\tif ((scale_x == linear) && (scale_y == logarithmic))\n\t{\n\t\tfprintf(plot_file, \"lin-\");\n\t}\n\telse if (scale_x == logarithmic)\n\t{\n\t\tfprintf(plot_file, \"log-\");\n\t}\n\tif ((scale_y == linear) && (scale_x == logarithmic))\n\t{\n\t\tfprintf(plot_file, \"lin\\n\");\n\t}\n\telse if (scale_y == logarithmic)\n\t{\n\t\tfprintf(plot_file, \"log\\n\");\n\t}\n\t\n\t// close stream\n\tfclose(plot_file);\n}\n\n// create a new frame. Arguments which are NULL are ignored\nvoid viplab_frame_limits(double min_x, double max_x, double min_y, double max_y)\n{\n\t// file handle to write to ViPLab plot file (vpf)\n\tFILE* plot_file;\n\tplot_file = fopen(\"vipplot.vgf\", \"a+\");\n\t\n\tif (min_x < max_x)\n\t{\n\t\tfprintf(plot_file, \"# x-range %lf %lf\\n\", min_x, max_x);\n\t}\n\t\n\tif (min_y < max_y)\n\t{\n\t\tfprintf(plot_file, \"# y-range %lf %lf\\n\", min_y, max_y);\n\t}\n\t\n\t// close stream\n\tfclose(plot_file);\n}\n\n\n\n\n",
+        "emphasis": "Low",
+        "identifier": "Id1",
+        "visible": true
+      },
+      {
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "C",
+        "value": "\n/*********************************************************************\n *                Testcode, nicht mehr Teil der Bibliothek           *\n *********************************************************************/\nint main(void)\n{\n    printf(\"Hallo Welt\\n\");\n    \n    double points[] = {1.0, 2.0, 3.0, 2.1, 3.0, 2.1, 4.0, -1.1, 0.0, 1, 1.0, 2};\n    viplab_plot_graph_2d('d', solid, 0, 0, 0, points, 3, \"plot A\");\n    double points2[] = {1.0, 12.0, 2.0, -2.1};\n    viplab_plot_graph_2d(' ', solid, 20, 40, 200, points2, 1, NULL);\n    double points3[] = {1.0, 12.0, 2.0, -2.1, 1.0, 11.0, 2.0, -1.1};\n    viplab_plot_graph_2d('*', solid, 255, 0, 255, points3, 2, \"plot C\");\n    \n    return EXIT_SUCCESS;\n}\n",
+        "emphasis": "High",
+        "identifier": "Id2",
+        "visible": true
+      }
+    ],
+    "description": "Mit Ausgabe und Plot",
+    "identifier": "Id:1025343028"
+  }
+}

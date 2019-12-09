@@ -1,0 +1,114 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:30:28",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:30:28",
+            "duration" : "47ms",
+            "finishTime" : "2018-11-09 17:30:28",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(C chain)v1.4",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#79"
+            },
+            "userInfo" : {
+                "summary" : "[gcc-4.8] Compiling failed! Exit code: 1",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "compiler",
+                        "message" : "header.h:11:15: error: expected \u2018=\u2019, \u2018,\u2019, \u2018;\u2019, \u2018asm\u2019 or \u2018__attribute__\u2019 before \u2018error\u2019\n double inline error(double arg)\n               ^",
+                        "source" : {
+                            "elementID" : "Id2",
+                            "extract" : "double inline error(double arg)",
+                            "begin" : 0,
+                            "end" : 31,
+                            "line" : 1,
+                            "col" : 15
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr_0.txt",
+                            "extract" : "header.h:11:15: error: expected \u2018=\u2019, \u2018,\u2019, \u2018;\u2019, \u2018asm\u2019 or \u2018__attribute__\u2019 before \u2018error\u2019\n double inline error(double arg)\n               ^",
+                            "begin" : 34,
+                            "end" : 194
+                        }
+                    },
+                    {
+                        "severity" : "info",
+                        "type" : "compiler",
+                        "message" : "main.c: In function \u2018main\u2019:",
+                        "output" : {
+                            "elementID" : "compile_stderr_0.txt",
+                            "extract" : "main.c: In function \u2018main\u2019:",
+                            "begin" : 195,
+                            "end" : 226
+                        }
+                    },
+                    {
+                        "severity" : "warning",
+                        "type" : "compiler",
+                        "message" : "main.c:10:3: warning: implicit declaration of function \u2018error\u2019 [-Wimplicit-function-declaration]\n   PRINT(\"%g\\t:\\t%g\\n\",arg,error(arg));\n   ^",
+                        "source" : {
+                            "elementID" : "Id5",
+                            "extract" : "\t\tPRINT(\"%g\\t:\\t%g\\n\",arg,error(arg));",
+                            "begin" : 96,
+                            "end" : 134,
+                            "line" : 7,
+                            "col" : 3
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr_0.txt",
+                            "extract" : "main.c:10:3: warning: implicit declaration of function \u2018error\u2019 [-Wimplicit-function-declaration]\n   PRINT(\"%g\\t:\\t%g\\n\",arg,error(arg));\n   ^",
+                            "begin" : 227,
+                            "end" : 372
+                        }
+                    },
+                    {
+                        "severity" : "warning",
+                        "type" : "compiler",
+                        "message" : "main.c:10:3: warning: format \u2018%g\u2019 expects argument of type \u2018double\u2019, but argument 3 has type \u2018int\u2019 [-Wformat=]",
+                        "source" : {
+                            "elementID" : "Id5",
+                            "extract" : "\t\tPRINT(\"%g\\t:\\t%g\\n\",arg,error(arg));",
+                            "begin" : 96,
+                            "end" : 134,
+                            "line" : 7,
+                            "col" : 3
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr_0.txt",
+                            "extract" : "main.c:10:3: warning: format \u2018%g\u2019 expects argument of type \u2018double\u2019, but argument 3 has type \u2018int\u2019 [-Wformat=]",
+                            "begin" : 373,
+                            "end" : 495
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36054",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "compile_stderr_0.txt",
+                "value" : "In file included from main.c:1:0:\nheader.h:11:15: error: expected \u2018=\u2019, \u2018,\u2019, \u2018;\u2019, \u2018asm\u2019 or \u2018__attribute__\u2019 before \u2018error\u2019\n double inline error(double arg)\n               ^\nmain.c: In function \u2018main\u2019:\nmain.c:10:3: warning: implicit declaration of function \u2018error\u2019 [-Wimplicit-function-declaration]\n   PRINT(\"%g\\t:\\t%g\\n\",arg,error(arg));\n   ^\nmain.c:10:3: warning: format \u2018%g\u2019 expects argument of type \u2018double\u2019, but argument 3 has type \u2018int\u2019 [-Wformat=]\n",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "compile_stdout_0.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

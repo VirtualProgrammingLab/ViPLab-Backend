@@ -1,0 +1,45 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:30:43",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:30:43",
+            "duration" : "29ms",
+            "finishTime" : "2018-11-09 17:30:43",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(C chain)v1.4",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#89"
+            },
+            "userInfo" : {
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36084",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "mergedSource_0",
+                "value" : "#include <stdio.h>\nvoid foo()\n{\n  printf(\"Hello World!\\n\");\n}\n",
+                "MIMEtype" : "text/plain",
+                "name" : "computation output"
+            },
+            {
+                "identifier" : "mergedSource_1",
+                "value" : "void foo(); /* decl */\n\nint main(int argc, char* argv[])\n{\n  foo();\n  return 0;\n}\n",
+                "MIMEtype" : "text/plain",
+                "name" : "computation output"
+            }
+        ]
+    }
+}

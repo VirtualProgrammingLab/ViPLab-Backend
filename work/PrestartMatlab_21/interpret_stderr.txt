@@ -1,0 +1,6 @@
+{Error using generatedSource>GAUSS (line 36)
+Das System ist nicht loesbar. Das 2-te Pivotelement ist 0.
+
+Error in generatedSource (line 10)
+x2=GAUSS(A2,b)
+} 

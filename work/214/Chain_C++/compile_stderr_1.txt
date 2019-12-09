@@ -1,0 +1,4 @@
+source_1.cpp: In function ‘int main(int, char**)’:
+source_1.cpp:7:1: error: expected ‘;’ before ‘}’ token
+ }
+ ^
