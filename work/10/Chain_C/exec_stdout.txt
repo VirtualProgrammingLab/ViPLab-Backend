@@ -1,6 +1,0 @@
-PATH=/bin:/usr/bin:/usr/local/bin:/usr/local/DuMuX/bin
-PWD=/work/10/Chain_C
-LANG=en_US.UTF-8
-SHLVL=1
-HOME=/work/10/Chain_C
-_=/usr/bin/env

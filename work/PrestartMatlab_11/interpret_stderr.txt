@@ -1,5 +1,0 @@
-{Out of memory. Type HELP MEMORY for your options.
-
-Error in generatedSource (line 3)
-arr = [0:500000000]
-} 

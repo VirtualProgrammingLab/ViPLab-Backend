@@ -1,7 +1,0 @@
-{Error: File: /work/PrestartMatlab_19/generatedSource.m Line: 6 Column: 1
-"y" previously appeared to be used as a function or command, conflicting with
-its use here as the name of a variable.
-A possible cause of this error is that you forgot to initialize the variable,
-or you have initialized it implicitly using load or eval.
-
-} 

@@ -1,3 +1,0 @@
-before system() call
-system() called
-after system() call

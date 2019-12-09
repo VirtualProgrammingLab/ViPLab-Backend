@@ -1,4 +1,0 @@
-source_0.c: In function ‘foo’:
-source_0.c:12:3: warning: implicit declaration of function ‘sleep’ [-Wimplicit-function-declaration]
-   sleep(210);
-   ^

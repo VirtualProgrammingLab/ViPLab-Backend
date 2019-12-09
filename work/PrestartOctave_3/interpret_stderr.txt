@@ -1,3 +1,0 @@
-error: 'unknownCommand' undefined near line 1 column 1
-error: called from
-    generatedSource at line 1 column 1

@@ -1,1 +1,0 @@
-hello/world/HelloWorldPerformer\$StaticInner hello/world/HelloWorldPerformer\$Inner hello/world/HelloWorldPerformer HelloWorldApp 

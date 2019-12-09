@@ -1,6 +1,0 @@
-{Error using system
-The unix() and ! commands are disabled.
-
-Error in generatedSource (line 1)
-system('echo "Hello World!"')
-} 

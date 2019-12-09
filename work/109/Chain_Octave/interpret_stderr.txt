@@ -1,8 +1,0 @@
-parse error near line 1 of file /work/109/Chain_Octave/generatedSource.m
-
-  syntax error
-
->>> 1 + 1 2 + 2
-          ^
-
-error: parse error while reading file /work/109/Chain_Octave/generatedSource.m

@@ -1,9 +1,0 @@
-[parsing started RegularFileObject[myMath/Function.java]]
-myMath/Function.java:6: error: ';' expected
-		return x*x
-		          ^
-[parsing completed 38ms]
-[parsing started RegularFileObject[Main.java]]
-[parsing completed 1ms]
-[total 54ms]
-1 error

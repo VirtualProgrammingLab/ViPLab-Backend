@@ -1,5 +1,0 @@
-{Undefined function or variable 'unknownFunc'.
-
-Error in generatedSource (line 3)
-unknownFunc() % unallowed call
-} 
