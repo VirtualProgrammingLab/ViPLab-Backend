@@ -1,0 +1,53 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:37:00",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:36:58",
+            "duration" : "2446ms",
+            "finishTime" : "2018-11-09 17:37:00",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Matlab chain)v2.9",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#193"
+            },
+            "userInfo" : {
+                "summary" : "[MATLAB just started] Interpreting succeeded!"
+            }
+        },
+        "Solution" : {
+            "postTime" : "2009-09-20T04:15:01.22Z",
+            "ID" : "127.32.15.3#127",
+            "comment" : "Die war nicht so leicht...",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36376",
+            "exerciseModifications" : {
+                "elements" : [
+                    {
+                        "identifier" : "codeFromStudent",
+                        "value" : "plot_file = fopen('vipplot.vgf', 'a')\nfprintf(plot_file, '# color 255 0 0\\n')\nfclose(plot_file)\n"
+                    }
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "interpret_stderr.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "interpret_stdout.txt",
+                "value" : "\n                            < M A T L A B (R) >\n                  Copyright 1984-2015 The MathWorks, Inc.\n                   R2015a (8.5.0.197613) 64-bit (glnxa64)\n                             February 12, 2015\n\n \nFor online documentation, see http://www.mathworks.com/support\nFor product information, visit www.mathworks.com.\n \n\n\tAcademic License\n\n\nplot_file =\n\n     3\n\n\nans =\n\n    16\n\n\nans =\n\n     0\n\n>> ",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "vipplot.vgf",
+                "value" : "# color 255 0 0\n",
+                "MIMEtype" : "application/x-vgf"
+            }
+        ]
+    }
+}

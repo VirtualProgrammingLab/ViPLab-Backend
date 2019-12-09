@@ -1,0 +1,46 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:37:13",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:37:13",
+            "duration" : "86ms",
+            "finishTime" : "2018-11-09 17:37:13",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Matlab chain)v2.9",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#196",
+                "0: exception" : "[ExSpecification /home/ac131917/ViPLab/Backend/src/CC_Controller.cpp line: 904 func: postResultAfterInterpreting]\n==> 3 graphics files with suffix '.vgf' found: more than one are not allowed (use vipplot.vgf only)."
+            },
+            "userInfo" : {
+                "summary" : "(Matlab chain)v2.9 failed.",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "output",
+                        "message" : "An exception occured:\n[ExSpecification /home/ac131917/ViPLab/Backend/src/CC_Controller.cpp line: 904 func: postResultAfterInterpreting]\n==> 3 graphics files with suffix '.vgf' found: more than one are not allowed (use vipplot.vgf only)."
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2009-09-20T04:15:01.22Z",
+            "ID" : "127.32.15.3#127",
+            "comment" : "",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36376",
+            "exerciseModifications" : {
+                "elements" : [
+                    {
+                        "identifier" : "codeFromStudent",
+                        "value" : "plot_file = fopen('vipplot.vgf', 'a')\nfprintf(plot_file, '# color 255 0 0\\n')\nfclose(plot_file)\nplot_file = fopen('vipplot2.vgf', 'a')\nfprintf(plot_file, '# color 0 255 0\\n')\nfclose(plot_file)\nplot_file = fopen('vipplot3.vgf', 'a')\nfprintf(plot_file, '# color 0 0 255\\n')\nfclose(plot_file)\n"
+                    }
+                ]
+            }
+        },
+        "elements" : [
+        ]
+    }
+}

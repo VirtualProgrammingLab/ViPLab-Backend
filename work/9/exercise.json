@@ -1,0 +1,32 @@
+{
+  "Exercise": {
+    "name": "merge missing",
+    "config": {
+      "Octave": {
+        "interpreting": {
+          "flags": ""
+        },
+        "stopAfterPhase": "interpreting",
+        "merging": {
+          "sources": [
+          ]
+        }
+      }
+    },
+    "postTime": "Fri Nov 18 14:57:50 CET 2011",
+    "elements": [
+      {
+        "identifier": "Id1",
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Matlab",
+        "value": "",
+        "emphasis": "High",
+        "visible": true
+      }
+    ],
+    "description": "parse basics",
+    "identifier": "Id:-1509083584",
+    "department": "RUS"
+  }
+}

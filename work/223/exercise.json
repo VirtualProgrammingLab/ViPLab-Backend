@@ -1,0 +1,55 @@
+{
+  "Exercise": {
+    "name": "complex.h test",
+    "config": {
+      "C": {
+        "running": {
+        },
+        "stopAfterPhase": "running",
+        "checking": {
+          "sources": [
+            "Id2"
+          ],
+          "forbiddenCalls": "atof atoi atol atoll atoq bcmp bcopy bzero chmod chown dup execl execle execlp execv execve execvp fexecve fork gets lchown system unlink"
+        },
+        "compiling": {
+          "compiler": "gcc",
+          "flags": "-Wall -ansi -pedantic"
+        },
+        "merging": {
+          "sources": [
+            "Id1",
+            "Id2"
+          ]
+        },
+        "linking": {
+          "flags": "-lm"
+        }
+      }
+    },
+    "postTime": "Wed Oct 12 17:08:22 CEST 2011",
+    "elements": [
+      {
+        "modifiable": false,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "C",
+        "value": "#include <complex.h>\n#include <stdio.h>\n",
+        "emphasis": "Low",
+        "identifier": "Id1",
+        "visible": true
+      },
+      {
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "C",
+        "value": "int main(void)\n{\n  double complex c = 5 + 3*I;\n  printf(\"%g + %gi\\n\", creal(c), cimag(c));\n  complex * cP = &c;\n  printf(\"%g + %gi\\n\", creal(*cP), cimag(*cP));\n\n  return 0;\n}\n",
+        "emphasis": "High",
+        "identifier": "Id2",
+        "visible": true
+      }
+    ],
+    "description": "test parsing complex type",
+    "identifier": "Id:-1357885609",
+    "department": "RUS"
+  }
+}

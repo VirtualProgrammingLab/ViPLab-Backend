@@ -1,0 +1,43 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "C.forkBomb_OK",
+  "comment"     : "For testing purposes.",
+  "name"        : "C fork 10",
+  "description" : "try to fork 10 processes",
+
+  "elements" :
+  [ 
+    { "identifier": "codeForTests",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "To be filled for tests.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "medium",
+      "value"     : "/* This program creates childs. */\n#include <unistd.h>\n#include <stdio.h>\n#include <stdlib.h>\n\nint main(void) {\n  int child_id;\n  int childCount = 0;\n  fprintf(stderr, \"Starting forks...\\n\");\n\n  for (int i = 0; i < 10; ++i) {\n    child_id = fork();\n    if (child_id < 0) {\n      fprintf(stderr, \"Parent %d: fork failed! Sleeping awhile...\\n\", getpid());\n      sleep(3);\n      fprintf(stderr, \"Parent %d: ...exiting.\\n\", getpid());\n      exit(1);\n    } else if (child_id) {\n      ++childCount;\n      fprintf(stderr, \"Parent %d with created child %d, childCount %d.\\n\", getpid(), child_id, childCount);\n    } else {\n      fprintf(stderr, \"Child %d: sleeping awhile...\\n\", getpid());\n      sleep(300);\n      fprintf(stderr, \"Child %d: ...exiting.\\n\", getpid());\n      exit(0);\n    }\n  }\n  fprintf(stderr, \"...finishing forks; sleeping awhile...\\n\");\n  sleep(3);\n  fprintf(stderr, \"Parent %d: ...exiting.\\n\", getpid());\n  return 0;\n}\n"
+    }
+  ],
+
+  "config" :
+  { "C" :
+    {
+      "merging"  :
+      {
+        "sources" : ["codeForTests"]
+      },
+      "compiling" :
+      {
+        "compiler" : "",
+        "flags"    : "-std=c99"
+      },
+      "linking" :
+      {
+        "flags" : ""
+      },
+      "running" :
+      {
+      }
+    }
+  }
+}
+}

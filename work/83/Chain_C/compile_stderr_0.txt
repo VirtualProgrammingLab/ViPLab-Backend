@@ -1,0 +1,4 @@
+mergedMain.c: In function ‘main’:
+mergedMain.c:6:3: warning: statement with no effect [-Wunused-value]
+   1+1;
+   ^

@@ -1,0 +1,11 @@
+source_0.c: In function ‘foo’:
+source_0.c:12:30: warning: missing terminating " character [enabled by default]
+   /* compile error */ printf("...;
+                              ^
+source_0.c:12:23: error: missing terminating " character
+   /* compile error */ printf("...;
+                       ^
+source_0.c:13:1: error: expected expression before ‘}’ token
+ }
+ ^
+source_0.c:13:1: error: expected ‘;’ before ‘}’ token

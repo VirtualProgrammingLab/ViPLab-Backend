@@ -1,0 +1,22 @@
+{"Exercise":{
+      "identifier": "sw",
+      "name": "Octave language test",
+      "comment": "call of function after 'main' func",
+      "config": {"Octave": {
+            "interpreting": {"flags": ""},
+            "merging": {"sources": ["codeFromStudent"]},
+            "stopAfterPhase": "interpreting"
+      }},
+      "description": "",
+      "elements": [{
+            "MIMEtype": "text/plain",
+            "emphasis": "High",
+            "identifier": "codeFromStudent",
+            "modifiable": true,
+            "name": "",
+            "syntaxHighlighting": "Matlab",
+            "value": "function [  ] = fun(  )\n  disp('fun..')\n  foo\n  bar\n  disp('..fun')\nend\n\nfunction [  ] = foo(  )\n  disp('foo')\nend\n\nfunction [  ] = bar(  )\n  disp('bar')\nend",
+            "visible": true
+      }],
+      "postTime": "Wed Nov 30 18:18:18 CET 2011"
+}}

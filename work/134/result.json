@@ -1,0 +1,100 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:31:55",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:31:55",
+            "duration" : "171ms",
+            "finishTime" : "2018-11-09 17:31:55",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(C chain)v1.4",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#134"
+            },
+            "userInfo" : {
+                "summary" : "Running succeeded!",
+                "elements" : [
+                    {
+                        "severity" : "info",
+                        "type" : "compiler",
+                        "message" : "source_0.c: In function \u2018foo\u2019:",
+                        "output" : {
+                            "elementID" : "compile_stderr_0.txt",
+                            "extract" : "source_0.c: In function \u2018foo\u2019:",
+                            "begin" : 0,
+                            "end" : 34
+                        }
+                    },
+                    {
+                        "severity" : "warning",
+                        "type" : "compiler",
+                        "message" : "source_0.c:12:7: warning: unused variable \u2018count\u2019 [-Wunused-variable]\n   int count=0;\n       ^",
+                        "source" : {
+                            "elementID" : "codeFromStudent",
+                            "extract" : "  int count=0;",
+                            "begin" : 51,
+                            "end" : 65,
+                            "line" : 6,
+                            "col" : 7
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr_0.txt",
+                            "extract" : "source_0.c:12:7: warning: unused variable \u2018count\u2019 [-Wunused-variable]\n   int count=0;\n       ^",
+                            "begin" : 35,
+                            "end" : 133
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2009-09-20T04:15:01.22Z",
+            "ID" : "4711#1",
+            "comment" : "[triggers utf8 exception] Die war nicht schwer!",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36208",
+            "exerciseModifications" : {
+                "elements" : [
+                    {
+                        "identifier" : "codeFromStudent",
+                        "value" : "/* Template */\n\nvoid foo(void)\n{\n  /* your code */\n  int count=0;\n  printf(\" M%crz \", (char)0xe4); // illegal UTF8 char\n}\n"
+                    }
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "compile_stderr_0.txt",
+                "value" : "source_0.c: In function \u2018foo\u2019:\nsource_0.c:12:7: warning: unused variable \u2018count\u2019 [-Wunused-variable]\n   int count=0;\n       ^\n",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "compile_stdout_0.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "pp_stderr_0.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "link_log.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "exec_stderr.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "exec_stdout.txt",
+                "value" : " M??? Invalid UTF-8; utf8_octet: e4 ???",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

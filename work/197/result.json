@@ -1,0 +1,46 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:37:19",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:37:16",
+            "duration" : "2806ms",
+            "finishTime" : "2018-11-09 17:37:19",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Matlab chain)v2.9",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#197",
+                "0: exception" : "[ExFileTooLarge /home/ac131917/ViPLab/Backend/src/IO.cpp line: 462 func: file2string]\n==> \"./197/Chain_Matlab/vipplot.vgf\" (fileSize: 2236512, fileSizeLimit: 1048064)"
+            },
+            "userInfo" : {
+                "summary" : "(Matlab chain)v2.9 failed.",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "output",
+                        "message" : "Generated file './197/Chain_Matlab/vipplot.vgf' is too large: its size 2236512 exceeds file size limit 1048064."
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2009-09-20T04:15:01.22Z",
+            "ID" : "127.32.15.3#127",
+            "comment" : "[Matlab] too much vgf data",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36385",
+            "exerciseModifications" : {
+                "elements" : [
+                    {
+                        "identifier" : "codeFromStudent",
+                        "value" : "plot_file = fopen('vipplot.vgf', 'a')\n  fprintf(plot_file, dataString)\n  fprintf(plot_file, dataString)\n  fprintf(plot_file, dataString)\n  fclose(plot_file)\n"
+                    }
+                ]
+            }
+        },
+        "elements" : [
+        ]
+    }
+}

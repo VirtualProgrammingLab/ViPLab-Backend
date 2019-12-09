@@ -1,0 +1,77 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "C_xxx",
+  "comment"     : "For testing purposes.",
+  "name"        : "C parse error",
+  "description" : "checkOK: only allowed PP commands.",
+
+  "elements" :
+  [ 
+    { "identifier": "preamble",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source before your code.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "low",
+      "value"     : "#include <stdio.h>\n#include <stdlib.h>\n\n\n//"
+    },
+    { "identifier": "codeForTests",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "To be filled for tests.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "medium",
+      "value"     : "#include \"foo.c\" \n\n\nvoid foo(void)\n{\n  /* your code */\n  printf(\"foo()\");\n}\n\nint main(int argc, char** argv)\n{\n  foo();\n  return 0;\n}\n"
+    },
+    { "identifier": "postscript",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "low",
+      "value"     : "/* Main could be here. */"
+    },
+
+    { "identifier": "elementToBeMapped",
+      "modifiable": false,
+      "name"      : "some element",
+      "MIMEtype"  : "text/plain",
+      "value"     : "#include <math.h>\n\n"
+    }
+  ],
+
+  "elementMap": { "elementToBeMapped": "file:///foo.c" },
+
+  "config" :
+  { "C" :
+    {
+      "merging"  :
+      {
+        "sources" : ["preamble", "codeForTests", "postscript"]
+      },
+      "compiling" :
+      {
+        "compiler" : "gcc",
+        "flags"    : "-Wall"
+      },
+      "checking" :
+      {
+        "sources": ["codeForTests"],
+        "forbiddenCalls": "system"
+      },
+      "linking" :
+      {
+        "flags" : "-lm"
+      },
+      "running" :
+      {
+        "commandLineArguments": "foo.txt"
+      },
+      "stopAfterPhase" : "running"
+    }
+  }
+}
+}

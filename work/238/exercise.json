@@ -1,0 +1,61 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "C test",
+  "name"        : "C.check.call_putc.forbid.ex.json",
+  "description" : "checking phase",
+  "comment"     : "suited for use with generic.noModifications.solution.json",
+
+  "elements" :
+  [ 
+    { "identifier": "1_T",
+      "modifiable": false,
+      "name"      : "1_T",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "value"     : ""
+    },
+    { "identifier": "2_S",
+      "modifiable": true,
+      "name"      : "2_S",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "value"     : "#include <stdio.h>\n\nint\nmain(int argc, char* argv[])\n{\n  fputc('$', stdout);\n  putc('#', stdout);\n  printf(\"\\n\");\n  return 0;\n}"
+    },
+    { "identifier": "3_T",
+      "modifiable": false,
+      "name"      : "3_T",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "value"     : ""
+    }
+  ],
+
+  "config" :
+  { "C" :
+    {
+      "merging"  :
+      {
+        "sources" : ["1_T", "2_S", "3_T"]
+      },
+      "compiling" :
+      {
+        "compiler" : "gcc",
+        "flags"    : "-Wall"
+      },
+      "checking" :
+      {
+        "sources": ["2_S"],
+        "forbiddenCalls": "system putc"
+      },
+      "linking" :
+      {
+        "flags" : ""
+      },
+      "running" :
+      {
+      },
+      "stopAfterPhase" : "running"
+    }
+  }
+}
+}

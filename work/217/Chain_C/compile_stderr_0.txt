@@ -1,0 +1,4 @@
+source_0.c: In function ‘trapez’:
+source_0.c:20:10: warning: unused variable ‘x’ [-Wunused-variable]
+   double x = 0;
+          ^

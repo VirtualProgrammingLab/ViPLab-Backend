@@ -1,0 +1,49 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:35:49",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:35:49",
+            "duration" : "29ms",
+            "finishTime" : "2018-11-09 17:35:49",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Matlab chain)v2.9",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#179"
+            },
+            "userInfo" : {
+                "summary" : "(Matlab chain)v2.9 failed.",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "callcheck",
+                        "message" : "[Matlab function filtering] Function call not allowed:\n\"zeros(n,1)\"; original source: codeFromStudent, line (corrected): 30, col: 5\nExplicitely allowed calls:\nabs accumarray acos acosd acosh acot acotd acoth acsc acscd acsch airy all amd and angle ans any arrayfun asec asecd asech asin asind asinh assert atan atan2 atand atanh axes axis balance besselh besseli besselj besselk bessely beta betainc betaincinv betaln bin2dec bitand bitcmp bitget bitmax bitnot bitor bitset bitshift bitxor blkdiag break bvp4c bvp5c bvpget bvpinit bvpset bvpxtend cart2pol cart2sph cartToBary case cast cat catch cdf2rdf ceil chol cholinc cholupdate circshift clear clearvars clock colamd colperm complex cond condeig condest conj continue conv conv2 convhull convhulln convn copy corrcoef cos cosd cosh cot cotd coth cov cplxpair cputime cross csc cscd csch ctranspose cumprod cumsum cumtrapz curl dec2base dec2bin dec2hex decic deconv del2 det detrend deval diag diff diffuse disp display divergence dmperm dot double echo eig eigs ellipj ellipke else elseif end eps eq erf erfc erfcinv erfcx erfinv error exp expint expm expm1 eye factor factorial false fft fft2 fftn fftshift fftw filter filter2 find findall findstr fix flipdim fliplr flipud floor fminbnd fminsearch for freqspace full function funm fzero gamma gammainc gammaincinv gammaln gcd ge getinterpmethod getsamples getsampleusingtime getsampleusingtime gettimeseriesnames gettsafteratevent gettsafterevent gettsatevent gettsbeforeatevent gettsbeforeevent gettsbetweenevents global gmres gradient grid gsvd gt gtext hadamard hankel hess hex2dec hex2num hilb horzcat hypot i ichol idealfilter idivide if ifft ifft2 ifftn ifftshift ilu imag ind2sub Inf inline int16 int2str int32 int64 int8 interp1 interp1q interp2 interp3 interpft interpn interpstreamspeed intersect intmax intmin inv invhilb ipermute iqr iscell iscellstr ischar iscolumn isempty isequal isequalwithequalnans isfield isfinite isfloat isglobal isinf isinteger isKey isletter islogical ismatrix ismember isnan isnumeric isprime isreal isrow isscalar issorted isspace issparse isstr isstrprop isstruct isvector j keys kron last lcm ldivide ldl le legend legendre length linsolve linspace log log10 log1p log2 logical logm logspace lower lscov lsqnonneg lsqr lt lu luinc magic mat2cell max mean median MException min minres minus mkpp mldivide mrdivide mod mode mpower mtimes NaN nchoosek ndgrid ne nextpow2 nnz nonzeros norm normest not nthroot null num2cell num2hex num2str numel ode113 ode15i ode15s ode23 ode23s ode23t ode23tb ode45 odefile odeget odeset odextend ones optimget optimset or ordeig orderfields ordqz ordschur orth otherwise padecoef parfor pascal pcg pchip pcode pdepe pdeval perms permute persistent pi pinv planerot plot 2-D line plot plus pol2cart poly polyarea polyder polyeig polyfit polyint polyval polyvalm pow2 power ppval primes prod psi qmr qr qrdelete qrinsert qrupdate quad quad2d quadgk quadl quadv qz rand rand randi randn randperm rank rat rats rcond rdivide real reallog realmax realmin realpow realsqrt regexp regexpi regexprep regexptranslate rem repmat resample reshape residue rethrow return rng roots rot90 round rref rsf2csf schur sec secd sech set setdiff setfield setinterpmethod settimeseriesnames setuniformtime setxor shiftdim sign sin sind single sinh size sort sortrows spalloc sparse spaugment spconvert spdiags speye spfun sph2cart spline spones spparms sprand sprandn sprandsym sprank sprintf sqrt sqrtm squeeze ss2tf sscanf std str2double str2mat str2num strcat strcmp strcmpi strfind strings strjust strmatch strncmp strncmpi strread strrep strtok strtrim struct struct2cell structfun strvcat sub2ind subsasgn subsindex subspace subsref substruct subvolume sum svd svds swapbytes switch symamd symbfact symmlq symrcm symvar synchronize tan tand tanh tfqmr throw throwAsCaller times timeseries title toeplitz trace transpose trapz tril triu true try tscollection tsearchn typecast uint16 uint32 uint64 uint8 uminus unicode2native union unique unmesh unmkpp uplus upper validateattributes validatestring values vander var varargin varargout vectorize vertcat while wilkinson xlabel xlim xor ylabel ylim zlabel zlim.\nImplicitely allowed are identifiers not being Matlab/Octave command names.",
+                        "source" : {
+                            "elementID" : "codeFromStudent",
+                            "extract" : "x = zeros(n,1);",
+                            "begin" : 465,
+                            "end" : 480,
+                            "line" : 14,
+                            "col" : 5
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36344",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+        ]
+    }
+}

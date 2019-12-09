@@ -1,0 +1,42 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:37:46",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:37:46",
+            "duration" : "23ms",
+            "finishTime" : "2018-11-09 17:37:46",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(C chain)v1.4",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#211",
+                "0: exception" : "[ExJSONWrongType /home/ac131917/ViPLab/Backend/src/CC_Controller.cpp line: 61 func: T_get]\n==> \"sources\": array type needed"
+            },
+            "userInfo" : {
+                "summary" : "(C chain)v1.4 failed.",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "system",
+                        "message" : "Backend has detected an error: no result!\n\n[debugging info](traverseAndPerform(comp))\n\nAn exception occured:\n[ExJSONWrongType /home/ac131917/ViPLab/Backend/src/CC_Controller.cpp line: 61 func: T_get]\n==> \"sources\": array type needed"
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36427",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+        ]
+    }
+}

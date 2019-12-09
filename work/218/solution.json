@@ -1,0 +1,15 @@
+{ "Solution" :
+{ "postTime" : "2009-09-20T04:15:01.22Z",
+  "ID" : "127.32.15.3#127",
+  "comment" : "Die war aber schwer!",
+  "exercise": "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36445",
+  "exerciseModifications" :
+  { "elements" :
+    [
+      { "identifier": "codeFromStudent",
+        "value"     : "typedef double (funcPtr)(double); // type of function to be integrated\n\n/* Definition der zu integrierenden Funktion */\ndouble f(double x)\n{\n  return x * x; // Beispiel\n}\n\ndouble trapez(double a, double b, int n, funcPtr f)\n{\n  double sum = 0; // init\n  /* Ab hier kommt die Funktionalitaet der integrierenden Funktion.. */\n\n  double x = 0\n  int k;\n  if (n < 1) return 0; // avoid endless recursion\n\n  // untere Grenze\n  sum+=f(a)/2;\n  // Schleife ueber die inneren Punkte\n  for(k=1; k < n; k++)\n  {\n    sum+=f(a+(b-a)*k/n);\n  }\n  // obere Grenze\n  sum+=f(b)/2;\n  // Skalieren\n  sum*=(b-a)/n;\n\n  return sum; // result\n}\n"
+      }
+    ]
+  }
+}
+}

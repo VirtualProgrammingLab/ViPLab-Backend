@@ -1,0 +1,55 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "[Matlab example] simple",
+  "comment"     : "",
+  "name"        : "Simple Matlab-Berechnung",
+  "description" : "",
+
+  "elements" :
+  [ { "identifier": "preamble",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source before your code.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Matlab",
+      "emphasis"  : "low",
+      "value"     : ""
+    },
+    { "identifier": "codeFromStudent",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "Fill in your code!",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Matlab",
+      "emphasis"  : "medium",
+      "value"     : "file = fopen('foo2.txt', 'r');\nif file == -1\n  error('file not found');\n  quit force;\nend\nfprintf(file, 'some content');\nfclose(file);\n"
+    },
+    { "identifier": "postscript",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source after your code.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Matlab",
+      "emphasis"  : "low",
+      "value"     : ""
+    }
+  ],
+
+  "elementMap": { "notThere": "file:///foo.txt" },
+
+  "config" :
+  { "Matlab" :
+    {
+      "merging"  :
+      {
+        "sources" : ["preamble", "codeFromStudent", "postscript"]
+      },
+      "interpreting" :
+      {
+        "flags"    : ""
+      },
+      "stopAfterPhase" : "interpreting"
+    }
+  }
+}
+}

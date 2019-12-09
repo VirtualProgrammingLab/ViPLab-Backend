@@ -1,0 +1,78 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:34:50",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:34:49",
+            "duration" : "251ms",
+            "finishTime" : "2018-11-09 17:34:50",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Matlab chain)v2.9",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#156"
+            },
+            "userInfo" : {
+                "summary" : "(Matlab chain)v2.9 failed.",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "lint",
+                        "message" : "L 114 (C 3): Parse error at '>': usage might be invalid MATLAB syntax.\n",
+                        "source" : {
+                            "elementID" : "Id1",
+                            "extract" : "  >+0.02*x+0.05*y;",
+                            "begin" : 2003,
+                            "end" : 2021,
+                            "line" : 114,
+                            "col" : 3
+                        },
+                        "output" : {
+                            "elementID" : "interpret_stdout.txt",
+                            "extract" : ">> L 114 (C 3): Parse error at '>': usage might be invalid MATLAB syntax.\n",
+                            "begin" : 350,
+                            "end" : 424
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "callcheck",
+                        "message" : "[Matlab function filtering] Parsing failed (original source: Id1, line (corrected): 114, col: 3): expecting <eoi> here",
+                        "source" : {
+                            "elementID" : "Id1",
+                            "extract" : "  >+0.02*x+0.05*y;",
+                            "begin" : 2003,
+                            "end" : 2021,
+                            "line" : 114,
+                            "col" : 3
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36279",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "interpret_stderr.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "interpret_stdout.txt",
+                "value" : "\n                            < M A T L A B (R) >\n                  Copyright 1984-2015 The MathWorks, Inc.\n                   R2015a (8.5.0.197613) 64-bit (glnxa64)\n                             February 12, 2015\n\n \nFor online documentation, see http://www.mathworks.com/support\nFor product information, visit www.mathworks.com.\n \n\n\tAcademic License\n\n>> L 114 (C 3): Parse error at '>': usage might be invalid MATLAB syntax.\n\n>> ",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

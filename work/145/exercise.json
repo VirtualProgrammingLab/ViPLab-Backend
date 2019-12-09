@@ -1,0 +1,39 @@
+{
+  "Exercise": {
+    "name": "commandForm_system",
+    "config": {
+      "Matlab": {
+        "interpreting": {
+          "flags": ""
+        },
+        "stopAfterPhase": "interpreting",
+        "checking": {
+          "allowedCalls": "help",
+          "sources": [
+            "Id1"
+          ]
+        },
+        "merging": {
+          "sources": [
+            "Id1"
+          ]
+        }
+      }
+    },
+    "postTime": "Fri Nov 18 14:57:50 CET 2011",
+    "elements": [
+      {
+        "identifier": "Id1",
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Matlab",
+        "value": "system",
+        "emphasis": "High",
+        "visible": true
+      }
+    ],
+    "description": "check command form",
+    "identifier": "Id:-1509083584",
+    "department": "RUS"
+  }
+}

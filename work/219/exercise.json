@@ -1,0 +1,75 @@
+{ "Exercise" :
+{ "postTime"    : "2009-09-16T12:46:48.52Z",
+  "identifier"  : "Numerik I, WS09/10, Aufgabe 1, v1.0",
+  "comment"     : "Um die Studenten mal richtig zu fordern.",
+  "name"        : "Aufgabe 1: C-Funktion zur Integralberechnung",
+  "description" : "Schreiben Sie eine C-Funktion trapez(a,b,n,f) zur numerischen Berechnung des Integrals einer Funktion f im Intervall [a,b] mit Hilfe der aufsummierten Sehnentrapezregel mit n äquidistanten Stützstellen.",
+
+  "elements" :
+  [ { "identifier": "Aufgabenblatt PDF",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Aufgabenblatt",
+      "MIMEtype"  : "text/uri-list",
+      "syntaxHighlighting": "none",
+      "emphasis"  : "medium",
+      "value"     : "https://ilias3.uni-stuttgart.de/repository.php?ref_id=99116&cmd=sendfile\r\n"
+    },
+    { "identifier": "preamble",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source before your code.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "low",
+      "value"     : "#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>\n\n// declaration of function to be integrated\ndouble f(double);\n"
+    },
+    { "identifier": "codeFromStudent",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "Fill in your code!",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "medium",
+      "value"     : "/* Template */\n\ntypedef double (funcPtr)(double); // type of function to be integrated\n\n/* Definition der zu integrierenden Funktion */\ndouble f(double x)\n{\n  return x * x; // Beispiel\n}\n\ndouble trapez(double a, double b, int n, funcPtr f)\n{\n  double sum = 0; // init\n  /* Ab hier kommt die Funktionalitaet der integrierenden Funktion.. */\n\n\n  return sum; // result\n}\n"
+    },
+    { "identifier": "postscript",
+      "visible"   : true,
+      "modifiable": false,
+      "name"      : "Info: source after your code calling trapez() in it.",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "C",
+      "emphasis"  : "low",
+      "value"     : "/* Intervallgrenzen */\ndouble a = 0;\ndouble b = 1;\n\nint main(int argc, char** argv)\n{\n  int n;\n  printf(\"\\na: %lf, f(a): %lf; b: %lf, f(b): %lf\\n\", a, f(a), b, f(b));\n  printf(\"+-----------------+----------+\\n\");\n  printf(\"| # Stuetzstellen |    sum   |\\n\");\n  printf(\"+-----------------+----------+\\n\");\n  for (n = 1; n <= (1024 * 1024); n*=2) {\n    double sum = trapez(a, b, n, f);\n\n    /* Ergebnis ausgeben... */\n    printf(\"| %7d         | %6lf |\\n\", n, sum);\n //   printf(\"\\n   %lf\\n  /\\n |\\n | f(x) dx = %lf\\n |\\n/\\n%lf\\n\",b,sum,a);\n  }\n  printf(\"+-----------------+----------+\\n\");\n\n  return 0;\n}\n"
+    }
+  ],
+
+  "config" :
+  { "C" :
+    {
+      "merging"  :
+      {
+        "sources" : ["preamble", "codeFromStudent", "postscript"]
+      },
+      "compiling" :
+      {
+        "compiler" : "gcc",
+        "flags"    : "-Wall"
+      },
+      "checking" :
+      {
+        "sources": ["codeFromStudent"],
+        "forbiddenCalls": "system"
+      },
+      "linking" :
+      {
+        "flags" : "-lm"
+      },
+      "running" :
+      {
+      },
+      "stopAfterPhase" : "running"
+    }
+  }
+}
+}

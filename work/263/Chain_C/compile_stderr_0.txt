@@ -1,0 +1,76 @@
+source_0.c:147:1: error: stray ‘\357’ in program
+ MZ�
+ ^
+source_0.c:147:1: error: stray ‘\277’ in program
+source_0.c:147:1: error: stray ‘\275’ in program
+source_0.c:147:6: warning: null character(s) ignored [enabled by default]
+ MZ�
+      ^
+source_0.c:147:1: error: stray ‘\3’ in program
+ MZ�
+ ^
+source_0.c:147:8: warning: null character(s) ignored [enabled by default]
+ MZ�
+        ^
+source_0.c:147:1: error: stray ‘\4’ in program
+ MZ�
+ ^
+source_0.c:147:12: warning: null character(s) ignored [enabled by default]
+ MZ�
+            ^
+source_0.c:147:1: error: stray ‘\303’ in program
+ MZ�
+ ^
+source_0.c:147:1: error: stray ‘\277’ in program
+source_0.c:147:1: error: stray ‘\303’ in program
+source_0.c:147:1: error: stray ‘\277’ in program
+source_0.c:147:19: warning: null character(s) ignored [enabled by default]
+ MZ�
+                   ^
+source_0.c:147:1: error: stray ‘\302’ in program
+ MZ�
+ ^
+source_0.c:147:1: error: stray ‘\270’ in program
+source_0.c:147:23: warning: null character(s) ignored [enabled by default]
+ MZ�
+                       ^
+source_0.c:147:30: error: stray ‘@’ in program
+ MZ�
+                              ^
+source_0.c:147:31: warning: null character(s) ignored [enabled by default]
+ MZ�
+                               ^
+source_0.c:147:1: error: stray ‘\342’ in program
+ MZ�
+ ^
+source_0.c:147:1: error: stray ‘\202’ in program
+source_0.c:147:1: error: stray ‘\254’ in program
+source_0.c:147:69: warning: null character(s) ignored [enabled by default]
+ MZ�
+                                                                     ^
+source_0.c:147:1: error: stray ‘\16’ in program
+ MZ�
+ ^
+source_0.c:147:1: error: stray ‘\37’ in program
+source_0.c:147:1: error: stray ‘\302’ in program
+source_0.c:147:1: error: stray ‘\272’ in program
+source_0.c:147:1: error: stray ‘\16’ in program
+source_0.c:147:77: warning: null character(s) ignored [enabled by default]
+ MZ�
+                                                                             ^
+source_0.c:147:1: error: stray ‘\302’ in program
+ MZ�
+ ^
+source_0.c:147:1: error: stray ‘\264’ in program
+source_0.c:147:1: error: stray ‘\303’ in program
+source_0.c:147:1: error: stray ‘\215’ in program
+source_0.c:147:83: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘!’ token
+ MZ�
+                                                                                   ^
+source_0.c:147:83: error: stray ‘\302’ in program
+source_0.c:147:83: error: stray ‘\270’ in program
+source_0.c:147:83: error: stray ‘\1’ in program
+source_0.c:147:83: error: stray ‘\303’ in program
+source_0.c:147:83: error: stray ‘\215’ in program
+
+cc1: out of memory allocating 3355443200 bytes after a total of 491520 bytes

@@ -1,0 +1,57 @@
+{
+  "Exercise": {
+    "name": "[test][Java] ",
+    "description": "compile error with -verbose flag -> Result should contain source position of compile error",
+    "config": {
+      "Java": {
+        "running": {
+
+        },
+        "stopAfterPhase": "running",
+        "compiling": {
+          "compiler": "javac",
+          "flags": "-verbose"
+        },
+        "merging": [
+          {
+            "sources": [
+              "Id2"
+            ],
+            "mergeID": "Function.java"
+          },
+          {
+            "sources": [
+              "Id1"
+            ],
+            "mergeID": "Main.java"
+          }
+        ]
+      }
+    },
+    "postTime": "Wed Aug 29 17:55:00 CEST 2012",
+    "elements": [
+      {
+        "group": "Function.java",
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Java",
+        "value": "package myMath;\n\npublic class Function {\n\tpublic double square(double x)\n\t{\n\t\treturn x*x\n\t}\n}\n",
+        "emphasis": "High",
+        "identifier": "Id2",
+        "visible": true
+      },
+      {
+        "group": "Main.java",
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Java",
+        "value": "import myMath.Function;\n\nclass Main {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println(\"Hello World!\");\n\t\tFunction f = new Function();\n\t\tdouble x = 2.0;\n\t\tSystem.out.println(\"x=\"+x+\" x^2=\"+f.square(x));\n\t}\n}\n",
+        "emphasis": "High",
+        "identifier": "Id1",
+        "visible": true
+      }
+    ],
+    "identifier": "Id:840546821",
+    "department": "RUS"
+  }
+}

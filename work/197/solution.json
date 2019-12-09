@@ -1,0 +1,15 @@
+{ "Solution" :
+{ "postTime" : "2009-09-20T04:15:01.22Z",
+  "ID" : "127.32.15.3#127",
+  "comment" : "[Matlab] too much vgf data",
+  "exercise": "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36385",
+  "exerciseModifications" :
+  { "elements" :
+    [
+      { "identifier": "codeFromStudent",
+        "value"     : "plot_file = fopen('vipplot.vgf', 'a')\n  fprintf(plot_file, dataString)\n  fprintf(plot_file, dataString)\n  fprintf(plot_file, dataString)\n  fclose(plot_file)\n"
+      }
+    ]
+  }
+}
+}

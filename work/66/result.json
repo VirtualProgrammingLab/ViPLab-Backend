@@ -1,0 +1,160 @@
+{
+    "Result" : {
+        "ID" : "one chunk 2018-11-09 17:30:04",
+        "status" : "final",
+        "computation" : {
+            "startTime" : "2018-11-09 17:30:03",
+            "duration" : "461ms",
+            "finishTime" : "2018-11-09 17:30:04",
+            "CC_versionLong" : "[ViP CCv4.6.1 (C chain)v1.4 (Matlab chain)v2.9 (Octave chain)v2.0 (DuMuX chain)v1.3 (C++ chain)v1.9 (Java chain)v1.8 (Wed Oct  3 12:52:35 CEST 2018)]",
+            "CC_version" : "ViP CCv4.6.1",
+            "chain_version" : "(Java chain)v1.8",
+            "technicalInfo" : {
+                "host" : "nfldevvip12",
+                "PID" : "41277",
+                "ID" : "#66"
+            },
+            "userInfo" : {
+                "summary" : "[javac] Compiling failed! Exit code: 1",
+                "elements" : [
+                    {
+                        "severity" : "error",
+                        "type" : "compiler",
+                        "message" : "error: class, interface, or enum expected",
+                        "source" : {
+                            "elementID" : "HelloWorldApp",
+                            "extract" : "no_class HelloWorldApp {",
+                            "begin" : 41,
+                            "end" : 65,
+                            "line" : 3,
+                            "col" : 1
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr.txt",
+                            "extract" : "unknown_0.java:3: error: class, interface, or enum expected\nno_class HelloWorldApp {\n^",
+                            "begin" : 0,
+                            "end" : 86
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "compiler",
+                        "message" : "error: class, interface, or enum expected",
+                        "source" : {
+                            "elementID" : "HelloWorldApp",
+                            "extract" : "\t  public static void main(String[] args) {",
+                            "begin" : 66,
+                            "end" : 109,
+                            "line" : 4,
+                            "col" : 18
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr.txt",
+                            "extract" : "unknown_0.java:4: error: class, interface, or enum expected\n\t  public static void main(String[] args) {\n\t                ^",
+                            "begin" : 87,
+                            "end" : 209
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "compiler",
+                        "message" : "error: class, interface, or enum expected",
+                        "source" : {
+                            "elementID" : "HelloWorldApp",
+                            "extract" : "    }",
+                            "begin" : 180,
+                            "end" : 185,
+                            "line" : 6,
+                            "col" : 5
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr.txt",
+                            "extract" : "unknown_0.java:6: error: class, interface, or enum expected\n    }\n    ^",
+                            "begin" : 210,
+                            "end" : 281
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "compiler",
+                        "message" : "error: class, interface, or enum expected",
+                        "source" : {
+                            "elementID" : "HelloWorldPerformer",
+                            "extract" : "public no_class HelloWorldPerformer {",
+                            "begin" : 22,
+                            "end" : 59,
+                            "line" : 3,
+                            "col" : 8
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr.txt",
+                            "extract" : "unknown_1.java:3: error: class, interface, or enum expected\npublic no_class HelloWorldPerformer {\n       ^",
+                            "begin" : 282,
+                            "end" : 388
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "compiler",
+                        "message" : "error: class, interface, or enum expected",
+                        "source" : {
+                            "elementID" : "HelloWorldPerformer",
+                            "extract" : "    public static void perform() {",
+                            "begin" : 60,
+                            "end" : 94,
+                            "line" : 4,
+                            "col" : 19
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr.txt",
+                            "extract" : "unknown_1.java:4: error: class, interface, or enum expected\n    public static void perform() {\n                  ^",
+                            "begin" : 389,
+                            "end" : 503
+                        }
+                    },
+                    {
+                        "severity" : "error",
+                        "type" : "compiler",
+                        "message" : "error: class, interface, or enum expected",
+                        "source" : {
+                            "elementID" : "HelloWorldPerformer",
+                            "extract" : "    }",
+                            "begin" : 162,
+                            "end" : 167,
+                            "line" : 6,
+                            "col" : 5
+                        },
+                        "output" : {
+                            "elementID" : "compile_stderr.txt",
+                            "extract" : "unknown_1.java:6: error: class, interface, or enum expected\n    }\n    ^",
+                            "begin" : 504,
+                            "end" : 575
+                        }
+                    }
+                ]
+            }
+        },
+        "Solution" : {
+            "postTime" : "2011-05-09 17:29:02+02:00",
+            "ID" : "127.32.15.3#127",
+            "comment" : "solution without modified elements",
+            "exercise" : "https://nfldevvipecs.rus.uni-stuttgart.de/numlab/exercises/36015",
+            "exerciseModifications" : {
+                "elements" : [
+                ]
+            }
+        },
+        "elements" : [
+            {
+                "identifier" : "compile_stderr.txt",
+                "value" : "unknown_0.java:3: error: class, interface, or enum expected\nno_class HelloWorldApp {\n^\nunknown_0.java:4: error: class, interface, or enum expected\n\t  public static void main(String[] args) {\n\t                ^\nunknown_0.java:6: error: class, interface, or enum expected\n    }\n    ^\nunknown_1.java:3: error: class, interface, or enum expected\npublic no_class HelloWorldPerformer {\n       ^\nunknown_1.java:4: error: class, interface, or enum expected\n    public static void perform() {\n                  ^\nunknown_1.java:6: error: class, interface, or enum expected\n    }\n    ^\n6 errors\n",
+                "MIMEtype" : "text/plain"
+            },
+            {
+                "identifier" : "compile_stdout.txt",
+                "value" : "",
+                "MIMEtype" : "text/plain"
+            }
+        ]
+    }
+}

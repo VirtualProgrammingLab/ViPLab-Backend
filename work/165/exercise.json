@@ -1,0 +1,48 @@
+{
+  "Exercise": {
+    "name": "[test] syntax error",
+    "config": {
+      "Matlab": {
+        "interpreting": {
+          "flags": ""
+        },
+        "stopAfterPhase": "interpreting",
+        "merging": {
+          "sources": [
+            "Id_0", "Id_1", "Id_2"
+          ]
+        }
+      }
+    },
+    "postTime": "Thu Nov 03 14:46:25 CET 2011",
+    "elements": [
+      {
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Matlab",
+        "value": "0 + 0 0 + 0\n",
+        "identifier": "Id_0",
+        "visible": true
+      },
+      {
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Matlab",
+        "value": "1 + 1\n",
+        "identifier": "Id_1",
+        "visible": true
+      },
+      {
+        "modifiable": true,
+        "MIMEtype": "text/plain",
+        "syntaxHighlighting": "Matlab",
+        "value": "2 + 2\n",
+        "identifier": "Id_2",
+        "visible": true
+      }
+    ],
+    "description": "test",
+    "identifier": "Id:1556379990",
+    "department": "RUS"
+  }
+}

@@ -1,0 +1,40 @@
+{ "Exercise" :
+{ "postTime"    : "Fri May 04 15:10:10 CEST 2012",
+  "TTL"         : 100000,
+  "identifier"  : "Java_HW",
+  "name"        : "[Java] Hello World",
+  "description" : "For testing purposes. For backend tests with generic.noModifications.solution.json.",
+  "comment"     : "triggers error",
+
+  "elements" :
+  [ 
+    { "identifier": "HelloWorldApp",
+      "visible"   : true,
+      "modifiable": true,
+      "name"      : "HelloWorldApp source code",
+      "MIMEtype"  : "text/plain",
+      "syntaxHighlighting": "Java",
+      "emphasis"  : "medium",
+      "value"     : "noClass HelloWorldApp {\n\t  public static void main(String[] args) {\n        System.out.println(\"Hello World!\"); // Display the string.\n    }\n}\n"
+    }
+  ],
+
+  "config" :
+  { "Java" :
+    {
+      "merging"  :
+      {
+        "sources" : ["HelloWorldApp"]
+      },
+      "compiling" :
+      {
+        "flags" : ""
+      },
+      "running" :
+      {
+        "flags" : ""
+      }
+    }
+  }
+}
+}
