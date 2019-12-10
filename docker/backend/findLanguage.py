@@ -53,8 +53,12 @@ def createNewContainer(data):
     try:
         request = requests.post('http://localhost:5001/newcontainer', data=json.dumps(data), headers = {'Content-type': 'application/json'})
         running_container.update(request.json())
-    finally:
         return request.status_code
+
+    except:
+        return 404
+
+
 
 def returnExitedContainer():
     '''
@@ -95,15 +99,17 @@ def getSolutionsFromQueue():
     - solution, x_ecsSender, [getExerciseFromExerciseUrl(exercise_url) -> exercise from exercise url]
     '''
     
-    r = requests.get(url + exercisesQueue, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
+    r = requests.post(url + exercisesQueue, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
     if r.headers.get("Content-Length") == "0":
         print("no new Solution available")
         return None, None, None
     else:
         x_ecsSender = r.headers.get("X-EcsSender")
+        #try:
         exercise_url = r.json().get("Solution").get("exercise")
         return r.json(), x_ecsSender, getExerciseFromExerciseUrl(exercise_url)
-
+        #except:
+        #    return None, None, None
     
     
 def do_something(solution, receiver, exercise, arg):
@@ -136,12 +142,14 @@ if __name__ == "__main__":
     starttime = time.time()
     arg = sys.argv #from starting this script
     #while(True):
-    #d=False
-    #while(d==False):
-    for _ in range(5):
+    d=False
+    i = 1
+    while(d==False):
+        print(i) 
+        i = i + 1
         solution, receiver, exercise = getSolutionsFromQueue()
         if solution != None:
-            t = threading.Thread(target=do_something, args=[solution, receiver, exercise, arg])
+            t = threading.Thread(target=do_something, args=[solution, receiver, exercise, arg])                
             t.start()
             #do_something(solution, receiver, exercise, arg)
             #t.join()
@@ -149,6 +157,7 @@ if __name__ == "__main__":
         else:
             d=True
             time.sleep(1.0)
+        t.join()
         #print(time.time()-starttime)
     t.join()
     print(time.time()-starttime)

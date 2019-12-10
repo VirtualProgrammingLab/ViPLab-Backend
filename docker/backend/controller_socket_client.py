@@ -99,17 +99,21 @@ class startingNewContainer(Resource):
         - dict: '{"container_id": receiver}'
         - statuscode from openSocket
         '''
-        conf_file = open("/home/julia/backend/examples/config.json")
-        config = json.load(conf_file)
-        conf_file.close()
+        #conf_file = open("/home/julia/backend/examples/config.json")
+        #config = json.load(conf_file)
+        #conf_file.close()
+        config = {"timelimitInSeconds": 15}
         input=json.loads(request.stream.read())
         language = input["language"].lower()
-        data = input["data"]
-        debug = input["debug"]
-        whole_data = {"data": data, "receiver": input["receiver"], "conf":config}
-        ip, container_id = self.startContainer(language, debug)
-        statuscode = self.openSocket(ip, whole_data)
-        return {container_id:input.get("receiver")}, statuscode
+        if language != "c":
+            return {0:0}, 400
+        else:
+            data = input["data"]
+            debug = input["debug"]
+            whole_data = {"data": data, "receiver": input["receiver"], "conf":config}
+            ip, container_id = self.startContainer(language, debug)
+            statuscode = self.openSocket(ip, whole_data)
+            return {container_id:input.get("receiver")}, statuscode
         
 
 api.add_resource(results,'/results')
