@@ -1,4 +1,0 @@
-myMath/Function.java:6: error: ';' expected
-		return x*x
-		          ^
-1 error

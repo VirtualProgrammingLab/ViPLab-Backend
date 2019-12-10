@@ -1,4 +1,0 @@
-source_0.cpp: In function ‘void foo()’:
-source_0.cpp:4:7: warning: unused variable ‘i’ [-Wunused-variable]
-   int i; // unused var -> compile warning
-       ^

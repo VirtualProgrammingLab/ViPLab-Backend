@@ -1,9 +1,0 @@
-In file included from main.c:1:0:
-header.h:11:15: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘error’
- double inline error(double arg)
-               ^
-main.c: In function ‘main’:
-main.c:10:3: warning: implicit declaration of function ‘error’ [-Wimplicit-function-declaration]
-   PRINT("%g\t:\t%g\n",arg,error(arg));
-   ^
-main.c:10:3: warning: format ‘%g’ expects argument of type ‘double’, but argument 3 has type ‘int’ [-Wformat=]

@@ -1,4 +1,0 @@
-source_0.c: In function ‘foo’:
-source_0.c:4:7: warning: unused variable ‘i’ [-Wunused-variable]
-   int i; // unused var -> compile warning
-       ^

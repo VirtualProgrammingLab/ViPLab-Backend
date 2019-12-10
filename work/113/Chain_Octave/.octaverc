@@ -1,2 +1,0 @@
-# avoids warning about function not matching command name (generatedSources)
-warning ("off", "Octave:function-name-clash");

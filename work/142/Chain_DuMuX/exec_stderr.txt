@@ -1,4 +1,0 @@
-/usr/local/DuMuX/bin/loopSleep ..
-0
-1
-.. /usr/local/DuMuX/bin/loopSleep
