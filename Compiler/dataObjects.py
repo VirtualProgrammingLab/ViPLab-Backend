@@ -89,7 +89,10 @@ class Exercise:
         compiler = self.config["compiling"]["compiler"]
         if compiler is None or compiler == "":
             compiler = "gcc" if self.lang == "C" else "g++"
-        return f"{compiler} {self.config['compiling']['flags']}"
+        if self.config['compiling']['flags']:
+            return f"{compiler} {self.config['compiling']['flags']}"
+        else:
+            return compiler
 
 class Solution:
     """ Solution object
@@ -174,7 +177,7 @@ class Result:
                 "PID" : os.getpid(),
                 "ID" : "#1"
             },
-            "userInfo" : {}
+            "userInfo" : {"elements": []}
         }
         self.elements = []
 
@@ -212,4 +215,4 @@ class Result:
         if data["Result"].get("index") is None:
             data["Result"].pop("index", None)
         
-        return json.dumps(data, indent=2, default=str)
+        return json.dumps(data, indent=4, default=str)

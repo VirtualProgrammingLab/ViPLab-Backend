@@ -1,7 +1,4 @@
-import os, subprocess, dataObjects, json, signal
-#sys import to put temp dir relative to main.py
-#can be removed when that's a fixed absolute path
-import sys
+import os, sys, subprocess, dataObjects, json, signal, shutil
 from pycparser import c_parser, c_ast, parse_file
 
 # Path for temp files.
@@ -23,8 +20,10 @@ class C:
         """
         if os.path.isdir(PATH) and not DEBUG:
             for f in os.scandir(PATH):
-                os.remove(f.path)
-            print("temp folder cleared")
+                if not os.path.isdir(f):
+                    os.remove(f.path)
+                else:
+                    shutil.rmtree(f.path)
 
     def __init__(self, solution : dataObjects.Solution, config : dict = None, id : int = None):
         """ Constructor
@@ -37,7 +36,7 @@ class C:
         self.solution = solution
         self.cfg = {} if config is None else config
         self._lang = self.solution.exercise.lang
-        self._fileext = "c" if self._lang == "C" else "cpp"
+        self._fileext = ".c" if self._lang == "C" else ".cpp"
         if id is not None:
             self.result.setId(id)
 
@@ -47,29 +46,55 @@ class C:
         # Creates temp dir if it does not exist
         if not os.path.exists(PATH):
             os.makedirs(PATH)
-            print("created temp folder")
 
         # Prepare code by replacing placeholder code with solutions code
         self.replaceCodeWithSolution()
 
         maxState = self.getMaxState()
+        self.getMappedItems()
+
         # Step 1: Merge source code
         exitcode, self.fileInfo = self.merge()
-        #print(f"fileInfo:\n{json.dumps(self.fileInfo, indent = 2)}")
+
         # Step 2: Compile files containing source code
         if exitcode == 0 and 1 <= maxState:
-            exitcode = self.compile()
+            try:
+                exitcode = self.compile()
+            except Exception as e:
+                self.result.computation["userInfo"]["summary"] = "UNEXPECTED ERROR IN COMPILING"
+                self.result.computation["userInfo"]["elements"].append(f"{type(e).__name__}: {e}")
+                exitcode = 1
+            
+
         # Step 3 (Only C): Check if student's solution contains illegal calls
         if exitcode == 0 and 2 <= maxState and self._lang == "C":
-            exitcode = self.check()
+            try:
+                exitcode = self.check()
+            except Exception as e:
+                self.result.computation["userInfo"]["summary"] = "UNEXPECTED ERROR IN CHECKING"
+                self.result.computation["userInfo"]["elements"].append(f"{type(e).__name__}: {e}")
+                exitcode = 1
+
         # Step 4: Link compiled files and libraries
         if exitcode == 0 and 3 <= maxState:
-            exitcode = self.link()
+            try:
+                exitcode = self.link()
+            except Exception as e:
+                self.result.computation["userInfo"]["summary"] = "UNEXPECTED ERROR IN LINKING"
+                self.result.computation["userInfo"]["elements"].append(f"{type(e).__name__}: {e}")
+                exitcode = 1
+
         # Step 5: Run exectutable files
         if exitcode == 0 and 4 <= maxState:
-            self.run()
+            try:
+                self.run()
+            except Exception as e:
+                self.result.computation["userInfo"]["summary"] = "UNEXPECTED ERROR IN RUNNING"
+                self.result.computation["userInfo"]["elements"].append(f"{type(e).__name__}: {e}")
+                exitcode = 1
 
         # Calculating computation time in result object
+        self.result.computation["technicalInfo"]["exitCode"] = exitcode
         self.result.calculateComputationTime()
 
     def getMaxState(self) -> int:
@@ -93,6 +118,24 @@ class C:
                     eEl["value"] = sEl["value"]
                     break
 
+    def mergeError(self, message):
+        """ Adds merge error to userInfo and returns returncode 1 
+
+        Returns:
+            1 (Integer):
+                Returncode 1
+            An empty dict:
+                Empty file informations
+        """
+        
+        self.result.computation["userInfo"]["summary"] = "[ERROR]"
+        self.result.computation["userInfo"]["elements"].append({
+            "severity": "error",
+            "type": "chain",
+            "message": f"Merging failed! {message}"
+        })
+        return 1, {}
+
     def merge(self):
         """ Merges all code snippets given by exercise json in config.merging
 
@@ -107,19 +150,16 @@ class C:
                     - "start": Integer indicating Start of Section (line number)
                     - "stop": Integer indicating End of Section (line number)
         """
-        l = len(self.solution.exercise.config["merging"])
+        merge = self.solution.exercise.config["merging"]
+
+        l = len(merge)
+
         if l == 0:
-            self.result.computation["userInfo"]["summary"] = "[ERROR]"
-            self.result.computation["userInfo"]["elements"] = [{
-                "severity": "error",
-                "type": "chain",
-                "message": "Merging failed! Empty merging array"
-            }]
-            return 1, {}
-        elif l == 1:
-            return 0, self.mergeSingleFile()
+            return self.mergeError("Empty merging array")
+        if isinstance(merge, list) and isinstance(merge[0], dict) and l != 1:
+            return self.mergeMultipleFiles()
         else:
-            return 0, self.mergeMultipleFiles()
+            return self.mergeSingleFile()
 
     def mergeSingleFile(self) -> dict:
         """ Merges a single file.
@@ -128,28 +168,97 @@ class C:
             A dict as specified as in "merge".
             The filename is always "temp"
         """
-        r = {"temp" : {}}
+        fname = f"temp{self._fileext}"
+        r = {fname : {"path": os.path.join(PATH, fname)}}
         code = ""
         loc = 0
-        for s in self.solution.exercise.config["merging"]["sources"]:
+
+        if isinstance(self.solution.exercise.config["merging"], list):
+            sourceElements = self.solution.exercise.config["merging"]
+        else:
+            sourceElements = self.solution.exercise.config["merging"]["sources"]
+            if len(sourceElements) == 0:
+                return self.mergeError("Empty merging array")
+
+        for s in sourceElements:
             for e in self.solution.exercise.elements:
                 if s == e["identifier"]:
-                    r["temp"][s] = {}
+                    r[fname][s] = {}
                     if e.get("visible") is not None:
-                        r["temp"][s]["visible"] = e["visible"]
-                    r["temp"][s]["start"] = (loc + 1)
-                    code += e["value"]
+                        r[fname][s]["visible"] = e["visible"]
+                    r[fname][s]["start"] = (loc + 1)
+                    code += e["value"] or "\n"
                     if not code.endswith("\n"):
                         code += "\n"
-                    cnt = e["value"].count("\n")
+                    cnt = (e["value"] or "\n").count("\n")
                     loc += cnt
-                    r["temp"][s]["stop"] = loc if cnt != 0 else (loc + 1)
+                    r[fname][s]["stop"] = loc if cnt != 0 else (loc + 1)
                     break
-        loc += 1
-        with open(os.path.join(PATH, f"temp.{self._fileext}"), "w+") as f:
+
+        fpath = os.path.join(PATH, f"{fname}")
+
+        with open(fpath, "w+") as f:
             f.write(code)
-        os.chmod(os.path.join(PATH, f"temp.{self._fileext}"), 0o666)
-        return r
+        os.chmod(fpath, 0o666)
+        return 0, r
+
+    def getMappedItems(self):
+        if self.solution.exercise.elementMap:
+            for m in self.solution.exercise.elementMap:
+                mergeInfo = self.solution.exercise.elementMap[m].split(os.sep)
+                fpath = mergeInfo[3:-1]
+                fname = mergeInfo[-1]
+
+                if fpath:
+                    path = os.path.join(PATH, *path, fname)
+                    if os.path.exists(path):
+                        continue
+                    else:
+                        for element in self.solution.exercise.elements:
+                            if element["identifier"] == m:
+                                with open(path, "w") as f:
+                                    f.write(element["value"])
+
+
+                else: 
+                    path = os.path.join(PATH, fname)
+                    if os.path.exists(path):
+                        continue
+                    else:
+                        for element in self.solution.exercise.elements:
+                            if element["identifier"] == m:
+                                with open(path, "w") as f:
+                                    f.write(element["value"])
+
+    def getFileName(self, mergeDict, cnt):
+        """ Retrieves the filenname and path of a file used for compiling,
+            checking and running
+            
+        Returns:
+            A String
+        """
+
+        mergeID, path = mergeDict.get("mergeID"), None
+        
+        if mergeID:
+            if self.solution.exercise.elementMap and \
+                mergeID in self.solution.exercise.elementMap:
+                mergeInfo = self.solution.exercise.elementMap[mergeID].split(os.sep)
+                path = mergeInfo[3:-1]
+                # ERROR HANDLING
+                if path and not path[0]:
+                    return self.mergeError("Absolute Paths are not allowed"), 0
+
+                fname = mergeInfo[-1]
+            else:
+                fname = mergeID
+        else:
+            fname = f"temp{cnt}"
+        
+        if self._fileext not in fname and ".h" not in fname:
+            return f"{fname}{self._fileext}", path, cnt + 1
+        else:
+            return fname, path, cnt + 1
 
     def mergeMultipleFiles(self) -> dict:
         """ Merges multiple files.
@@ -157,11 +266,24 @@ class C:
         Returns:
             A dict as specified as in "merge".
         """
+        i = 1 # used if neither mergeID nor mapping is given
         r = {}
         for m in self.solution.exercise.config["merging"]:
-            fname = m["mergeID"] 
-            loc = 0
+            fname, fpath, i = self.getFileName(m, i)
+            if fname == 1:
+                return fname, fpath
+            
             r[fname] = {}
+
+            if fpath:
+                tmp = os.path.join(PATH, *fpath)
+                if not os.path.exists(tmp):
+                    os.makedirs(tmp)
+                r[fname]["path"] = os.path.join(tmp, fname)
+            else:
+                r[fname]["path"] = os.path.join(PATH, fname)
+
+            loc = 0
             code = ""
             for s in m["sources"]:
                 for e in self.solution.exercise.elements:
@@ -175,16 +297,20 @@ class C:
                             code += "\n"
                         cnt = e["value"].count("\n")
                         loc += cnt
-                        r["temp"][s]["stop"] = loc if cnt != 0 else (loc + 1)
+                        r[fname][s]["stop"] = loc if cnt != 0 else (loc + 1)
                         break
             loc += 1
-            with open(os.path.join(PATH, f"{fname}.{self._fileext}"), "w+") as f:
+
+            with open(r[fname]["path"], "w+") as f:
                 f.write(code)
-        return r
+            os.chmod(r[fname]["path"], 0o666)
+        return 0, r
 
     def getSnippetIdentifier(self, file, line):
         for i in self.fileInfo[file]:
-            if line >= self.fileInfo[file][i]["start"] and line <= self.fileInfo[file][i]["stop"]:
+            if i == "path":
+                continue
+            if line in range(self.fileInfo[file][i]["start"], self.fileInfo[file][i]["stop"] + 1):
                 return i
 
     def getLoc(self, file, line, join=False):
@@ -202,28 +328,44 @@ class C:
         cwd = os.getcwd()
         os.chdir(PATH)
 
-        # array containing all filenames of files to be compiled. If that information is not 
-        # given in exercise's config, all merged files will be compiled
-        files = self.solution.exercise.config["compiling"].get("sources")
-        files = files if files is not None else self.fileInfo
-
         # compiling command as specified as in exercise
-        com = f"{self.solution.exercise.getCompilingCommand()} -c "
-        # filenames of files to be compiled, each with the correct file extension
-        com += f"{' '.join([f'{s}.{self._fileext}' for s in files])} "
+        com = self.solution.exercise.getCompilingCommand().split(" ")
+        # path for all source files
+        for f in self.fileInfo:
+            if ".h" in f:
+                continue
+            com.append(self.fileInfo[f]["path"])
+        # flag to just compile files without linking
+        com.append("-c")
         # flag for easier error handling. Requires GCC 9.4
-        com += "-fdiagnostics-format=json"
+        com.append("-fdiagnostics-format=json")
 
-        self.result.computation["technicalInfo"]["compileCommand"] = com
-        proc = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        os.chdir(cwd)
-        #self.result.computation["technicalInfo"]["compileOutput"] = proc.stdout
-        #print(f"Proc Output (Len {len(proc.stdout)}):\n{proc.stdout}\n---")
-
+        self.result.computation["technicalInfo"]["compileCommand"] = " ".join(com)
+        proc = subprocess.run(com, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         try:
-            parsed = json.loads(proc.stdout.decode("utf-8"))
+            parsed = json.loads(proc.stderr.decode("utf-8")) if proc.stderr else \
+                json.loads(proc.stdout.decode("utf-8")) if proc.stdout else ""
+        except json.decoder.JSONDecodeError:
+            txt = proc.stderr if proc.stderr else \
+                proc.stdout if proc.stdout else ""
 
-            if len(parsed) > 0:
+            if txt[0] == b"[":
+                tmp = txt.replace(b"\n", b"")
+                sliced = tmp[:tmp.rfind(b"]") + 1]
+            elif txt[0] == b"{":
+                tmp = txt.replace(b"\n", b"")
+                sliced = tmp[:tmp.rfind(b"}") + 1]
+            else:
+                sliced = txt.replace(b"\n", b"")
+            txt = txt.decode("utf-8")
+
+            try:
+                parsed = json.loads(sliced)
+            except json.decoder.JSONDecodeError:
+                parsed = txt
+
+        if len(parsed) > 0:
+            if isinstance(parsed, dict):
                 maxState = "info"
                 elements = []
                 for p in parsed:
@@ -247,7 +389,7 @@ class C:
                         "message" : p["message"],
                         "source" : {
                             "elementID" : snippet,
-                            "extract" : self.getLoc(f"{file}.{self._fileext}", line, join=True),
+                            "extract" : self.getLoc(f"{file}{self._fileext}", line, join=True),
                             "begin" : self.fileInfo[file][snippet]["start"],
                             "end" : self.fileInfo[file][snippet]["stop"],
                             "line" : line - self.fileInfo[file][snippet]["start"],
@@ -257,10 +399,25 @@ class C:
                     elements.append(e)
                     
                 self.result.computation["userInfo"]["summary"] = f"[{maxState.upper()}]"
-                self.result.computation["userInfo"]["elements"] = elements
+                self.result.computation["userInfo"]["elements"] += elements
+            elif isinstance(parsed, str):
+                maxState = None
+                if "error" in parsed:
+                    maxState = "ERROR"
+                elif "warning" in parsed:
+                    maxState = "WARNING"
+                elif "info" in parsed:
+                    maxState = "INFO"
 
-        except json.decoder.JSONDecodeError:   
-            parsed = proc.stdout.decode("utf-8")
+                if maxState:
+                    self.result.computation["userInfo"]["summary"] = f"[{maxState}] - could not parse output"
+                    self.result.computation["userInfo"]["elements"].append({
+                        "severity": maxState,
+                        "type": "compiler",
+                        "message": f"Could not parse output:\n{parsed}"
+                    })
+            else: # list
+                self.result.computation["userInfo"]["elements"] += parsed
             
         # adds compiling output to "elements" in result object
         data = {
@@ -269,48 +426,48 @@ class C:
             "value" : parsed
         }
         self.result.elements.append(data)
+        os.chdir(cwd)
         return proc.returncode
 
     def check(self):
         """ Checks all merged source files.
         Checking after compiling to reduce effort. It's unnecessary to check if compiling fails.
         """
-        forbidden = self.solution.exercise.config.get("checking")
-        if forbidden is None:
+        checkConfig = self.solution.exercise.config.get("checking")
+        if checkConfig is None:
             return 0
 
         returncode = 0
-        forbidden = forbidden["forbiddenCalls"].split(" ")
+        forbidden = checkConfig["forbiddenCalls"].split(" ")
         checker = Checker(self.fileInfo)
         for a in checker.asts:
             checker.getFunctions(checker.asts[a])
 
-        #print(json.dumps(checker.visitor.data, indent=4))
         elements = []
 
         for file in checker.visitor.data:
-            f = file.split(os.sep)[-1][:-(len(self._fileext) + 1)]
+            f = file.split(os.sep)[-1]
             for func in checker.visitor.data[file]:
                 for i in checker.visitor.data[file][func]:
                     cur = checker.visitor.data[file][func][i]
-                    if self.getSnippetIdentifier(f, cur["Line"]) == "codeFromStudent" \
-                        and cur["FuncCall"] in forbidden:
+                    id = self.getSnippetIdentifier(f, cur["Line"])
+                    if id in checkConfig["sources"] and cur["FuncCall"] in forbidden:
 
-                        line = cur["Line"] - self.fileInfo[f]["codeFromStudent"]["start"]
+                        line = cur["Line"] - self.fileInfo[f][id]["start"]
 
                         e =  {
                             "severity": "error",
                             "type": "callcheck",
                             "message": f"[C function filtering] Function call not allowed:\n\'"
-                                f"{cur['FuncCall']}\';original source: codeFromStudent, line "
+                                f"{cur['FuncCall']}\';original source: f'{id}', line "
                                 f"(corrected): {line}, " \
                                 f"col: {cur['Column']}\nForbidden calls:\nsystem.\n",
                         
                             "source": {
-                                "elementID": "codeFromStudent",
+                                "elementID": id,
                                 "extract": self.getLoc(file, line),
-                                "begin": self.fileInfo[f]["codeFromStudent"]["start"],
-                                "end": self.fileInfo[f]["codeFromStudent"]["stop"],
+                                "begin": self.fileInfo[f][id]["start"],
+                                "end": self.fileInfo[f][id]["stop"],
                                 "line": line,
                                 "col": cur["Column"]
                             }
@@ -342,15 +499,19 @@ class C:
     def link(self):
         """ Links compiled files and libraries.
         """
-        com = f"{'gcc' if self._lang == 'C' else 'g++'} -o {os.path.join(PATH, 'out')} " \
-            f"{' '.join([os.path.join(PATH, f'{s}.o') for s in self.fileInfo])}"
+        com = ["gcc" if self._lang == "C" else "g++", "-o", f"{os.path.join(PATH, 'out')}"]
+        for f in self.fileInfo:
+            if ".h" in f:
+                continue
+            com.append(f"{os.path.join(PATH, f)[:-len(self._fileext)]}.o")
+        #com.append(f"{' '.join([os.path.join(PATH, f'{s}.o') for s in self.fileInfo])}")
 
-        flags = self.solution.exercise.config["linking"]["flags"]
-        if flags is not None and flags != "":
-            com += f" {flags}"
+        flags = self.solution.exercise.config["linking"].get("flags")
+        if flags:
+            com.append(flags)
 
-        self.result.computation["technicalInfo"]["linkCommand"] = com
-        proc = subprocess.run(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        self.result.computation["technicalInfo"]["linkCommand"] = " ".join(com)
+        proc = subprocess.run(com, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         data = {
             "MIMEtype":"text/plain",
             "identifier":f"{self.result.id} Linking",
@@ -363,33 +524,30 @@ class C:
         """ Makes file executable and runs it.
         """
         os.chmod(os.path.join(PATH, "out"), 0o700)
-        com = f"{os.path.join(PATH, 'out')}"
+        com = [f"{os.path.join(PATH, 'out')}"]
         cmdLineArgs = self.solution.exercise.config["running"].get("commandLineArguments")
         if cmdLineArgs is not None:
-            com += f" {cmdLineArgs}"
+            com.extend(cmdLineArgs.split())
 
         # Time Limit of running process
         timelimit = self.solution.exercise.config["running"].get("timelimitInSeconds")
         cfglimit = self.cfg.get("timelimitInSeconds")
-        if timelimit is None:
+        if not timelimit:
             timelimit = cfglimit # is now either None or int
-        else:
-            if cfglimit is not None:
+        elif cfglimit:
                 timelimit = min(timelimit, cfglimit)
 
-        self.result.computation["technicalInfo"]["runCommand"] = com
+        self.result.computation["technicalInfo"]["runCommand"] = "".join(com)
 
-        proc = subprocess.Popen(com.split(" "), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            preexec_fn=os.setsid, shell=True)
+        proc = subprocess.Popen(com, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            preexec_fn=os.setsid, shell=False)
         try:
             stdout, stderr = proc.communicate(timeout=timelimit)
             text = ""
         except subprocess.TimeoutExpired as e:
-            os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-            text = f"Runtime failed! Timeout after {e.timeout} seconds"
-            stdout, stderr = proc.communicate()
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+            stdout, stderr, text = "", "", f"Runtime failed! Timeout after {e.timeout} seconds"
             self.result.computation["userInfo"]["summary"] = "Runtime failed! Exit code: 1"
-
 
         data = [{
             "MIMEtype":"text/plain",
@@ -399,15 +557,16 @@ class C:
         {
             "MIMEtype":"text/plain",
             "identifier":f"{self.result.id} Running stdout",
-            "value" : stdout.decode("utf-8")
+            "value" : stdout#.decode("utf-8")
         },
         {
             "MIMEtype":"text/plain",
             "identifier":f"{self.result.id} Running stderr",
-            "value" : stderr.decode("utf-8")
+            "value" : stderr#.decode("utf-8")
         }]
         for d in data:
             self.result.elements.append(d)
+        return proc.returncode
 
 class Checker:
     """ Class for generating Abstract Syntax Trees (AST) of source files
@@ -443,7 +602,6 @@ class Checker:
             if node.decl.coord.file not in self.data:
                 self.data[node.decl.coord.file] = {}
             self.data[node.decl.coord.file][node.decl.name] = {}
-            #print(f"File: {node.decl.coord.file}")
             i = 0
             for n in node.body.block_items:
                 if isinstance(n, c_ast.FuncCall):
@@ -476,7 +634,7 @@ class Checker:
         """
         asts = {}
         for f in self._files:
-            asts[f] = self.getAst(os.path.join(PATH, f"{f}.c"))
+            asts[f] = self.getAst(self._files[f]["path"])
         return asts
     
     def getFunctions(self, ast: c_ast.FileAST):
