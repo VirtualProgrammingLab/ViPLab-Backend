@@ -1,7 +1,6 @@
 # ViPLab-Backend
- Virtual Programming Laboratory Backend
+Virtual Programming Laboratory Backend
 
-Dies ist das Projekt-INF bzw. Bachelorforschungsprojekt der Universit?t Stuttgart von Sven Dyhr, Julia Christoph und Miriam Awad.
+This is the project INF or Bachelor research project of the University of Stuttgart by Sven Dyhr, Julia Christoph and Miriam Awad.
 
-Ziel dieses Projektes ist die Neuentwicklung des aktuellen Vip-Lab Backends der Universit?t Stuttgart.
-Dazu wurde eine neue Architektur auf Grundlage von Kata-Containern entwickelt, welche pro abzuarbeitenden Task einen neunen Container hochzieht, die Aufgabe innerhalb compiliert und ausf?hrt und die entsprechenden Ergebnisse wieder zur?ckgibt. 
+The aim of this project is to develop a new Vip-Lab backend for the University of Stuttgart. A new architecture based on Kata containers has been developed, which pulls up a new container for each task to be processed, compiles and executes the task within and returns the corresponding results.
