@@ -141,12 +141,7 @@ if __name__ == "__main__":
     '''
     starttime = time.time()
     arg = sys.argv #from starting this script
-    #while(True):
-    d=False
-    i = 1
-    while(d==False):
-        print(i) 
-        i = i + 1
+    while(True): 
         solution, receiver, exercise = getSolutionsFromQueue()
         if solution != None:
             t = threading.Thread(target=do_something, args=[solution, receiver, exercise, arg])                
