@@ -1,4 +1,4 @@
-import os, sys, subprocess, dataObjects, json, signal, shutil
+import os, sys, subprocess, dataObjects, json, signal
 from pycparser import c_parser, c_ast, parse_file
 
 # Path for temp files.
@@ -23,6 +23,7 @@ class C:
                 if not os.path.isdir(f):
                     os.remove(f.path)
                 else:
+                    import shutil
                     shutil.rmtree(f.path)
 
     def __init__(self, solution : dataObjects.Solution, config : dict = None, id : int = None):
@@ -64,7 +65,6 @@ class C:
                 self.result.computation["userInfo"]["summary"] = "UNEXPECTED ERROR IN COMPILING"
                 self.result.computation["userInfo"]["elements"].append(f"{type(e).__name__}: {e}")
                 exitcode = 1
-            
 
         # Step 3 (Only C): Check if student's solution contains illegal calls
         if exitcode == 0 and 2 <= maxState and self._lang == "C":
@@ -203,6 +203,8 @@ class C:
         return 0, r
 
     def getMappedItems(self):
+        """ Checks elementMap for files not created yet and creates them.
+        """
         if self.solution.exercise.elementMap:
             for m in self.solution.exercise.elementMap:
                 mergeInfo = self.solution.exercise.elementMap[m].split(os.sep)
@@ -233,9 +235,16 @@ class C:
     def getFileName(self, mergeDict, cnt):
         """ Retrieves the filenname and path of a file used for compiling,
             checking and running
+
+        Args:
+            mergeDict (dict):
+                the dict containing merge informations needed for the current file
+            cnt (int):
+                an integer counting up each call.
             
         Returns:
-            A String
+            Strings representing the filename and the filepath. 
+            Incremented cnt Integer
         """
 
         mergeID, path = mergeDict.get("mergeID"), None
@@ -307,6 +316,17 @@ class C:
         return 0, r
 
     def getSnippetIdentifier(self, file, line):
+        """ Retrieves the code snipped identifier of a given line
+
+        Args:
+            file (str):
+                the file containing the identifier
+            line (int):
+                the line number
+
+        Returns:
+            A string containing the snippet identifier
+        """
         for i in self.fileInfo[file]:
             if i == "path":
                 continue
@@ -314,6 +334,19 @@ class C:
                 return i
 
     def getLoc(self, file, line, join=False):
+        """ Retrieves a line of code in a given file
+        
+        Args:
+            file (str):
+                the filepath to be opened
+            line (int):
+                the line number of the line we want to return
+            join (bool):
+                if True, the filepath will be joined with PATH first
+
+        Returns:
+            A String containing the specified line of code.
+        """
         with open(file if not join else os.path.join(PATH, file), "r") as f:
             i = 0
             while i < line - 1:
@@ -323,6 +356,9 @@ class C:
 
     def compile(self):
         """ Compiles all merged source files.
+
+        Returns:
+            An Integer representing the return code of the compiler.
         """
         # changes current working directory for easier compiling
         cwd = os.getcwd()
@@ -432,6 +468,11 @@ class C:
     def check(self):
         """ Checks all merged source files.
         Checking after compiling to reduce effort. It's unnecessary to check if compiling fails.
+
+        Returns:
+            An Integer representing the final state of checking:
+                0 - Checking passed
+                1 - Checking failed
         """
         checkConfig = self.solution.exercise.config.get("checking")
         if checkConfig is None:
@@ -498,13 +539,15 @@ class C:
 
     def link(self):
         """ Links compiled files and libraries.
+
+        Returns:
+            An Integer representing the return code of the compiler.
         """
         com = ["gcc" if self._lang == "C" else "g++", "-o", f"{os.path.join(PATH, 'out')}"]
         for f in self.fileInfo:
             if ".h" in f:
                 continue
             com.append(f"{os.path.join(PATH, f)[:-len(self._fileext)]}.o")
-        #com.append(f"{' '.join([os.path.join(PATH, f'{s}.o') for s in self.fileInfo])}")
 
         flags = self.solution.exercise.config["linking"].get("flags")
         if flags:
@@ -522,6 +565,9 @@ class C:
     
     def run(self):
         """ Makes file executable and runs it.
+
+        Returns:
+            An Integer representing the return code of the program.
         """
         os.chmod(os.path.join(PATH, "out"), 0o700)
         com = [f"{os.path.join(PATH, 'out')}"]
