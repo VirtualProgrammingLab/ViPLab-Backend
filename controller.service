@@ -1,8 +1,0 @@
-[Unit]
-Description=Foo
-
-[Service]
-ExecStart=/home/julia/backend/run.sh
-
-[Install]
-WantedBy=multi-user.target

@@ -174,7 +174,7 @@ class C:
         loc = 0
 
         if isinstance(self.solution.exercise.config["merging"], list):
-            sourceElements = self.solution.exercise.config["merging"]
+            sourceElements = self.solution.exercise.config["merging"][0]["sources"]
         else:
             sourceElements = self.solution.exercise.config["merging"]["sources"]
             if len(sourceElements) == 0:

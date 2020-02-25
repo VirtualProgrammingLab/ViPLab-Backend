@@ -29,7 +29,13 @@ class results(Resource):
             input=json.loads(request.stream.read())
             receiver = input.get("receiver")
             result = input.get("Result")
-            r = requests.post('https://nfldevvipecs.rus.uni-stuttgart.de/numlab/results', headers={'X-EcsReceiverMemberships':receiver,'Accept': 'application/json', "Content-Type":"application/json"}, data=json.dumps(result), auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
+            input["Result"]["Solution"]=input["Result"]["Solution"]["Solution"]
+            input["Result"]["computation"]["technicalInfo"]["ID"]="#12"
+            input["Result"]["computation"]["technicalInfo"]["ID"]="#12"
+            input["Result"]["computation"]["technicalInfo"]["PID"]="12"
+            del input["receiver"]
+            # TODO: write config file
+            r = requests.post(conf.server + '/numlab/results', headers={'X-EcsReceiverMemberships':receiver,'Accept': 'application/json', "Content-Type":"application/json"}, data=json.dumps(input), auth=(conf.username, conf.passwd))
             print(r.headers)
             print(r.status_code)
             print(json.dumps(input,  indent=4))
@@ -47,7 +53,8 @@ class startingNewContainer(Resource):
         - ip of started container 
         - id of started container
         '''
-        containerObject = client.containers.run("python_socket_" + language, runtime="kata-fc", publish_all_ports=True, auto_remove=debug, detach=True, stdin_open=True)
+        #containerObject = client.containers.run("python_socket_" + language, runtime="kata-fc", publish_all_ports=True, auto_remove=debug, detach=True, stdin_open=True)
+        containerObject = client.containers.run("python_socket_" + language, runtime="kata-fc", publish_all_ports=True, auto_remove=False, detach=True, stdin_open=True)
         a = True
         containerId= vars(containerObject)["attrs"]["Id"]
         while a==True:
