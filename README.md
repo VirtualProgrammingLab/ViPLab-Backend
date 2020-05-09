@@ -1,14 +1,27 @@
 # ViPLab-Backend
 Virtual Programming Laboratory Backend
 
-This is the project INF or Bachelor research project of the University of Stuttgart by Sven Dyhr, Julia Christoph and Miriam Awad.
+To run the ViPLab backend on your system you need:
 
-The aim of this project is to develop a new Vip-Lab backend for the University of Stuttgart. A new architecture based on Kata containers has been developed, which pulls up a new container for each task to be processed, compiles and executes the task within and returns the corresponding results.
+* python3.x
+* python-qpid-proton
+* python-magic
+* url64
+* docker (and docker-py)
 
-Short installation guide:
-1. Download/clone git
-2. Build the dockerfile and name it "python_socket_c"
+You can configure backend behavior by copying ```config.sample.ini``` 
+to ```config.ini``` and change the variables.
 
-Starting the Backend:
-1. Start the Flask server (-> controller_socket_client.py)
-2. Start the triggering script (-> findLanguage.py)
+Start the backend with:
+
+```python3 backend.py```
+
+Press ```Ctrl+C``` to stop the backend.
+
+## Known issues / missing features
+
+* no status messages what backend is doing (downloading container, starting, etc.)
+* files are only send when the container is finished (no intermediate files)
+* only *Container*-environment is working (c-environment will follow)
+* web resource for image has not been tested (only published files would work)
+* no error-handling
