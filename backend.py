@@ -28,7 +28,6 @@ class ViPLabBackend(object):
         self.tasks = multiprocessing.Queue(3)
         self.results = multiprocessing.Queue()
         self.running_computations = {}
-        self.files = []
         self.client = docker.from_env()
         # ToDO: store errors and send them within result-message back
         self.errors = []
@@ -50,8 +49,9 @@ class ViPLabBackend(object):
             except Empty:
                 pass
             else:
+                # ToDO: bind body to class
                 computation = json.loads(task)
-                tmp_dir = self._prepare_all_environments(computation)
+                tmp_dir, files = self._prepare_all_environments(computation)
                 # ToDO: map start-function dynamically based on getattr
                 if computation["environment"] == "Container":
                     container = self._prepare_container_backend(computation,
@@ -63,7 +63,7 @@ class ViPLabBackend(object):
                                                    stream=True, logs=True,
                                                    demux=True)
                 result_handler = ResultStreamer(response_stream, tmp_dir.name,
-                                                self.files, self.results,
+                                                files, self.results,
                                                 computation["identifier"])
                 result_handler.start()
                 self.running_computations[computation["identifier"]] = \
@@ -85,6 +85,7 @@ class ViPLabBackend(object):
         # create tmp-dir for this computation and store files there
         tmp_dir = tempfile.TemporaryDirectory(prefix="viplab_", dir="/tmp")
         os.mkdir(os.path.join(tmp_dir.name, "files"))
+        files = []
         for f in computation["files"]:
             with open(os.path.join(tmp_dir.name, "files", f["path"]), 
                       'w') as fh:
@@ -93,8 +94,8 @@ class ViPLabBackend(object):
                     if not content.endswith("\n"):
                         content += "\n"
                     fh.write(content)
-            self.files.append(f["path"])
-        return tmp_dir
+            files.append(f["path"])
+        return tmp_dir, files
     
     def _prepare_container_backend(self, computation, tmp_dir):
         # ToDO: create in-between status messages for frontend
@@ -157,7 +158,7 @@ class ResultStreamer(Thread):
                     std_err_chunk += std_err.decode('utf-8') + "\n"
                 current_time = time.time()
                 chunk_time += current_time - start_time
-                print(chunk_time)
+                #print(chunk_time)
             else:
                 current_time = time.time()
                 self.create_result(std_out_chunk, std_err_chunk)
@@ -205,8 +206,10 @@ if __name__ == '__main__':
     try:
         backend.main()
     except KeyboardInterrupt:
-        backend.messager_process.join()
+        # ToDo: analyze clean up process and improve it
         backend.tasks.close()
         backend.tasks.join_thread()
+        backend.results.put("finished")
         backend.results.close()
         backend.results.join_thread()
+        backend.messager_process.join()

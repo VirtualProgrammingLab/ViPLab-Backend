@@ -8,15 +8,12 @@ from proton.reactor import ApplicationEvent, EventInjector
 class AMQPMessager(MessagingHandler):    
     def __init__(self, server, receiver_queues, sender_queue, task_queue,
                  result_queue):
-        super(AMQPMessager, self).__init__(auto_accept=False)
+        super(AMQPMessager, self).__init__()
         self.server = server
         self.receiver_queues = receiver_queues
         self.sender_queue = sender_queue
         self.tasks = task_queue
         self.results = result_queue
-
-        self.expected = 1000000
-        self.received = 0
 
     def on_start(self, event):
         conn = event.container.connect(self.server)
@@ -30,25 +27,19 @@ class AMQPMessager(MessagingHandler):
         event.container.selectable(self.result_informer.injector)
 
     def on_message(self, event):
-        if event.message.id and event.message.id < self.received:
-            # ignore duplicate message
-            return
-        if self.expected == 0 or self.received < self.expected:
-            print(event.message.body)
-            self.tasks.put(event.message.body)
-            self.received += 1
-            # ToDO: bind body to class and don't accept message if
-            # this is not working
-            self.accept(event.delivery)
-            # ToDO: implement cleanup in different method (on_delete??)
-            if self.received == self.expected:
-                event.receiver.close()
-                event.sender.close()
-                event.connection.close()
+        # ToDO: ignore duplicate message
+        # print(event.message.body)
+        self.tasks.put(event.message.body)
     
     def on_result(self, event):
-        # ToDO: should i ask the broker if i have sender credit??
-        self.sender.send(Message(durable=True, body=event.subject))
+        # check if we are finished
+        if type(event.subject) == str and event.subject == 'finished':
+            event.receiver.close()
+            self.sender.close()
+            event.connection.close()
+        else:
+            # ToDO: should i ask the broker if i have sender credit??
+            self.sender.send(Message(durable=True, body=event.subject))
 
 
 class ResultInformer(Thread):
