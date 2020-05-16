@@ -21,7 +21,7 @@ Press ```Ctrl+C``` to stop the backend.
 
 ## Known issues / missing features
 
-* no status messages what backend is doing (downloading container, starting, etc.)
+* no status messages what backend is doing (downloading container, starting, etc.) are send to frontend
 * files are only send when the container is finished (no intermediate files)
 * only *Container*-environment is working (c-environment will follow)
 * web resource for image has not been tested (only published files would work)

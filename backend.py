@@ -148,16 +148,16 @@ class ViPLabBackend(object):
         print("Creating container ...")
         container = self.client.containers.create(
             image_id,
-            command=comp_conf["command_line_arguments"], # "" if not set
+            command=comp_conf["command_line_arguments"], 
             auto_remove=False,
-            cpu_quota=100000*comp_conf["num_cpus"], # 1 if not set
+            cpu_quota=100000*comp_conf["num_cpus"], 
             detach=True,
             entrypoint=comp_conf["entrypoint"],
-            mem_limit=comp_conf["memory"], # 1gb if not set
+            mem_limit=comp_conf["memory"], 
             volumes={os.path.join(tmp_dir, "files"): {
                     "bind": comp_conf["volume"],
                     "mode": 'rw'}} \
-                if comp_conf["volume"] is not None else None) # empty dict if not set
+                if comp_conf["volume"] is not None else None)
         print("... Done.")
         return container, image_filename
         
