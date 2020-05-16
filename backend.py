@@ -14,10 +14,12 @@ import url64
 import time
 import datetime
 import uuid
+import tarfile
 from proton.reactor import Container
 from amqp_messager import AMQPMessager
 from threading import Thread
 from queue import Empty
+from models import ComputationSchema, ConfigurationContainerSchema
 
 class ViPLabBackend(object):
     def __init__(self, config_file):
@@ -31,7 +33,7 @@ class ViPLabBackend(object):
         self.client = docker.from_env()
         # ToDO: store errors and send them within result-message back
         self.errors = []
-        
+        # ToDo: implement logging
         # set up amqp_messager
         messager = Container(AMQPMessager(self.config["AMQP"]["server"],
                         self.config.getlist("AMQP", "computationqueues"),
@@ -49,13 +51,15 @@ class ViPLabBackend(object):
             except Empty:
                 pass
             else:
-                # ToDO: bind body to class
-                computation = json.loads(task)
+                print("Got computation task.")
+                computation = ComputationSchema().loads(task)
                 tmp_dir, files = self._prepare_all_environments(computation)
                 # ToDO: map start-function dynamically based on getattr
                 if computation["environment"] == "Container":
-                    container = self._prepare_container_backend(computation,
-                                                                tmp_dir.name)
+                    container, image_filename = \
+                        self._prepare_container_backend(computation, 
+                                                        tmp_dir.name)
+                    files.append(image_filename)
                 else:
                     raise NotImplementedError
                 # attach result listener thread
@@ -69,11 +73,13 @@ class ViPLabBackend(object):
                 self.running_computations[computation["identifier"]] = \
                         (container, result_handler, tmp_dir)
                 container.start()
+                print("Container started.")
             # check if computations are finished
             comp2trash = []
             for key, (cont, thread, tmp) in self.running_computations.items():
                 if not thread.is_alive():
                     if not self.config.getboolean("DEFAULT", "keepcontainer"):
+                        print("Cleaning up task")
                         cont.remove()
                     thread.join()
                     tmp.cleanup()
@@ -99,40 +105,61 @@ class ViPLabBackend(object):
     
     def _prepare_container_backend(self, computation, tmp_dir):
         # ToDO: create in-between status messages for frontend
-        comp_conf = computation["configuration"]
+        comp_conf = ConfigurationContainerSchema().load(
+            computation["configuration"])
         # load image
-        image_uri = comp_conf["resources.image"]
+        image_filename = None
+        image_uri = comp_conf["image"]
         if image_uri.startswith("file"):
-            with open(image_uri[7:], 'rb') as bf: 
-                # returns list of images
-                image = self.client.images.load(bf)
+            image_filename = image_uri[7:]
+            # since load takes a lot of time we check if the image is already
+            # in the local registry
+            with tarfile.open(image_filename) as tar:
+                manifest = tar.extractfile("manifest.json").read().decode('utf-8')
+                image_id = json.loads(manifest)[0]["RepoTags"][0]
+            if len(self.client.images.list(image_id)) == 0:
+                with open(image_filename, 'rb') as bf: 
+                    print("Loading image ...")
+                    image_id = self.client.images.load(bf)[0].id
+                    print("... Done.")
+        elif image_uri.startswith("id"):
+            image_id = image_uri[5:]
+        # ToDO: docker run can handle both, id and name, and even pulls if not 
+        # already in registry; docker start fails in doing that
+        # -> check source code what docker run does
+        elif image_uri.startswith("name"):
+            image_id = image_uri[7:]
+            image = self.client.images.list(image_id)
+            if len(image) == 0:
+                self.client.images.pull(image_id)
         else: 
             # assume accessible web resource: this can be a published dataset
             # or a s3-direct link (provided by viplab-connector)
             resp = requests.get(image_uri, stream=True)
             content_disp = resp.headers["Content-disposition"]
-            filename = content_disp[content_disp.find("filename")+9:].strip('"') 
-            with open(os.path.join(tmp_dir, filename), 'wb') as fh:
+            image_filename = content_disp[content_disp.find("filename")+9:].strip('"') 
+            with open(os.path.join(tmp_dir, image_filename), 'wb') as fh:
                 for chunk in resp.iter_content(chunk_size=1024):
                     fh.write(chunk)
-            self.files.append(filename)
-            with open(os.path.join(tmp_dir, filename), 'rb') as bf:
-                image = self.client.images.load(bf)
+            with open(os.path.join(tmp_dir, image_filename), 'rb') as bf:
+                image_id = self.client.images.load(bf)[0].id
         
         # create container
+        print("Creating container ...")
         container = self.client.containers.create(
-            image[0].id,
-            command=comp_conf["running.commandLineArguments"],
+            image_id,
+            command=comp_conf["command_line_arguments"], # "" if not set
             auto_remove=False,
-            cpu_quota=100000*comp_conf["resources.numCPUs"],
+            cpu_quota=100000*comp_conf["num_cpus"], # 1 if not set
             detach=True,
-            entrypoint=comp_conf["running.entrypoint"],
-            mem_limit=comp_conf["resources.memory"],
+            entrypoint=comp_conf["entrypoint"],
+            mem_limit=comp_conf["memory"], # 1gb if not set
             volumes={os.path.join(tmp_dir, "files"): {
-                "bind": comp_conf["resources.volume"],
-                "mode": 'rw'}})
-        
-        return container
+                    "bind": comp_conf["volume"],
+                    "mode": 'rw'}} \
+                if comp_conf["volume"] is not None else None) # empty dict if not set
+        print("... Done.")
+        return container, image_filename
         
 
 class ResultStreamer(Thread):
@@ -140,7 +167,7 @@ class ResultStreamer(Thread):
         super(ResultStreamer, self).__init__()
         self.stream = stream
         self.tmp_dir = tmp_dir
-        self.computation_id = computation_id
+        self.computation_id = str(computation_id)
         self.results = result_queue
         self.sent_files = files
         
@@ -171,6 +198,7 @@ class ResultStreamer(Thread):
         self.create_result(std_out_chunk, std_err_chunk, "final", files=True)
     
     def create_result(self, std_out, std_err, status="intermediate", files=False):
+        print("Creating result.")
         result = {"computation": self.computation_id,
                   "status": status,
                   "timestamp": datetime.datetime.now().isoformat(),

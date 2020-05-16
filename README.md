@@ -6,6 +6,7 @@ To run the ViPLab backend on your system you need:
 * python3.x
 * python-qpid-proton
 * python-magic
+* marshmallow
 * url64
 * docker (and docker-py)
 
