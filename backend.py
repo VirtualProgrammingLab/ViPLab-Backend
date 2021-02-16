@@ -200,12 +200,12 @@ class ResultStreamer(Thread):
     def create_result(self, std_out, std_err, status="intermediate", files=False):
         print("Creating result.")
         result = {"computation": self.computation_id,
+                  "identifier": str(uuid.uuid4()),
                   "status": status,
-                  "timestamp": datetime.datetime.now().isoformat(),
-                  "notifications": {},
+                  "timestamp": datetime.datetime.now().astimezone().replace(microsecond=0).isoformat(),
                   "output": {"stdout": url64.encode(std_out),
                              "stderr": url64.encode(std_err)},
-                  "files": []}
+                  "artifacts": []}
         if files:
             mime = magic.Magic(mime=True)
             (_, _, filenames) = next(os.walk(os.path.join(self.tmp_dir, "files")))
@@ -216,8 +216,9 @@ class ResultStreamer(Thread):
                 mimetype = mime.from_file(file_path)
                 with open(file_path, 'rb') as fh:
                     content = fh.read()
-                result["files"].append(
+                result["artifacts"].append(
                     {"identifier": str(uuid.uuid4()),
+                     "type": "file",
                      "path": name,
                      "MIMEtype": mimetype,
                      "content": url64.encode(content)})
