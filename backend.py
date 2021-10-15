@@ -241,4 +241,5 @@ if __name__ == '__main__':
         backend.results.put("finished")
         backend.results.close()
         backend.results.join_thread()
+        backend.messager_process.terminate()
         backend.messager_process.join()
