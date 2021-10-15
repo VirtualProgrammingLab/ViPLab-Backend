@@ -26,7 +26,9 @@ class ViPLabBackend(object):
         self.config = configparser.ConfigParser(converters={"list": json.loads},
                                                 inline_comment_prefixes=('#'))
         self.config.read(config_file)
-        
+        if os.getenv('AMQPServer') :
+            self.config.set("AMQP", "server",  os.getenv('AMQPServer'))
+            print("Using env AMQPServer %s"%os.getenv('AMQPServer'))
         self.tasks = multiprocessing.Queue(3)
         self.results = multiprocessing.Queue()
         self.running_computations = {}
