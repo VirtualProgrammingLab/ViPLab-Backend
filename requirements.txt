@@ -1,0 +1,5 @@
+python-qpid-proton==0.35.0
+python-magic==0.4.24
+marshmallow==3.13.0
+url64==0.0.2
+docker==5.0.3
