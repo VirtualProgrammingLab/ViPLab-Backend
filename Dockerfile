@@ -14,7 +14,6 @@ RUN apk add --no-cache --virtual .build-deps  \
  		musl-dev \
 		openssl-dev \
 cyrus-sasl-dev\
-        
   &&  pip install --no-cache-dir -r requirements.txt \
   &&   apk del --no-network .build-deps 
 

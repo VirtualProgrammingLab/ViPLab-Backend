@@ -22,6 +22,7 @@ from queue import Empty
 from models import ComputationSchema, ConfigurationContainerSchema
 from docker.types import Mount
 import io
+import time
 
 class ViPLabBackend(object):
     def __init__(self, config_file):
@@ -51,7 +52,7 @@ class ViPLabBackend(object):
         while True:
             # start tasks if available
             try:
-                task = self.tasks.get(block=False, timeout=1)
+                task = self.tasks.get(block=True, timeout=1)
             except Empty:
                 pass
             else:
@@ -64,9 +65,14 @@ class ViPLabBackend(object):
                         self._prepare_container_backend(computation, 
                                                         tmp_dir.name)
                     if files:
-                        sidekick = self._launch_sidekick(volume, computation.identifier)
-                        ip_add = sidekick.attrs['NetworkSettings']['IPAddress']
-                        self.copy_to_container(ip_add, os.path.join(tmp_dir.name, "files"))
+                        sidekick = self._launch_sidekick(volume, computation['identifier'])
+                        time.sleep(3)
+                        sidekick.reload()
+                        ip_add = sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
+                        print(sidekick, ip_add)
+                        self.copy_to_container(ip_add, os.path.join(tmp_dir.name, "files"), files)
+                    else:
+                        sidekick = None
                     files.append(image_filename)
                 else:
                     raise NotImplementedError
@@ -76,7 +82,8 @@ class ViPLabBackend(object):
                                                    demux=True)
                 result_handler = ResultStreamer(response_stream, tmp_dir.name,
                                                 files, self.results,
-                                                computation["identifier"])
+                                                computation["identifier"],
+                                                sidekick)
                 result_handler.start()
                 self.running_computations[computation["identifier"]] = \
                         (container, result_handler, tmp_dir)
@@ -112,13 +119,14 @@ class ViPLabBackend(object):
         return tmp_dir, files
     
     def _launch_sidekick(self, volume, computation_id):
-        container = self.client.containers.create(
+        container = self.client.containers.run(
             'viplab/volumecreator',
             auto_remove=True,
             cpu_quota=100000,
             detach=True,
+            network='docker-development-environment_default',
             mem_limit="1G",
-            mounts=[Mount('/tmp/volumecreatoruploads',volume.id)],
+            mounts=[Mount('/tmp/shared',volume.id)],
             name='viplab-vol-creator-%s'%computation_id
         )
         return container
@@ -151,6 +159,7 @@ class ViPLabBackend(object):
             image_id = image_uri[7:]
             image = self.client.images.list(image_id)
             if len(image) == 0:
+                print("Pulling image")
                 self.client.images.pull(image_id)
         else: 
             # assume accessible web resource: this can be a published dataset
@@ -181,27 +190,26 @@ class ViPLabBackend(object):
             mounts=[Mount(comp_conf["volume"],volume.id)] \
                 if comp_conf["volume"] is not None else None)
         print("... Done.")
-        return container, image_filename, volume
+        if comp_conf["volume"] is not None:
+            return container, image_filename, volume
+        else:
+            return container, image_filename, None
 
-    def copy_to_container(self, container: 'Container', basepath: str, src: str, dst_dir: str):
-        """ src shall be an absolute path """
-        print(basepath,src)
-        stream = io.BytesIO()
-        with tarfile.open(fileobj=stream, mode='w|') as tar, open(os.path.join(basepath,src), 'rb') as f:
-            info = tar.gettarinfo(fileobj=f)
-            info.name = os.path.basename(src)
-            tar.addfile(info, f)
-
-        container.put_archive(dst_dir, stream.getvalue())
+    def copy_to_container(self, ip_add, basepath, files):
+        print(basepath, files)
+        for f in files:
+            files = {'file': (f, open(os.path.join(basepath,f),'rb'))}
+            r = requests.post('http://%s:5000'%ip_add, files=files)
 
 class ResultStreamer(Thread):
-    def __init__(self, stream, tmp_dir, files, result_queue, computation_id):
+    def __init__(self, stream, tmp_dir, files, result_queue, computation_id, sidekick):
         super(ResultStreamer, self).__init__()
         self.stream = stream
         self.tmp_dir = tmp_dir
         self.computation_id = str(computation_id)
         self.results = result_queue
         self.sent_files = files
+        self.sidekick = sidekick
         
     def run(self):
         std_out_chunk = ""
@@ -240,6 +248,18 @@ class ResultStreamer(Thread):
                   "artifacts": []}
         if files:
             mime = magic.Magic(mime=True)
+            if self.sidekick:
+                ip_add = self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
+                r = requests.get('http://%s:5000/list'%ip_add)
+                data = r.json()
+                for filename in data:
+                    print(filename)
+                    fdata = requests.get('http://%s:5000/data/%s'%(ip_add,filename[1:]), stream=True)
+                    if fdata.status_code == 200:
+                        with open(os.path.join(self.tmp_dir, "files",filename[1:]), 'wb') as f:
+                            for chunk in fdata.iter_content(1024):
+                                f.write(chunk)
+                self.sidekick.stop()
             (_, _, filenames) = next(os.walk(os.path.join(self.tmp_dir, "files")))
             filenames = [n for n in filenames if n not in self.sent_files]
             for name in filenames:
