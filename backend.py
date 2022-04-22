@@ -4,7 +4,8 @@ Delegates incoming tasks to available backends
 """
 import multiprocessing
 import configparser
-import magic
+import mimetypes
+import re
 import json
 import tempfile
 import docker
@@ -247,7 +248,6 @@ class ResultStreamer(Thread):
                              "stderr": url64.encode(std_err)},
                   "artifacts": []}
         if files:
-            mime = magic.Magic(mime=True)
             if self.sidekick:
                 ip_add = self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
                 r = requests.get('http://%s:5000/list'%ip_add)
@@ -265,7 +265,37 @@ class ResultStreamer(Thread):
             for name in filenames:
                 # ToDO: if filesize > 1mb -> generate s3-url
                 file_path = os.path.join(self.tmp_dir, "files", name)
-                mimetype = mime.from_file(file_path)
+                mimetypes.init()
+                mimetypes.add_type("application/vnd.kitware", ".vtu")
+                mimetypes.add_type("application/vnd.kitware", ".vtp")
+                mimetypes.add_type("application/x-vgf", ".vgf")
+                mimetypes.add_type("application/x-vgf3", ".vgf3")
+                mimetypes.add_type("application/x-vgfc", ".vgfc")
+                mime = mimetypes.guess_type(file_path)
+                mimetype = "" 
+                if mime[0] == "text/plain":
+                    fr = open(file_path, "r")
+                    file = fr.readlines()
+                    is_uri = True
+                    regex = re.compile(
+                        r'^(?:http|ftp)s?://' # http:// or https://
+                        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+                        r'localhost|' #localhost...
+                        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+                        r'(?::\d+)?' # optional port
+                        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+                    for line in file:
+                        line_content = line.strip()
+                        if re.match(regex, line_content) is None:
+                            is_uri = False
+                    if is_uri:
+                        mimetype = "text/uri-list"
+                    else: 
+                        mimetype = "text/plain"
+                elif mime[0]!=None:
+                    mimetype = mime[0]
+                else:
+                    mimetype = "text/plain"
                 with open(file_path, 'rb') as fh:
                     content = fh.read()
                 result["artifacts"].append(
