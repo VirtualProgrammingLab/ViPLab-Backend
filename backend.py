@@ -292,11 +292,11 @@ class ResultStreamer(Thread):
                     if is_uri:
                         mimetype = "text/uri-list"
                     else: 
-                        mimetype = "text/octet-stream"
+                        mimetype = "text/plain"
                 elif mime[0] is not None:
                     mimetype = mime[0]
                 else:
-                    mimetype = "text/octet-stream"
+                    mimetype = "application/octet-stream"
                 with open(file_path, 'rb') as fh:
                     content = fh.read()
                 result["artifacts"].append(
