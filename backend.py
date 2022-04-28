@@ -4,7 +4,8 @@ Delegates incoming tasks to available backends
 """
 import multiprocessing
 import configparser
-import magic
+import mimetypes
+import re
 import json
 import tempfile
 import docker
@@ -38,6 +39,8 @@ class ViPLabBackend(object):
         self.client = docker.from_env()
         # ToDO: store errors and send them within result-message back
         self.errors = []
+        # init mimetypes and add missing types
+        self.add_mimetypes()
         # ToDo: implement logging
         # set up amqp_messager
         messager = Container(AMQPMessager(self.config["AMQP"]["server"],
@@ -201,6 +204,15 @@ class ViPLabBackend(object):
             files = {'file': (f, open(os.path.join(basepath,f),'rb'))}
             r = requests.post('http://%s:5000'%ip_add, files=files)
 
+    def add_mimetypes(self):
+        mimetypes.init()
+        mimetypes.add_type("application/vnd.kitware", ".vtu")
+        mimetypes.add_type("application/vnd.kitware", ".vtp")
+        mimetypes.add_type("application/x-vgf", ".vgf")
+        mimetypes.add_type("application/x-vgf3", ".vgf3")
+        mimetypes.add_type("application/x-vgfc", ".vgfc")
+                
+
 class ResultStreamer(Thread):
     def __init__(self, stream, tmp_dir, files, result_queue, computation_id, sidekick):
         super(ResultStreamer, self).__init__()
@@ -210,6 +222,13 @@ class ResultStreamer(Thread):
         self.results = result_queue
         self.sent_files = files
         self.sidekick = sidekick
+        self.regex = re.compile(
+                        r'^(?:http|ftp)s?://' # http:// or https://
+                        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+                        r'localhost|' #localhost...
+                        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+                        r'(?::\d+)?' # optional port
+                        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         
     def run(self):
         std_out_chunk = ""
@@ -247,7 +266,6 @@ class ResultStreamer(Thread):
                              "stderr": url64.encode(std_err)},
                   "artifacts": []}
         if files:
-            mime = magic.Magic(mime=True)
             if self.sidekick:
                 ip_add = self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
                 r = requests.get('http://%s:5000/list'%ip_add)
@@ -265,7 +283,20 @@ class ResultStreamer(Thread):
             for name in filenames:
                 # ToDO: if filesize > 1mb -> generate s3-url
                 file_path = os.path.join(self.tmp_dir, "files", name)
-                mimetype = mime.from_file(file_path)
+                mime = mimetypes.guess_type(file_path)
+                mimetype = "" 
+                if mime[0] == "text/plain":
+                    with open(file_path, 'r') as fr:
+                        lines = fr.readlines()
+                    is_uri = all([re.match(self.regex, line.strip()) for line in lines])
+                    if is_uri:
+                        mimetype = "text/uri-list"
+                    else: 
+                        mimetype = "text/plain"
+                elif mime[0] is not None:
+                    mimetype = mime[0]
+                else:
+                    mimetype = "application/octet-stream"
                 with open(file_path, 'rb') as fh:
                     content = fh.read()
                 result["artifacts"].append(
