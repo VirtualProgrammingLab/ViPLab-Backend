@@ -86,7 +86,8 @@ def getExerciseFromExerciseUrl(exercise_url):
     - exercise
     '''
     try:
-        request = requests.get(exercise_url, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"), headers = {'Accept': 'application/json', 'Content-Type': 'application/json'})
+        # TODO: security issue! exercise_url can be anything and anywhere!
+        request = requests.get(exercise_url, auth=(conf.username, conf.passwd), headers = {'Accept': 'application/json', 'Content-Type': 'application/json'})
         return request.json()
     except:
         return 404
@@ -99,7 +100,7 @@ def getSolutionsFromQueue():
     - solution, x_ecsSender, [getExerciseFromExerciseUrl(exercise_url) -> exercise from exercise url]
     '''
     
-    r = requests.post(url + exercisesQueue, auth=("pinfcc2", "YqYsyjVLomICGTY7SK6e"))
+    r = requests.post(url + exercisesQueue, auth=(conf.username, conf.passwd))
     if r.headers.get("Content-Length") == "0":
         print("no new Solution available")
         return None, None, None
@@ -141,7 +142,13 @@ if __name__ == "__main__":
     '''
     starttime = time.time()
     arg = sys.argv #from starting this script
-    while(True): 
+    #while(True):
+    d=False
+    i = 1
+    while(d==False):
+#    for _ in range(1):
+        print(i) 
+        i = i + 1
         solution, receiver, exercise = getSolutionsFromQueue()
         if solution != None:
             t = threading.Thread(target=do_something, args=[solution, receiver, exercise, arg])                
@@ -152,22 +159,28 @@ if __name__ == "__main__":
         else:
             d=True
             time.sleep(1.0)
-        t.join()
-        #print(time.time()-starttime)
-    t.join()
+       # t.join()
+        print(time.time()-starttime)
+    #t.join()
     print(time.time()-starttime)
     
 
     
     
     
-    '''starttime=time.time()
+    starttime=time.time()
     i = 1
     while True:
         solution, receiver, exercise = getSolutionsFromQueue()
+        print(receiver)
+        print(solution)
+        print(json.dumps(solution, indent=4, sort_keys=True))
+        print(exercise)
         if solution != None:
             data = {"Exercise" : exercise.get("Exercise"), "Solution" : solution.get("Solution"), "Receiver" : receiver}
+            do_something(solution, receiver, exercise, arg)
+
             print(data)
         print("tick" + str(i))
         i += 1
-        time.sleep(1.0 - ((time.time() - starttime) % 1.0))'''
+        time.sleep(1.0 - ((time.time() - starttime) % 1.0))

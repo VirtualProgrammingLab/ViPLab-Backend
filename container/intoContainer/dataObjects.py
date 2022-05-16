@@ -169,9 +169,9 @@ class Result:
         self.index = None
         self.computation = {
             "startTime" : dt.strftime(self.time, "%Y-%m-%d %H:%M:%S"),
-            "CC_versionLong" : "",
-            "CC_version" : "",
-            "chain_version" : "",
+            "CC_versionLong" : "pstest2",
+            "CC_version" : "pstest1",
+            "chain_version" : "1",
             "technicalInfo" : {
                 "host" : socket.gethostname(),
                 "PID" : os.getpid(),
