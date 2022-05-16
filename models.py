@@ -12,6 +12,7 @@ class ConfigurationContainerSchema(Schema):
     volume = fields.String(data_key="resources.volume", missing=None)
     memory = fields.String(data_key="resources.memory", missing='64mb')
     num_cpus = fields.Integer(data_key="resources.numCPUs", missing=1)
+    output = fields.List(fields.Raw(required=False))
 
 class PartSchema(Schema):
     identifier = fields.UUID(required=True)
