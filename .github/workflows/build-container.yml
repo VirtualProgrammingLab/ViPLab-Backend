@@ -21,6 +21,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - 
+        name: copy file
+        uses: canastro/copy-file-action@master
+        with:
+          source: "config.sample.ini"
+          target: "config.ini"
+
       -
         name: Build and push
         id: docker_build
