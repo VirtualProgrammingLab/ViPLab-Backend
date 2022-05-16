@@ -10,9 +10,9 @@ import json
 import tempfile
 import docker
 import requests
+import time
 import os
 import url64 
-import time
 import datetime
 import uuid
 import tarfile
@@ -22,8 +22,7 @@ from threading import Thread
 from queue import Empty
 from models import ComputationSchema, ConfigurationContainerSchema
 from docker.types import Mount
-import io
-import time
+
 
 class ViPLabBackend(object):
     def __init__(self, config_file):

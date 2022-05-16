@@ -24,4 +24,4 @@ COPY config.ini /
 ENV PYHTONPATH /
 ENTRYPOINT [ "python" ]
 
-CMD [ "backend.py"]
+CMD ["-u", "backend.py"]
