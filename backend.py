@@ -8,6 +8,7 @@ import mimetypes
 import re
 import json
 import tempfile
+from xml.etree.ElementPath import prepare_star
 import docker
 import requests
 import time
@@ -34,6 +35,7 @@ class ViPLabBackend(object):
             print("Using env AMQPServer %s"%os.getenv('AMQPServer'))
         self.tasks = multiprocessing.Queue(3)
         self.results = multiprocessing.Queue()
+        self.preparations = multiprocessing.Queue()
         self.running_computations = {}
         self.client = docker.from_env()
         # ToDO: store errors and send them within result-message back
@@ -46,7 +48,8 @@ class ViPLabBackend(object):
                         self.config.getlist("AMQP", "computationqueues"),
                         self.config["AMQP"]["resultqueue"],
                         self.tasks,
-                        self.results))
+                        self.results,
+                        self.preparations))
         self.messager_process = multiprocessing.Process(target=messager.run)
         self.messager_process.start()
             
@@ -103,6 +106,20 @@ class ViPLabBackend(object):
                     comp2trash.append(key)
             for key in comp2trash:
                 del self.running_computations[key]
+
+            # prepare containers if available
+            # TODO also prepare matlab
+            try:
+                prepare_task = self.preparations.get(block=True, timeout=1)
+            except Empty:
+                pass
+            else:
+                print("--- Got preparation task. ---")
+                json_prepare_task = json.loads(prepare_task)
+                tmp_dir, files = self._prepare_all_environments(json_prepare_task)
+                if json_prepare_task["environment"] == "Container":
+                    comp_conf = ConfigurationContainerSchema().load(json_prepare_task["configuration"])
+                    self.load_image(comp_conf, tmp_dir.name)
                 
     def _prepare_all_environments(self, computation):
         # create tmp-dir for this computation and store files there
@@ -137,7 +154,33 @@ class ViPLabBackend(object):
         # ToDO: create in-between status messages for frontend
         comp_conf = ConfigurationContainerSchema().load(
             computation["configuration"])
+        
         # load image
+        image_filename, image_id = self.load_image(comp_conf, tmp_dir)
+        
+        # create container
+        if comp_conf["volume"] is not None:
+            print("Creating volume ...")
+            volume = self.client.volumes.create(labels={"computation": computation['identifier'].hex})
+
+        print("Creating container ...")
+        container = self.client.containers.create(
+            image_id,
+            command=comp_conf["command_line_arguments"], 
+            auto_remove=False,
+            cpu_quota=100000*comp_conf["num_cpus"], 
+            detach=True,
+            entrypoint=comp_conf["entrypoint"],
+            mem_limit=comp_conf["memory"],
+            mounts=[Mount(comp_conf["volume"],volume.id)] \
+                if comp_conf["volume"] is not None else None)
+        print("... Done.")
+        if comp_conf["volume"] is not None:
+            return container, image_filename, volume
+        else:
+            return container, image_filename, None
+
+    def load_image(self, comp_conf, tmp_dir):
         image_filename = None
         image_uri = comp_conf["image"]
         if image_uri.startswith("file"):
@@ -175,27 +218,7 @@ class ViPLabBackend(object):
             with open(os.path.join(tmp_dir, image_filename), 'rb') as bf:
                 image_id = self.client.images.load(bf)[0].id
         
-        # create container
-        if comp_conf["volume"] is not None:
-            print("Creating volume ...")
-            volume = self.client.volumes.create(labels={"computation": computation['identifier'].hex})
-
-        print("Creating container ...")
-        container = self.client.containers.create(
-            image_id,
-            command=comp_conf["command_line_arguments"], 
-            auto_remove=False,
-            cpu_quota=100000*comp_conf["num_cpus"], 
-            detach=True,
-            entrypoint=comp_conf["entrypoint"],
-            mem_limit=comp_conf["memory"],
-            mounts=[Mount(comp_conf["volume"],volume.id)] \
-                if comp_conf["volume"] is not None else None)
-        print("... Done.")
-        if comp_conf["volume"] is not None:
-            return container, image_filename, volume
-        else:
-            return container, image_filename, None
+        return image_filename, image_id
 
     def copy_to_container(self, ip_add, basepath, files):
         print(basepath, files)
@@ -210,7 +233,6 @@ class ViPLabBackend(object):
         mimetypes.add_type("application/x-vgf", ".vgf")
         mimetypes.add_type("application/x-vgf3", ".vgf3")
         mimetypes.add_type("application/x-vgfc", ".vgfc")
-                
 
 class ResultStreamer(Thread):
     def __init__(self, stream, tmp_dir, files, result_queue, computation_id, sidekick):

@@ -7,13 +7,14 @@ from proton.reactor import ApplicationEvent, EventInjector
 
 class AMQPMessager(MessagingHandler):    
     def __init__(self, server, receiver_queues, sender_queue, task_queue,
-                 result_queue):
+                 result_queue, preparation_queue):
         super(AMQPMessager, self).__init__()
         self.server = server
         self.receiver_queues = receiver_queues
         self.sender_queue = sender_queue
         self.tasks = task_queue
         self.results = result_queue
+        self.preparations = preparation_queue
 
     def on_start(self, event):
         conn = event.container.connect(self.server)
@@ -28,8 +29,10 @@ class AMQPMessager(MessagingHandler):
 
     def on_message(self, event):
         # ToDO: ignore duplicate message
-        # print(event.message.body)
-        self.tasks.put(event.message.body)
+        if event.message.address != "preparations":
+            self.tasks.put(event.message.body)
+        elif event.message.address == "preparations":
+            self.preparations.put(event.message.body)
     
     def on_result(self, event):
         # check if we are finished
