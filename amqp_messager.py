@@ -16,7 +16,7 @@ class AMQPMessager(MessagingHandler):
         self.results = result_queue
 
     def on_start(self, event):
-        conn = event.container.connect(self.server)
+        conn = event.container.connect(self.server, heartbeat=30)
         for queue in self.receiver_queues:
             event.container.create_receiver(conn, queue)  
         self.sender = event.container.create_sender(conn, self.sender_queue)
