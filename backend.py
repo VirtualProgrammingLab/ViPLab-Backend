@@ -63,9 +63,13 @@ class ViPLabBackend(object):
                 tmp_dir, files = self._prepare_all_environments(computation)
                 # ToDO: map start-function dynamically based on getattr
                 if computation["environment"] == "Container":
-                    container, image_filename, volume = \
-                        self._prepare_container_backend(computation, 
+                    try:
+                        container, image_filename, volume = \
+                            self._prepare_container_backend(computation, 
                                                         tmp_dir.name)
+                    except: # e.g. schema validation error
+                        print("Exeception occured in prepartion. Skipped task.")
+                        continue
                     if files:
                         sidekick = self._launch_sidekick(volume, computation['identifier'])
                         time.sleep(3)
@@ -317,7 +321,6 @@ if __name__ == '__main__':
     try:
         backend.main()
     except KeyboardInterrupt:
-        # ToDo: analyze clean up process and improve it
         backend.tasks.close()
         backend.tasks.join_thread()
         backend.results.put("finished")
