@@ -4,8 +4,6 @@ Delegates incoming tasks to available backends
 """
 import multiprocessing
 import configparser
-import mimetypes
-import re
 import json
 import tempfile
 import docker
@@ -22,6 +20,9 @@ from threading import Thread
 from queue import Empty
 from models import ComputationSchema, ConfigurationContainerSchema
 from docker.types import Mount
+import boto3
+from requests.adapters import HTTPAdapter, Retry
+from urllib.parse import urlparse, urlunparse
 
 
 class ViPLabBackend(object):
@@ -32,16 +33,31 @@ class ViPLabBackend(object):
         if os.getenv('AMQPServer') :
             self.config.set("AMQP", "server",  os.getenv('AMQPServer'))
             print("Using env AMQPServer %s"%os.getenv('AMQPServer'))
+        if os.getenv('endpoint_url') :
+            self.config.set("S3", "EndpointURL",  os.getenv('endpoint_url'))
+            print("Using env endpoint_url %s"%os.getenv('endpoint_url'))
+        if os.getenv('access_key') :
+            self.config.set("S3", "AWSAccessKeyID",  os.getenv('access_key'))
+            print("Using env access_key %s"%os.getenv('access_key'))
+        if os.getenv('secret_key') :
+            self.config.set("S3", "AWSSecretAccessKey",  os.getenv('secret_key'))
+            print("Using env secret_key")
+        if os.getenv('rewrite_endpoint_url') :
+            self.config.set("S3", "RewriteEndpoint",  os.getenv('rewrite_endpoint_url'))
+            print("Using env rewrite_endpoint_url: %s"%os.getenv('rewrite_endpoint_url'))
         self.tasks = multiprocessing.Queue(3)
         self.results = multiprocessing.Queue()
         self.running_computations = {}
         self.client = docker.from_env()
         # ToDO: store errors and send them within result-message back
         self.errors = []
-        # init mimetypes and add missing types
-        self.add_mimetypes()
         # ToDo: implement logging
         # set up amqp_messager
+        self.s3client = boto3.client('s3',
+                                     endpoint_url=self.config["S3"]["EndpointURL"],
+                                     aws_access_key_id=self.config["S3"]["AWSAccessKeyID"],
+                                     aws_secret_access_key=self.config["S3"]["AWSSecretAccessKey"]
+        )
         messager = Container(AMQPMessager(self.config["AMQP"]["server"],
                         self.config.getlist("AMQP", "computationqueues"),
                         self.config["AMQP"]["resultqueue"],
@@ -89,7 +105,9 @@ class ViPLabBackend(object):
                 result_handler = ResultStreamer(response_stream, tmp_dir.name,
                                                 files, self.results,
                                                 computation["identifier"],
-                                                sidekick)
+                                                sidekick, 
+                                                self.s3client, 
+                                                self.config["S3"]["RewriteEndpoint"])
                 result_handler.start()
                 self.running_computations[computation["identifier"]] = \
                         (container, result_handler, tmp_dir)
@@ -203,21 +221,17 @@ class ViPLabBackend(object):
 
     def copy_to_container(self, ip_add, basepath, files):
         print(basepath, files)
+        s = requests.Session()
+        retries = Retry(total=5, backoff_factor=3)
+        s.mount('http://', HTTPAdapter(max_retries=retries))
         for f in files:
             files = {'file': (f, open(os.path.join(basepath,f),'rb'))}
-            r = requests.post('http://%s:5000'%ip_add, files=files)
+            r = s.post('http://%s:5000'%ip_add, files=files)
 
-    def add_mimetypes(self):
-        mimetypes.init()
-        mimetypes.add_type("application/vnd.kitware", ".vtu")
-        mimetypes.add_type("application/vnd.kitware", ".vtp")
-        mimetypes.add_type("application/x-vgf", ".vgf")
-        mimetypes.add_type("application/x-vgf3", ".vgf3")
-        mimetypes.add_type("application/x-vgfc", ".vgfc")
                 
 
 class ResultStreamer(Thread):
-    def __init__(self, stream, tmp_dir, files, result_queue, computation_id, sidekick):
+    def __init__(self, stream, tmp_dir, files, result_queue, computation_id, sidekick, s3client, rewrite_url = None):
         super(ResultStreamer, self).__init__()
         self.stream = stream
         self.tmp_dir = tmp_dir
@@ -225,13 +239,8 @@ class ResultStreamer(Thread):
         self.results = result_queue
         self.sent_files = files
         self.sidekick = sidekick
-        self.regex = re.compile(
-                        r'^(?:http|ftp)s?://' # http:// or https://
-                        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
-                        r'localhost|' #localhost...
-                        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
-                        r'(?::\d+)?' # optional port
-                        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        self.s3client = s3client
+        self.rewrite_url = rewrite_url
         
     def run(self):
         std_out_chunk = ""
@@ -273,42 +282,32 @@ class ResultStreamer(Thread):
                 ip_add = self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
                 r = requests.get('http://%s:5000/list'%ip_add)
                 data = r.json()
-                for filename in data:
-                    print(filename)
-                    fdata = requests.get('http://%s:5000/data/%s'%(ip_add,filename[1:]), stream=True)
-                    if fdata.status_code == 200:
-                        with open(os.path.join(self.tmp_dir, "files",filename[1:]), 'wb') as f:
-                            for chunk in fdata.iter_content(1024):
-                                f.write(chunk)
+                for fileentry in [entry for entry in data if entry['name'][1:] not in self.sent_files]:
+                    print(fileentry)
+                    if fileentry["size"] < 4 * 1024:
+                        fdata = requests.get('http://%s:5000/data/%s'%(ip_add,fileentry['name'][1:])).content
+                        result["artifacts"].append(
+                            {"identifier": str(uuid.uuid4()),
+                             "type": "file",
+                             "path": fileentry['name'][1:],
+                             "MIMEtype": fileentry['mimetype'],
+                             "content": url64.encode(fdata)})
+                    else:
+                        response = {"target" : self.s3client.generate_presigned_url('put_object', Params={'Bucket': "test-bucket", 'Key': fileentry['name'][1:]}, ExpiresIn=3600, HttpMethod='PUT')}
+                        r = requests.post('http://%s:5000/upload/%s'%(ip_add,fileentry['name'][1:]), json=response)
+                        target_url = self.s3client.generate_presigned_url('get_object', Params={'Bucket': "test-bucket", 'Key': fileentry['name'][1:]}, ExpiresIn=3600)
+                        if self.rewrite_url:
+                            target_split = urlparse(target_url)
+                            rewrite_split = urlparse(self.rewrite_url)
+                            target_url = urlunparse((rewrite_split[0], rewrite_split[1], target_split[2], target_split[3], target_split[4], target_split[5]))
+                        result["artifacts"].append(
+                            {"identifier": str(uuid.uuid4()),
+                             "type": "s3file",
+                             "path": fileentry['name'][1:],
+                             "size": fileentry["size"],
+                             "MIMEtype": 'application/octet-stream',
+                             "url": target_url })
                 self.sidekick.stop()
-            (_, _, filenames) = next(os.walk(os.path.join(self.tmp_dir, "files")))
-            filenames = [n for n in filenames if n not in self.sent_files]
-            for name in filenames:
-                # ToDO: if filesize > 1mb -> generate s3-url
-                file_path = os.path.join(self.tmp_dir, "files", name)
-                mime = mimetypes.guess_type(file_path)
-                mimetype = "" 
-                if mime[0] == "text/plain":
-                    with open(file_path, 'r') as fr:
-                        lines = fr.readlines()
-                    is_uri = all([re.match(self.regex, line.strip()) for line in lines])
-                    if is_uri:
-                        mimetype = "text/uri-list"
-                    else: 
-                        mimetype = "text/plain"
-                elif mime[0] is not None:
-                    mimetype = mime[0]
-                else:
-                    mimetype = "application/octet-stream"
-                with open(file_path, 'rb') as fh:
-                    content = fh.read()
-                result["artifacts"].append(
-                    {"identifier": str(uuid.uuid4()),
-                     "type": "file",
-                     "path": name,
-                     "MIMEtype": mimetype,
-                     "content": url64.encode(content)})
-                self.sent_files.append(name)
         self.results.put(result)
                     
         
