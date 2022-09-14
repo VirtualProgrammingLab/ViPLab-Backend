@@ -305,7 +305,7 @@ class ResultStreamer(Thread):
                              "type": "s3file",
                              "path": fileentry['name'][1:],
                              "size": fileentry["size"],
-                             "MIMEtype": 'application/octet-stream',
+                             "MIMEtype": fileentry['mimetype'],
                              "url": target_url })
                 self.sidekick.stop()
         self.results.put(result)
