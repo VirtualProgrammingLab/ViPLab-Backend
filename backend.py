@@ -86,7 +86,7 @@ class ViPLabBackend(object):
                     except: # e.g. schema validation error
                         print("Exeception occured in prepartion. Skipped task.")
                         continue
-                    if files:
+                    if volume:
                         sidekick = self._launch_sidekick(volume, computation['identifier'])
                         time.sleep(3)
                         sidekick.reload()
