@@ -249,6 +249,7 @@ class ResultStreamer(Thread):
         self.s3client = s3client
         self.rewrite_url = rewrite_url
         self.bucket_name = bucket_name
+        self.result_patterns = None
         
         # check intermediate result regex-patterns TODO: move to models.py
         invalid_patterns = []
