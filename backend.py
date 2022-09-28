@@ -53,8 +53,6 @@ class ViPLabBackend(object):
         if os.getenv('rewrite_endpoint_url') :
             self.config.set("S3", "RewriteEndpoint",  os.getenv('rewrite_endpoint_url'))
             print("Using env rewrite_endpoint_url: %s"%os.getenv('rewrite_endpoint_url'))
-        else:
-            self.config.set("S3", "RewriteEndpoint", None)
         self.tasks = multiprocessing.Queue(3)
         self.results = multiprocessing.Queue()
         self.running_computations = {}
@@ -118,7 +116,7 @@ class ViPLabBackend(object):
                                                 sidekick, 
                                                 self.s3client, 
                                                 self.config["S3"]["BucketName"],
-                                                self.config["S3"]["RewriteEndpoint"])
+                                                self.config["S3"]["RewriteEndpoint"] if self.config["S3"].has_key("RewriteEndpoint") else None)
                 result_handler.start()
                 self.running_computations[computation["identifier"]] = \
                         (container, result_handler, tmp_dir)
