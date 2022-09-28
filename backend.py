@@ -53,6 +53,8 @@ class ViPLabBackend(object):
         if os.getenv('rewrite_endpoint_url') :
             self.config.set("S3", "RewriteEndpoint",  os.getenv('rewrite_endpoint_url'))
             print("Using env rewrite_endpoint_url: %s"%os.getenv('rewrite_endpoint_url'))
+        else:
+            self.config.set("S3", "RewriteEndpoint", None)
         self.tasks = multiprocessing.Queue(3)
         self.results = multiprocessing.Queue()
         self.running_computations = {}
@@ -325,7 +327,7 @@ class ResultStreamer(Thread):
                     else:
                         response = {"target" : self.s3client.generate_presigned_url('put_object', Params={'Bucket': self.bucket_name, 'Key': fileentry['name'][1:]}, ExpiresIn=3600, HttpMethod='PUT')}
                         r = requests.post('http://%s:5000/upload/%s'%(ip_add,fileentry['name'][1:]), json=response)
-                        target_url = self.s3client.generate_presigned_url('get_object', Params={'Bucket': "test-bucket", 'Key': fileentry['name'][1:]}, ExpiresIn=3600)
+                        target_url = self.s3client.generate_presigned_url('get_object', Params={'Bucket': self.bucket_name, 'Key': fileentry['name'][1:]}, ExpiresIn=3600)
                         if self.rewrite_url:
                             target_split = urlparse(target_url)
                             rewrite_split = urlparse(self.rewrite_url)
