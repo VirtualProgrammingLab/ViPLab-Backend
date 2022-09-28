@@ -3,11 +3,14 @@ from marshmallow import Schema, fields, validate
 from marshmallow.decorators import validates_schema
 
 class ConfigurationContainerSchema(Schema):
-    # ToDO: document defaults in documentation-repo 
+    # TODO: document defaults in documentation-repo 
     # there are inconsistencies between computation and computation template
+    # TODO: write more validators, e.g. for regex-pattern or image
     command_line_arguments = fields.String(data_key="running.commandLineArguments",
                                            missing=None)
     entrypoint = fields.String(data_key="running.entrypoint", missing=None)
+    intermediate_files_pattern = \
+        fields.List(fields.String, data_key="running.intermediateFilesPattern", missing=[])
     image = fields.String(data_key="resources.image", required=True)
     volume = fields.String(data_key="resources.volume", missing=None)
     memory = fields.String(data_key="resources.memory", missing='64mb')
@@ -20,7 +23,7 @@ class PartSchema(Schema):
                            validate=validate.OneOf(["invisible", "visible", 
                                                     "modifiable", "template"]))
     content = fields.String(missing="")
-    # ToDO: bug in websocket-api: should be removed
+    # TODO: bug in websocket-api: should be removed
     metadata = fields.Raw()
 
 class FileSchema(Schema):

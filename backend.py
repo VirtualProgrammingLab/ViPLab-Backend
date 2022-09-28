@@ -2,28 +2,33 @@
 
 Delegates incoming tasks to available backends
 """
-import multiprocessing
 import configparser
+import datetime
 import json
+import multiprocessing
+import os
+import re
+import tarfile
 import tempfile
+import time
+import traceback
+import uuid
+
+import boto3
 import docker
 import requests
-import time
-import os
 import url64 
-import datetime
-import uuid
-import tarfile
-from proton.reactor import Container
-from amqp_messager import AMQPMessager
-from threading import Thread
+
 from queue import Empty
-from models import ComputationSchema, ConfigurationContainerSchema
-from docker.types import Mount
-import boto3
-from requests.adapters import HTTPAdapter, Retry
+from threading import Thread
 from urllib.parse import urlparse, urlunparse
 
+from docker.types import Mount
+from proton.reactor import Container
+from requests.adapters import HTTPAdapter, Retry
+
+from amqp_messager import AMQPMessager
+from models import ComputationSchema, ConfigurationContainerSchema
 
 class ViPLabBackend(object):
     def __init__(self, config_file):
@@ -80,11 +85,11 @@ class ViPLabBackend(object):
                 # ToDO: map start-function dynamically based on getattr
                 if computation["environment"] == "Container":
                     try:
-                        container, image_filename, volume = \
-                            self._prepare_container_backend(computation, 
-                                                        tmp_dir.name)
-                    except: # e.g. schema validation error
+                        container, volume, int_patterns = \
+                            self._prepare_container_backend(computation)
+                    except: # e.g. schema validation error, container not accessable, etc...
                         print("Exeception occured in prepartion. Skipped task.")
+                        traceback.print_exc()
                         continue
                     if volume:
                         sidekick = self._launch_sidekick(volume, computation['identifier'])
@@ -95,7 +100,6 @@ class ViPLabBackend(object):
                         self.copy_to_container(ip_add, os.path.join(tmp_dir.name, "files"), files)
                     else:
                         sidekick = None
-                    files.append(image_filename)
                 else:
                     raise NotImplementedError
                 # attach result listener thread
@@ -105,6 +109,7 @@ class ViPLabBackend(object):
                 result_handler = ResultStreamer(response_stream, tmp_dir.name,
                                                 files, self.results,
                                                 computation["identifier"],
+                                                int_patterns,
                                                 sidekick, 
                                                 self.s3client, 
                                                 self.config["S3"]["RewriteEndpoint"])
@@ -155,12 +160,12 @@ class ViPLabBackend(object):
         )
         return container
 
-    def _prepare_container_backend(self, computation, tmp_dir):
+    def _prepare_container_backend(self, computation):
         # ToDO: create in-between status messages for frontend
         comp_conf = ConfigurationContainerSchema().load(
             computation["configuration"])
         # load image
-        image_filename = None
+        # TODO: support download from university wide registry
         image_uri = comp_conf["image"]
         if image_uri.startswith("file"):
             image_filename = image_uri[7:]
@@ -189,19 +194,16 @@ class ViPLabBackend(object):
             # assume accessible web resource: this can be a published dataset
             # or a s3-direct link (provided by viplab-connector)
             resp = requests.get(image_uri, stream=True)
-            content_disp = resp.headers["Content-disposition"]
-            image_filename = content_disp[content_disp.find("filename")+9:].strip('"') 
-            with open(os.path.join(tmp_dir, image_filename), 'wb') as fh:
-                for chunk in resp.iter_content(chunk_size=1024):
-                    fh.write(chunk)
-            with open(os.path.join(tmp_dir, image_filename), 'rb') as bf:
-                image_id = self.client.images.load(bf)[0].id
-        
+            image_id = self.client.images.load(resp.iter_content(chunk_size=None))[0].id
+            resp.close()
+
         # create container
+        volume = None
         if comp_conf["volume"] is not None:
             print("Creating volume ...")
-            volume = self.client.volumes.create(labels={"computation": computation['identifier'].hex})
+            volume = self.client.volumes.create(labels={"computation": computation['identifier'].hex})        
 
+        # TODO: shrink cpu time! (see docu for timelimitinseconds)
         print("Creating container ...")
         container = self.client.containers.create(
             image_id,
@@ -214,10 +216,9 @@ class ViPLabBackend(object):
             mounts=[Mount(comp_conf["volume"],volume.id)] \
                 if comp_conf["volume"] is not None else None)
         print("... Done.")
-        if comp_conf["volume"] is not None:
-            return container, image_filename, volume
-        else:
-            return container, image_filename, None
+
+        return container, volume, comp_conf["intermediate_files_pattern"]
+
 
     def copy_to_container(self, ip_add, basepath, files):
         print(basepath, files)
@@ -231,7 +232,8 @@ class ViPLabBackend(object):
                 
 
 class ResultStreamer(Thread):
-    def __init__(self, stream, tmp_dir, files, result_queue, computation_id, sidekick, s3client, rewrite_url = None):
+    def __init__(self, stream, tmp_dir, files, result_queue, computation_id,
+                 result_patterns, sidekick, s3client, rewrite_url=None):
         super(ResultStreamer, self).__init__()
         self.stream = stream
         self.tmp_dir = tmp_dir
@@ -241,6 +243,20 @@ class ResultStreamer(Thread):
         self.sidekick = sidekick
         self.s3client = s3client
         self.rewrite_url = rewrite_url
+        
+        # check intermediate result regex-patterns TODO: move to models.py
+        invalid_patterns = []
+        for i, pattern in enumerate(result_patterns):
+            try:
+                re.compile(pattern)
+            except re.error:
+                invalid_patterns.append(i)
+                print("Invalid intermetiate files pattern %s. Ignoring!" % pattern)
+        result_patterns = [pattern for i, pattern in enumerate(result_patterns) \
+            if i not in invalid_patterns]
+        if result_patterns:
+            # TODO: check if its correct with r'...'
+            self.result_patterns = [re.compile(pattern) for pattern in result_patterns]
         
     def run(self):
         std_out_chunk = ""
@@ -260,6 +276,8 @@ class ResultStreamer(Thread):
             else:
                 current_time = time.time()
                 self.create_result(std_out_chunk, std_err_chunk)
+                if self.result_patterns:
+                    self.parse_stdout(std_out_chunk)
                 chunk_time = 0
                 std_out_chunk = ""
                 std_err_chunk = ""
@@ -267,6 +285,9 @@ class ResultStreamer(Thread):
         # the container has finished and we can create the final results
         # ToDo: ensure only finished files for intermediate results
         self.create_result(std_out_chunk, std_err_chunk, "final", files=True)
+    
+    def parse_stdout(self, std_out_chunk):
+        return []
     
     def create_result(self, std_out, std_err, status="intermediate", files=False):
         print("Creating result.")
@@ -277,21 +298,24 @@ class ResultStreamer(Thread):
                   "output": {"stdout": url64.encode(std_out),
                              "stderr": url64.encode(std_err)},
                   "artifacts": []}
-        if files:
-            if self.sidekick:
-                ip_add = self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
-                r = requests.get('http://%s:5000/list'%ip_add)
-                data = r.json()
+        finished_files = self.parse_stdout(std_out)
+        if self.sidekick and (finished_files or status == "final"):
+            ip_add = \
+                self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
+            r = requests.get('http://%s:5000/list'%ip_add)
+            data = r.json()
+            
+            if status == "final" and self.sidekick:
                 for fileentry in [entry for entry in data if entry['name'][1:] not in self.sent_files]:
                     print(fileentry)
                     if fileentry["size"] < 4 * 1024:
                         fdata = requests.get('http://%s:5000/data/%s'%(ip_add,fileentry['name'][1:])).content
                         result["artifacts"].append(
                             {"identifier": str(uuid.uuid4()),
-                             "type": "file",
-                             "path": fileentry['name'][1:],
-                             "MIMEtype": fileentry['mimetype'],
-                             "content": url64.encode(fdata)})
+                                "type": "file",
+                                "path": fileentry['name'][1:],
+                                "MIMEtype": fileentry['mimetype'],
+                                "content": url64.encode(fdata)})
                     else:
                         response = {"target" : self.s3client.generate_presigned_url('put_object', Params={'Bucket': "test-bucket", 'Key': fileentry['name'][1:]}, ExpiresIn=3600, HttpMethod='PUT')}
                         r = requests.post('http://%s:5000/upload/%s'%(ip_add,fileentry['name'][1:]), json=response)
@@ -302,11 +326,11 @@ class ResultStreamer(Thread):
                             target_url = urlunparse((rewrite_split[0], rewrite_split[1], target_split[2], target_split[3], target_split[4], target_split[5]))
                         result["artifacts"].append(
                             {"identifier": str(uuid.uuid4()),
-                             "type": "s3file",
-                             "path": fileentry['name'][1:],
-                             "size": fileentry["size"],
-                             "MIMEtype": fileentry['mimetype'],
-                             "url": target_url })
+                                "type": "s3file",
+                                "path": fileentry['name'][1:],
+                                "size": fileentry["size"],
+                                "MIMEtype": fileentry['mimetype'],
+                                "url": target_url })
                 self.sidekick.stop()
         self.results.put(result)
                     
