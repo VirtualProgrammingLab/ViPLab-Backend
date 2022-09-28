@@ -47,6 +47,9 @@ class ViPLabBackend(object):
         if os.getenv('secret_key') :
             self.config.set("S3", "AWSSecretAccessKey",  os.getenv('secret_key'))
             print("Using env secret_key")
+        if os.getenv('bucket_name') :
+            self.config.set("S3", "BucketName",  os.getenv('bucket_name'))
+            print("Using bucket_name %s"%os.getenv('bucket_name'))
         if os.getenv('rewrite_endpoint_url') :
             self.config.set("S3", "RewriteEndpoint",  os.getenv('rewrite_endpoint_url'))
             print("Using env rewrite_endpoint_url: %s"%os.getenv('rewrite_endpoint_url'))
@@ -112,6 +115,7 @@ class ViPLabBackend(object):
                                                 int_patterns,
                                                 sidekick, 
                                                 self.s3client, 
+                                                self.config["S3"]["BucketName"],
                                                 self.config["S3"]["RewriteEndpoint"])
                 result_handler.start()
                 self.running_computations[computation["identifier"]] = \
@@ -233,7 +237,8 @@ class ViPLabBackend(object):
 
 class ResultStreamer(Thread):
     def __init__(self, stream, tmp_dir, files, result_queue, computation_id,
-                 result_patterns, sidekick, s3client, rewrite_url=None):
+                 result_patterns, sidekick, s3client, bucket_name, rewrite_url=None):
+
         super(ResultStreamer, self).__init__()
         self.stream = stream
         self.tmp_dir = tmp_dir
@@ -243,6 +248,7 @@ class ResultStreamer(Thread):
         self.sidekick = sidekick
         self.s3client = s3client
         self.rewrite_url = rewrite_url
+        self.bucket_name = bucket_name
         
         # check intermediate result regex-patterns TODO: move to models.py
         invalid_patterns = []
@@ -317,7 +323,7 @@ class ResultStreamer(Thread):
                                 "MIMEtype": fileentry['mimetype'],
                                 "content": url64.encode(fdata)})
                     else:
-                        response = {"target" : self.s3client.generate_presigned_url('put_object', Params={'Bucket': "test-bucket", 'Key': fileentry['name'][1:]}, ExpiresIn=3600, HttpMethod='PUT')}
+                        response = {"target" : self.s3client.generate_presigned_url('put_object', Params={'Bucket': self.bucket_name, 'Key': fileentry['name'][1:]}, ExpiresIn=3600, HttpMethod='PUT')}
                         r = requests.post('http://%s:5000/upload/%s'%(ip_add,fileentry['name'][1:]), json=response)
                         target_url = self.s3client.generate_presigned_url('get_object', Params={'Bucket': "test-bucket", 'Key': fileentry['name'][1:]}, ExpiresIn=3600)
                         if self.rewrite_url:
