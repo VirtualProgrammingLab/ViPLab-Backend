@@ -116,7 +116,7 @@ class ViPLabBackend(object):
                                                 sidekick, 
                                                 self.s3client, 
                                                 self.config["S3"]["BucketName"],
-                                                self.config["S3"]["RewriteEndpoint"] if self.config["S3"].has_key("RewriteEndpoint") else None)
+                                                self.config["S3"]["RewriteEndpoint"] if self.config.has_option("S3","RewriteEndpoint") else None)
                 result_handler.start()
                 self.running_computations[computation["identifier"]] = \
                         (container, result_handler, tmp_dir)
