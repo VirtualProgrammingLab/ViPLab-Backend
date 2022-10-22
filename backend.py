@@ -109,19 +109,13 @@ class ViPLabBackend(object):
                 response_stream = container.attach(stdout=True, stderr=True, 
                                                    stream=True, logs=True,
                                                    demux=True)
-                result_handler = ResultStreamer(response_stream, tmp_dir.name,
-                                                files, self.results,
-                                                computation["identifier"],
-                                                int_patterns,
-                                                sidekick, 
-                                                self.s3client, 
-                                                self.config["S3"]["BucketName"],
-                                                self.config["S3"]["RewriteEndpoint"] if self.config.has_option("S3","RewriteEndpoint") else None)
+                result_handler = ResultStreamer(container, response_stream, tmp_dir.name, files,
+                    self.results, computation["identifier"], int_patterns, sidekick, self.s3client,
+                    self.config["S3"]["BucketName"], self.config["S3"]["RewriteEndpoint"] if \
+                        self.config.has_option("S3","RewriteEndpoint") else None)
                 result_handler.start()
                 self.running_computations[computation["identifier"]] = \
                         (container, result_handler, tmp_dir)
-                container.start()
-                print("Container started.")
             # check if computations are finished
             comp2trash = []
             for key, (cont, thread, tmp) in self.running_computations.items():
@@ -236,10 +230,11 @@ class ViPLabBackend(object):
                 
 
 class ResultStreamer(Thread):
-    def __init__(self, stream, tmp_dir, files, result_queue, computation_id,
+    def __init__(self, container, stream, tmp_dir, files, result_queue, computation_id,
                  result_patterns, sidekick, s3client, bucket_name, rewrite_url=None):
 
         super(ResultStreamer, self).__init__()
+        self.container = container
         self.stream = stream
         self.tmp_dir = tmp_dir
         self.computation_id = str(computation_id)
@@ -271,27 +266,34 @@ class ResultStreamer(Thread):
         chunk_time = 0
         start_time = time.time()
         current_time = 0
-        for std_out, std_err in self.stream:
-            if chunk_time < 2:
-                if std_out:
-                    std_out_chunk += std_out.decode('utf-8') + "\n"
-                if std_err:
-                    std_err_chunk += std_err.decode('utf-8') + "\n"
-                current_time = time.time()
-                chunk_time += current_time - start_time
-                #print(chunk_time)
-            else:
-                current_time = time.time()
-                self.create_result(std_out_chunk, std_err_chunk)
-                if self.result_patterns:
-                    self.parse_stdout(std_out_chunk)
-                chunk_time = 0
-                std_out_chunk = ""
-                std_err_chunk = ""
-            start_time = current_time
-        # the container has finished and we can create the final results
-        # ToDo: ensure only finished files for intermediate results
-        self.create_result(std_out_chunk, std_err_chunk, "final", files=True)
+        try:
+            self.container.start()
+        except docker.errors.APIError as e:
+            self.create_result("", str(e), status="final", files=False)
+        else:
+            print("Container started.")
+            for std_out, std_err in self.stream:
+                if chunk_time < 2:
+                    if std_out:
+                        std_out_chunk += std_out.decode('utf-8') + "\n"
+                    if std_err:
+                        std_err_chunk += std_err.decode('utf-8') + "\n"
+                    current_time = time.time()
+                    chunk_time += current_time - start_time
+                    #print(chunk_time)
+                else:
+                    current_time = time.time()
+                    self.create_result(std_out_chunk, std_err_chunk)
+                    if self.result_patterns:
+                        self.parse_stdout(std_out_chunk)
+                    chunk_time = 0
+                    std_out_chunk = ""
+                    std_err_chunk = ""
+                start_time = current_time
+            # the container has finished and we can create the final results
+            # ToDo: ensure only finished files for intermediate results
+            print("Container stream finished")
+            self.create_result(std_out_chunk, std_err_chunk, "final", files=True)
     
     def parse_stdout(self, std_out_chunk):
         return []
