@@ -275,9 +275,9 @@ class ResultStreamer(Thread):
             for std_out, std_err in self.stream:
                 if chunk_time < 2:
                     if std_out:
-                        std_out_chunk += std_out.decode('utf-8') + "\n"
+                        std_out_chunk += std_out.decode('utf-8')
                     if std_err:
-                        std_err_chunk += std_err.decode('utf-8') + "\n"
+                        std_err_chunk += std_err.decode('utf-8')
                     current_time = time.time()
                     chunk_time += current_time - start_time
                     #print(chunk_time)
