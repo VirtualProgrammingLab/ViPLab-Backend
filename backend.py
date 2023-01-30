@@ -291,7 +291,7 @@ class ResultStreamer(Thread):
                     std_err_chunk = ""
                 start_time = current_time
             # the container has finished and we can create the final results
-            # ToDo: ensure only finished files for intermediate results
+            # TODO: ensure only finished files for intermediate results
             print("Container stream finished")
             self.create_result(std_out_chunk, std_err_chunk, "final", files=True)
     
@@ -317,7 +317,7 @@ class ResultStreamer(Thread):
             if status == "final" and self.sidekick:
                 for fileentry in [entry for entry in data if entry['name'][1:] not in self.sent_files]:
                     print(fileentry)
-                    if fileentry["size"] < 4 * 1024:
+                    if fileentry["size"] < 0: # TODO: fix frontend to handle mix typed files with the same basename; before hack: 4 * 1024:
                         fdata = requests.get('http://%s:5000/data/%s'%(ip_add,fileentry['name'][1:])).content
                         result["artifacts"].append(
                             {"identifier": str(uuid.uuid4()),
