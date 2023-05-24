@@ -98,7 +98,7 @@ class ViPLabBackend(object):
                         sidekick = self._launch_sidekick(volume, computation['identifier'])
                         time.sleep(3)
                         sidekick.reload()
-                        ip_add = sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
+                        ip_add = sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_viplab']['IPAddress']
                         print(sidekick, ip_add)
                         self.copy_to_container(ip_add, os.path.join(tmp_dir.name, "files"), files)
                     else:
@@ -151,7 +151,7 @@ class ViPLabBackend(object):
             auto_remove=True,
             cpu_quota=100000,
             detach=True,
-            network='docker-development-environment_default',
+            network='docker-development-environment_viplab',
             mem_limit="1G",
             mounts=[Mount('/tmp/shared',volume.id)],
             name='viplab-vol-creator-%s'%computation_id
@@ -310,7 +310,7 @@ class ResultStreamer(Thread):
         finished_files = self.parse_stdout(std_out)
         if self.sidekick and (finished_files or status == "final"):
             ip_add = \
-                self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_default']['IPAddress']
+                self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_viplab']['IPAddress']
             r = requests.get('http://%s:5000/list'%ip_add)
             data = r.json()
             
