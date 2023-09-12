@@ -1,4 +1,4 @@
-python-qpid-proton==0.38.0
+python-qpid-proton==0.39.0
 marshmallow==3.19.0
 url64==0.1.0
 docker==6.1.3
