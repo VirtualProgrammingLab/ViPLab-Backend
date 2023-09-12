@@ -249,16 +249,16 @@ class ResultStreamer(Thread):
         # check intermediate result regex-patterns TODO: move to models.py
         invalid_patterns = []
         for i, pattern in enumerate(result_patterns):
+            p_decoded = url64.decode(r'%s' % pattern)
             try:
-                re.compile(pattern)
+                re.compile(p_decoded)
             except re.error:
                 invalid_patterns.append(i)
-                print("Invalid intermetiate files pattern %s. Ignoring!" % pattern)
+                print("Invalid intermetiate files pattern %s. Ignoring!" % p_decoded)
         result_patterns = [pattern for i, pattern in enumerate(result_patterns) \
             if i not in invalid_patterns]
         if result_patterns:
-            # TODO: check if its correct with r'...'
-            self.result_patterns = [re.compile(pattern) for pattern in result_patterns]
+            self.result_patterns = [re.compile(url64.decode(r'%s' % pattern)) for pattern in result_patterns]
         
     def run(self):
         std_out_chunk = ""
@@ -266,6 +266,7 @@ class ResultStreamer(Thread):
         chunk_time = 0
         start_time = time.time()
         current_time = 0
+        files = False
         try:
             self.container.start()
         except docker.errors.APIError as e:
@@ -283,20 +284,63 @@ class ResultStreamer(Thread):
                     #print(chunk_time)
                 else:
                     current_time = time.time()
-                    self.create_result(std_out_chunk, std_err_chunk)
                     if self.result_patterns:
-                        self.parse_stdout(std_out_chunk)
+                        files = self._parse_stdout(std_out_chunk)
+                    self.create_result(std_out_chunk, std_err_chunk, "intermediate", files=files)
                     chunk_time = 0
                     std_out_chunk = ""
                     std_err_chunk = ""
+                    files = False
                 start_time = current_time
             # the container has finished and we can create the final results
-            # TODO: ensure only finished files for intermediate results
             print("Container stream finished")
-            self.create_result(std_out_chunk, std_err_chunk, "final", files=True)
+            # for better UX, TODO: maybe not needed when status message are implemented
+            std_out_chunk += "\n---------\nStarting to transfer (final) output data. "
+            std_out_chunk += "This may take some time..."
+            self.create_result(std_out_chunk, std_err_chunk)
+            self.create_result("...finished!", "", "final", files=True)
     
-    def parse_stdout(self, std_out_chunk):
-        return []
+    def _parse_stdout(self, std_out_chunk):
+        print("Scanning for finished files...")
+        finished_files = []
+        for pattern in self.result_patterns:
+            # TODO: What if the pattern is split between two chunks?
+            finished_files += pattern.findall(std_out_chunk)
+        return list(set(finished_files))
+    
+    def _get_artifact(self, ip, filename, mime_type, size):
+        if size < 0: # TODO: fix frontend to handle mix typed files with the same basename; before: 4 * 1024:
+            # TODO: error handling when filename does not exists? 
+            fdata = requests.get(f"http://{ip}:5000/data/{filename}").content
+            artifact = dict(
+                {"identifier": str(uuid.uuid4()),
+                 "type": "file",
+                 "path": filename,
+                 "MIMEtype": mime_type,
+                 "content": url64.encode(fdata)})
+        else:
+            response = {"target" : self.s3client.generate_presigned_url(
+                            'put_object', Params={'Bucket': self.bucket_name, 
+                                                  'Key': f"{self.computation_id}/{filename}"},
+                            ExpiresIn=3600, HttpMethod='PUT')}
+            r = requests.post('http://%s:5000/upload/%s' % (ip, filename), json=response)
+            target_url = self.s3client.generate_presigned_url(
+                'get_object', Params={'Bucket': self.bucket_name, 
+                                      'Key': f"{self.computation_id}/{filename}"}, ExpiresIn=3600)
+            if self.rewrite_url:
+                target_split = urlparse(target_url)
+                rewrite_split = urlparse(self.rewrite_url)
+                target_url = urlunparse((rewrite_split[0], rewrite_split[1], target_split[2], 
+                                         target_split[3], target_split[4], target_split[5]))
+            artifact = dict(
+                {"identifier": str(uuid.uuid4()),
+                 "type": "s3file",
+                 "path": filename,
+                 "size": size,
+                 "MIMEtype": mime_type,
+                 "url": target_url})
+        return artifact
+        
     
     def create_result(self, std_out, std_err, status="intermediate", files=False):
         print("Creating result.")
@@ -307,40 +351,28 @@ class ResultStreamer(Thread):
                   "output": {"stdout": url64.encode(std_out),
                              "stderr": url64.encode(std_err)},
                   "artifacts": []}
-        finished_files = self.parse_stdout(std_out)
-        if self.sidekick and (finished_files or status == "final"):
+
+        if self.sidekick and files:
             ip_add = \
                 self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_viplab']['IPAddress']
-            r = requests.get('http://%s:5000/list'%ip_add)
-            data = r.json()
-            
-            if status == "final" and self.sidekick:
+            if status == "intermediate":
+                print(f'Intermediate result with {len(files)} entries')
+                for fileentry in files:
+                    r = requests.get('http://%s:5000/list/%s' % (ip_add, fileentry))
+                    data = r.json()
+                    result["artifacts"].append(
+                        self._get_artifact(ip_add, fileentry, data['mimetype'], data['size']))
+                    print(fileentry, data['mimetype'], data['size'])
+                    self.sent_files.append(fileentry)
+            else: # status == "final"
+                r = requests.get('http://%s:5000/list'%ip_add)
+                data = r.json()
                 for fileentry in [entry for entry in data if entry['name'][1:] not in self.sent_files]:
                     print(fileentry)
-                    if fileentry["size"] < 0: # TODO: fix frontend to handle mix typed files with the same basename; before hack: 4 * 1024:
-                        fdata = requests.get('http://%s:5000/data/%s'%(ip_add,fileentry['name'][1:])).content
-                        result["artifacts"].append(
-                            {"identifier": str(uuid.uuid4()),
-                                "type": "file",
-                                "path": fileentry['name'][1:],
-                                "MIMEtype": fileentry['mimetype'],
-                                "content": url64.encode(fdata)})
-                    else:
-                        response = {"target" : self.s3client.generate_presigned_url('put_object', Params={'Bucket': self.bucket_name, 'Key': fileentry['name'][1:]}, ExpiresIn=3600, HttpMethod='PUT')}
-                        r = requests.post('http://%s:5000/upload/%s'%(ip_add,fileentry['name'][1:]), json=response)
-                        target_url = self.s3client.generate_presigned_url('get_object', Params={'Bucket': self.bucket_name, 'Key': fileentry['name'][1:]}, ExpiresIn=3600)
-                        if self.rewrite_url:
-                            target_split = urlparse(target_url)
-                            rewrite_split = urlparse(self.rewrite_url)
-                            target_url = urlunparse((rewrite_split[0], rewrite_split[1], target_split[2], target_split[3], target_split[4], target_split[5]))
-                        result["artifacts"].append(
-                            {"identifier": str(uuid.uuid4()),
-                                "type": "s3file",
-                                "path": fileentry['name'][1:],
-                                "size": fileentry["size"],
-                                "MIMEtype": fileentry['mimetype'],
-                                "url": target_url })
+                    result["artifacts"].append(
+                        self._get_artifact(ip_add, fileentry['name'][1:], fileentry['mimetype'], fileentry['size']))
                 self.sidekick.stop()
+                
         self.results.put(result)
                     
         
