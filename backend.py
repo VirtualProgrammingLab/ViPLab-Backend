@@ -3,6 +3,7 @@
 Delegates incoming tasks to available backends
 """
 import configparser
+import copy
 import datetime
 import json
 import multiprocessing
@@ -148,7 +149,7 @@ class ViPLabBackend(object):
     def _launch_sidekick(self, volume, computation_id):
         container = self.client.containers.run(
             'viplab/volumecreator',
-            auto_remove=True,
+            auto_remove=True if not self.config.getboolean("DEFAULT", "keepcontainer") else False,
             cpu_quota=100000,
             detach=True,
             network='docker-development-environment_viplab',
@@ -373,7 +374,7 @@ class ResultStreamer(Thread):
                         self._get_artifact(ip_add, fileentry['name'][1:], fileentry['mimetype'], fileentry['size']))
                 self.sidekick.stop()
                 
-        self.results.put(result)
+        self.results.put(copy.deepcopy(result))
                     
         
 if __name__ == '__main__':
