@@ -3,7 +3,6 @@
 Delegates incoming tasks to available backends
 """
 import configparser
-import copy
 import datetime
 import json
 import multiprocessing
@@ -358,23 +357,23 @@ class ResultStreamer(Thread):
                 self.sidekick.attrs['NetworkSettings']['Networks']['docker-development-environment_viplab']['IPAddress']
             if status == "intermediate":
                 print(f'Intermediate result with {len(files)} entries')
-                for fileentry in files:
+                for nr, fileentry in enumerate(files):
                     r = requests.get('http://%s:5000/list/%s' % (ip_add, fileentry))
                     data = r.json()
                     result["artifacts"].append(
                         self._get_artifact(ip_add, fileentry, data['mimetype'], data['size']))
-                    print(fileentry, data['mimetype'], data['size'])
+                    #print(nr, fileentry, data['mimetype'], data['size'])
                     self.sent_files.append(fileentry)
             else: # status == "final"
                 r = requests.get('http://%s:5000/list'%ip_add)
                 data = r.json()
                 for fileentry in [entry for entry in data if entry['name'][1:] not in self.sent_files]:
-                    print(fileentry)
+                    #print(fileentry)
                     result["artifacts"].append(
                         self._get_artifact(ip_add, fileentry['name'][1:], fileentry['mimetype'], fileentry['size']))
                 self.sidekick.stop()
-                
-        self.results.put(copy.deepcopy(result))
+        print(f'Queued {len(result["artifacts"])} files')
+        self.results.put(result)
                     
         
 if __name__ == '__main__':

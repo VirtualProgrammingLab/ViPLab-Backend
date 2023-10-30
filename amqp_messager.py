@@ -20,9 +20,7 @@ class AMQPMessager(MessagingHandler):
         for queue in self.receiver_queues:
             event.container.create_receiver(conn, queue)  
         self.sender = event.container.create_sender(conn, self.sender_queue)
-        e = ApplicationEvent("result")
-        e.container = event.container
-        self.result_informer = ResultInformer(self.results, EventInjector(), e)
+        self.result_informer = ResultInformer(self.results, EventInjector(), event.container)
         self.result_informer.start()
         event.container.selectable(self.result_informer.injector)
 
@@ -43,16 +41,19 @@ class AMQPMessager(MessagingHandler):
 
 
 class ResultInformer(Thread):
-    def __init__(self, result_queue, injector, event):
+    def __init__(self, result_queue, injector, container):
         super(ResultInformer, self).__init__()
         self.result_queue = result_queue
         self.injector = injector
-        self.event = event
+        self.container = container
         
     def run(self):
         while True:
             result_json = self.result_queue.get()
+            #print("Proton: ", len(result_json['artifacts']), result_json['identifier'], self.result_queue.qsize())
             result = json.dumps(result_json)
-            self.event.subject = result
-            self.injector.trigger(self.event)
+            e = ApplicationEvent("result")
+            e.container = self.container
+            e.subject = result
+            self.injector.trigger(e)
 
