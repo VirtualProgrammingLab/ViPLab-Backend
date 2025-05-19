@@ -21,7 +21,7 @@ cyrus-sasl-dev\
 COPY backend.py amqp_messager.py models.py /
 COPY config.ini /
 
-ENV PYHTONPATH /
+ENV PYHTONPATH=/
 ENTRYPOINT [ "python" ]
 
 CMD ["-u", "backend.py"]
