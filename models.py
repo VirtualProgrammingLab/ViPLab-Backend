@@ -7,14 +7,14 @@ class ConfigurationContainerSchema(Schema):
     # there are inconsistencies between computation and computation template
     # TODO: write more validators, e.g. for regex-pattern or image
     command_line_arguments = fields.String(data_key="running.commandLineArguments",
-                                           missing=None)
-    entrypoint = fields.String(data_key="running.entrypoint", missing=None)
+                                           load_default=None)
+    entrypoint = fields.String(data_key="running.entrypoint", load_default=None)
     intermediate_files_pattern = \
-        fields.List(fields.String, data_key="running.intermediateFilesPattern", missing=[])
+        fields.List(fields.String, data_key="running.intermediateFilesPattern", load_default=[])
     image = fields.String(data_key="resources.image", required=True)
-    volume = fields.String(data_key="resources.volume", missing=None)
-    memory = fields.String(data_key="resources.memory", missing='64mb')
-    num_cpus = fields.Integer(data_key="resources.numCPUs", missing=1)
+    volume = fields.String(data_key="resources.volume", load_default=None)
+    memory = fields.String(data_key="resources.memory", load_default='64mb')
+    num_cpus = fields.Integer(data_key="resources.numCPUs", load_default=1)
     output = fields.List(fields.Raw(required=False))
 
 class PartSchema(Schema):
@@ -22,7 +22,7 @@ class PartSchema(Schema):
     access = fields.String(required=True,
                            validate=validate.OneOf(["invisible", "visible", 
                                                     "modifiable", "template"]))
-    content = fields.String(missing="")
+    content = fields.String(load_default="")
     # TODO: bug in websocket-api: should be removed
     metadata = fields.Raw()
 
